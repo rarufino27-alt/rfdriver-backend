@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Perfil - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ==============================
+   GOLD THEME + DARK/LIGHT
+=================================*/
+:root{
+  --gold-dark:#d6b25f;
+  --gold-dark2:#e8d08a;
+
+  --gold-light:#90731b;
+  --gold-light2:#b08c2e;
+
+  --bg-dark:#0d0d0d;
+  --text-dark:#f4f4f4;
+  --card-dark:#161616;
+  --border-dark:#242424;
+
+  --bg-light:#f7f7f7;
+  --text-light:#222;
+  --card-light:#ffffff;
+  --border-light:#d6d6d6;
+
+  --radius:14px;
+}
+
+body.dark{
+  --bg:var(--bg-dark);
+  --text:var(--text-dark);
+  --card:var(--card-dark);
+  --border:var(--border-dark);
+  --gold-main:var(--gold-dark);
+  --gold-main2:var(--gold-dark2);
+}
+body.light{
+  --bg:var(--bg-light);
+  --text:var(--text-light);
+  --card:var(--card-light);
+  --border:var(--border-light);
+  --gold-main:var(--gold-light);
+  --gold-main2:var(--gold-light2);
+}
+
+*{ box-sizing:border-box; font-family:Inter,system-ui; }
+
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  padding-top:70px; padding-bottom:100px; transition:.3s;
+}
+
+/*********************************
+ DRAWER
+**********************************/
+.drawer{
+  position:fixed; top:0; left:-260px;
+  width:260px; height:100%;
+  background:var(--card);
+  transition:left .3s;
+  z-index:9999; padding-top:70px;
+}
+.drawer.open{left:0;}
+.drawer a{
+  display:block; padding:15px 22px;
+  border-bottom:1px solid var(--border);
+  text-decoration:none; color:var(--text);
+}
+
+.drawer-toggle{
+  position:fixed; left:15px; top:15px;
+  font-size:24px; cursor:pointer; z-index:10000;
+  background:var(--gold-main);
+  padding:6px 10px; border-radius:10px; color:#000;
+}
+
+/*********************************
+ THEME BTN
+**********************************/
+.theme-toggle{
+  position:fixed; right:15px; top:15px;
+  font-size:22px; cursor:pointer; z-index:10001;
+  background:var(--card); padding:6px 10px; border-radius:10px;
+}
+
+/*********************************
+ TABBAR
+**********************************/
+.tabbar{
+  position:fixed; bottom:0; left:0; right:0;
+  height:70px; background:var(--card);
+  border-top:1px solid var(--border);
+  display:flex; justify-content:space-around; align-items:center;
+  z-index:9990;
+}
+.tabbar a{
+  text-decoration:none; text-align:center;
+  font-size:20px; flex:1; color:var(--text);
+}
+.tabbar small{font-size:12px; display:block;}
+
+.action-btn{
+  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+  width:58px; height:58px; border:none; border-radius:30px;
+  display:flex; justify-content:center; align-items:center;
+  margin-top:-35px; color:#000; font-size:26px;
+}
+
+/*********************************
+ PAGE + TABS
+**********************************/
+h1{margin:0; font-size:28px; font-weight:800; color:var(--gold-main);}
+.sub{font-size:14px; opacity:.8;}
+.page-header{padding:0 20px 10px;}
+
+.container{padding:0 20px 20px;}
+
+.tabs{display:flex; gap:10px; margin-top:10px;}
+.tab-btn{
+  flex:1; padding:10px; border-radius:999px;
+  border:1px solid var(--border); cursor:pointer;
+  text-align:center; font-weight:700;
+}
+.tab-btn.active{
+  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+  border:none; color:#000;
+}
+
+/*********************************
+ CARDS + FORM
+**********************************/
+.card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:18px; margin-top:18px;
+}
+
+label{display:block; margin-top:10px; font-size:13px;}
+input,select,textarea{
+  width:100%; margin-top:6px; padding:11px;
+  border-radius:10px; border:1px solid var(--border);
+  background:var(--card); color:var(--text);
+}
+textarea{min-height:90px; resize:vertical;}
+
+button{
+  padding:11px 14px; border-radius:10px; border:none;
+  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+  font-weight:700; margin-top:14px; cursor:pointer; color:#000;
+}
+
+.row{display:flex; flex-wrap:wrap; gap:10px;}
+.col{flex:1; min-width:120px;}
+
+/************
+ PREVIEW
+*************/
+.photo-preview{
+  width:100px; height:100px; border-radius:50%;
+  object-fit:cover; background:var(--border); margin-top:8px;
+}
+.vehicle-photo{
+  width:90px; height:60px; border-radius:10px;
+  object-fit:cover; background:var(--border);
+}
+.qr-preview{
+  width:120px; height:120px; border-radius:14px;
+  object-fit:cover; background:var(--border);
+}
+
+/**************
+ VEHICLE LIST
+**************/
+.vehicle-card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:12px; margin-top:10px;
+  display:flex; gap:12px; align-items:center;
+}
+.vehicle-card img{width:70px; height:50px; object-fit:cover; border-radius:10px;}
+.vehicle-card .v-info{flex:1; font-size:13px;}
+.vehicle-card .v-ops{display:flex; flex-direction:column; gap:8px;}
+.vehicle-card button{margin-top:0; padding:6px 10px; font-size:13px;}
+.vehicle-card button.danger{
+  background:var(--border); color:#900; font-weight:700;
+}
+</style>
+</head>
+
+<body class="light">
+<!-- BOTÕES TOPO -->
+<div class="drawer-toggle" onclick="toggleDrawer()">☰</div>
+<div id="toggleTheme" class="theme-toggle" onclick="toggleTheme()">🌓</div>
+
+<!-- DRAWER -->
+<nav class="drawer" id="drawer">
+  <a href="index.html">🏠 Dashboard</a>
+  <a href="entradas.html">💵 Caixa</a>
+  <a href="resumo.html">📊 Resumo</a>
+  <a href="calculadora.html">📟 Calculadora</a>
+  <a href="planos.html">💎 Planos</a>
+  <a href="perfil.html">👤 Perfil</a>
+  <a href="recibo_empresa.html">🏭 Empresa</a>
+  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="manutencao.html">🛠 Manutenção</a>
+</nav>
+
+<div class="page-header">
+  <h1>Perfil</h1>
+  <div class="sub">Gerencie seus dados pessoais, veículos e informações financeiras.</div>
+
+  <div class="tabs">
+    <div id="tabPessoal" class="tab-btn active">Pessoal</div>
+    <div id="tabVeiculos" class="tab-btn">Veículos</div>
+    <div id="tabFinanceiro" class="tab-btn">Financeiro</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ======================
+       ABA PESSOAL
+  ========================== -->
+  <section id="abaPessoal" class="card">
+    <h2>Dados Pessoais</h2>
+
+    <label>Foto do motorista</label>
+    <img id="fotoPessoalPreview" class="photo-preview" alt="Foto do motorista"/>
+    <input id="fotoPessoalInput" type="file" accept="image/*"/>
+
+    <div class="row">
+      <div class="col">
+        <label>Nome completo</label>
+        <input id="pNome" type="text" placeholder="Seu nome completo">
+      </div>
+      <div class="col">
+        <label>Telefone</label>
+        <input id="pTelefone" type="tel" placeholder="(00) 00000-0000">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>CPF</label>
+        <input id="pCpf" type="text" placeholder="000.000.000-00">
+      </div>
+      <div class="col">
+        <label>Cidade</label>
+        <input id="pCidade" type="text" placeholder="Cidade">
+      </div>
+      <div class="col">
+        <label>Estado</label>
+        <input id="pEstado" type="text" placeholder="UF">
+      </div>
+    </div>
+
+    <button id="btnSalvarPessoal">Salvar dados pessoais</button>
+  </section>
+
+
+  <!-- ======================
+       ABA VEÍCULOS
+  ========================== -->
+  <section id="abaVeiculos" class="card" style="display:none;">
+    <h2>Veículos</h2>
+
+    <h3 style="margin-top:0;font-size:18px;">Cadastro de veículo</h3>
+
+    <!-- hidden id para edição -->
+    <input type="hidden" id="vEditId"/>
+
+    <div class="row">
+      <div class="col">
+        <label>Tipo</label>
+        <select id="vTipo">
+          <option value="carro">Carro</option>
+          <option value="moto">Moto</option>
+        </select>
+      </div>
+      <div class="col">
+        <label>Foto do veículo</label>
+        <input id="vFotoInput" type="file" accept="image/*"/>
+        <img id="vFotoPreview" class="vehicle-photo"/>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>Marca</label>
+        <input id="vMarca" type="text" placeholder="Ex: Toyota">
+      </div>
+      <div class="col">
+        <label>Modelo</label>
+        <input id="vModelo" type="text" placeholder="Ex: Corolla">
+      </div>
+      <div class="col">
+        <label>Ano</label>
+        <input id="vAno" type="text" placeholder="Ex: 2020">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>Cor</label>
+        <input id="vCor" type="text" placeholder="Ex: Preto">
+      </div>
+      <div class="col">
+        <label>Placa</label>
+        <input id="vPlaca" type="text" placeholder="ABC-1D23">
+      </div>
+      <div class="col">
+        <label>KM Atual</label>
+        <input id="vKm" type="number" placeholder="0">
+      </div>
+    </div>
+
+    <button id="btnSalvarVeiculo">Salvar veículo</button>
+
+    <h3 style="margin-top:20px;font-size:18px;">Meus veículos</h3>
+    <div id="listaVeiculos"></div>
+  </section>
+
+
+  <!-- ======================
+       ABA FINANCEIRO
+  ========================== -->
+  <section id="abaFinanceiro" class="card" style="display:none;">
+    <h2>Cadastro Financeiro</h2>
+
+    <div class="row">
+      <div class="col">
+        <label>Nome do titular</label>
+        <input id="fTitular" type="text" placeholder="Nome do titular">
+      </div>
+      <div class="col">
+        <label>Banco (opcional)</label>
+        <input id="fBanco" type="text" placeholder="Ex: Nubank, Itaú...">
+      </div>
+      <div class="col">
+        <label>Tipo de conta</label>
+        <select id="fTipoConta">
+          <option value="">Não informado</option>
+          <option value="corrente">Corrente</option>
+          <option value="poupanca">Poupança</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>Tipo de chave PIX</label>
+        <select id="fTipoPix">
+          <option value="">Nenhum</option>
+          <option value="cpf">CPF</option>
+          <option value="telefone">Telefone</option>
+          <option value="email">E-mail</option>
+          <option value="aleatoria">Aleatória</option>
+        </select>
+      </div>
+      <div class="col">
+        <label>Chave PIX (opcional)</label>
+        <input id="fChavePix" type="text" placeholder="Digite sua chave PIX">
+      </div>
+    </div>
+
+    <label>QR Code para recebimento (opcional)</label>
+    <input id="fQrInput" type="file" accept="image/*"/>
+    <img id="fQrPreview" class="qr-preview"/>
+
+    <label>Observação</label>
+    <textarea id="fObs" placeholder="Ex: Aceito apenas PIX"></textarea>
+
+    <button id="btnSalvarFinanceiro">Salvar dados financeiros</button>
+  </section>
+
+</div> <!-- ./container -->
+
+
+<!-- TABBAR -->
+<div class="tabbar">
+  <a href="index.html">🏠<small>Home</small></a>
+  <a href="entradas.html">💵<small>Caixa</small></a>
+  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
+  <a href="resumo.html">📊<small>Resumo</small></a>
+  <a class="active" href="perfil.html">👤<small>Perfil</small></a>
+</div>
+<script src="planos.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  /* ===============================
+     BLOQUEIO POR PLANO
+  ================================== */
+  function plano(){
+    try{ return getPlano(); }catch(e){}
+    return (localStorage.getItem('planoAtual')||'free').toLowerCase();
+  }
+  (function(){
+    const p = plano();
+    if(p!=='premium' && p!=='pro' && p!=='básico' && p!=='basic'){
+       alert("Perfil é liberado apenas nos planos basico, Premium e Pro.");
+       location.href="planos.html";
+       return;
+    }
+  })();
+
+  /* ===============================
+     HELPERS
+  ================================== */
+  const $ = id => document.getElementById(id);
+
+  /* ===============================
+     DRAWER
+  ================================== */
+  window.toggleDrawer = function(){
+    const d = $("drawer");
+    if(d) d.classList.toggle("open");
+  };
+
+  /* ===============================
+     THEME
+  ================================== */
+  window.toggleTheme = function(){
+    const isDark = document.body.classList.contains("dark");
+    if(isDark){
+       document.body.classList.remove("dark");
+       document.body.classList.add("light");
+       localStorage.setItem("theme","light");
+       const t = $("toggleTheme");
+       if(t) t.innerText="🌙";
+    } else {
+       document.body.classList.add("dark");
+       document.body.classList.remove("light");
+       localStorage.setItem("theme","dark");
+       const t = $("toggleTheme");
+       if(t) t.innerText="☀️";
+    }
+  };
+
+  // inicia tema salvo
+  (function(){
+    const saved = localStorage.getItem("theme") || "light";
+    if(saved==="dark"){
+      document.body.classList.add("dark");
+      const t = $("toggleTheme");
+      if(t) t.innerText="☀️";
+    } else {
+      document.body.classList.add("light");
+      const t = $("toggleTheme");
+      if(t) t.innerText="🌙";
+    }
+  })();
+
+  /* ===============================
+     TROCA DE ABAS
+  ================================== */
+  const abaPessoal    = $("abaPessoal");
+  const abaVeiculos   = $("abaVeiculos");
+  const abaFinanceiro = $("abaFinanceiro");
+
+  const tabPessoal    = $("tabPessoal");
+  const tabVeiculos   = $("tabVeiculos");
+  const tabFin        = $("tabFinanceiro");
+
+  function showAba(nome){
+    if(!abaPessoal || !abaVeiculos || !abaFinanceiro) return;
+    abaPessoal.style.display    = "none";
+    abaVeiculos.style.display   = "none";
+    abaFinanceiro.style.display = "none";
+
+    if(tabPessoal)  tabPessoal.classList.remove("active");
+    if(tabVeiculos) tabVeiculos.classList.remove("active");
+    if(tabFin)      tabFin.classList.remove("active");
+
+    if(nome==="pessoal" && abaPessoal){
+      abaPessoal.style.display="block";
+      if(tabPessoal) tabPessoal.classList.add("active");
+    }
+    if(nome==="veiculos" && abaVeiculos){
+      abaVeiculos.style.display="block";
+      if(tabVeiculos) tabVeiculos.classList.add("active");
+    }
+    if(nome==="financeiro" && abaFinanceiro){
+      abaFinanceiro.style.display="block";
+      if(tabFin) tabFin.classList.add("active");
+    }
+  }
+
+  if(tabPessoal)  tabPessoal.onclick  = ()=>showAba("pessoal");
+  if(tabVeiculos) tabVeiculos.onclick = ()=>showAba("veiculos");
+  if(tabFin)      tabFin.onclick      = ()=>showAba("financeiro");
+
+  /* ===============================
+     PREVIEW DE IMAGENS
+  ================================== */
+  function previewImage(input, imgEl){
+    if(!input || !imgEl) return;
+    const f = input.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = e => imgEl.src = e.target.result;
+    r.readAsDataURL(f);
+  }
+
+  const fotoPessoalInput = $("fotoPessoalInput");
+  const fotoPessoalPreview = $("fotoPessoalPreview");
+  if(fotoPessoalInput && fotoPessoalPreview){
+    fotoPessoalInput.addEventListener("change", e=>{
+      previewImage(e.target, fotoPessoalPreview);
+    });
+  }
+
+  const vFotoInput = $("vFotoInput");
+  const vFotoPreview = $("vFotoPreview");
+  if(vFotoInput && vFotoPreview){
+    vFotoInput.addEventListener("change", e=>{
+      previewImage(e.target, vFotoPreview);
+    });
+  }
+
+  const fQrInput = $("fQrInput");
+  const fQrPreview = $("fQrPreview");
+  if(fQrInput && fQrPreview){
+    fQrInput.addEventListener("change", e=>{
+      previewImage(e.target, fQrPreview);
+    });
+  }
+
+  /* ===============================
+     STORAGE KEYS / LOAD / SAVE
+  ================================== */
+  const KEY_PESSOAL    = "perfilPessoalRF";
+  const KEY_VEICULOS   = "veiculosRF";
+  const KEY_FINANCEIRO = "financeiroRF";
+
+  function load(k){
+    try{
+      const raw = localStorage.getItem(k);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){
+      return null;
+    }
+  }
+  function save(k,v){
+    localStorage.setItem(k, JSON.stringify(v));
+  }
+
+  /* ===============================
+     1) PERFIL PESSOAL
+  ================================== */
+  function salvarPessoal(){
+    const obj = {
+      foto:   fotoPessoalPreview ? (fotoPessoalPreview.src || "") : "",
+      nome:   $("pNome")?.value.trim()    || "",
+      tel:    $("pTelefone")?.value.trim()|| "",
+      cpf:    $("pCpf")?.value.trim()     || "",
+      cidade: $("pCidade")?.value.trim()  || "",
+      estado: $("pEstado")?.value.trim()  || "",
+    };
+    save(KEY_PESSOAL,obj);
+    alert("Dados pessoais salvos!");
+  }
+
+  function carregarPessoal(){
+    const obj = load(KEY_PESSOAL)||{};
+    if(obj.foto && fotoPessoalPreview) fotoPessoalPreview.src = obj.foto;
+    if(obj.nome && $("pNome")) $("pNome").value = obj.nome;
+    if(obj.tel && $("pTelefone")) $("pTelefone").value = obj.tel;
+    if(obj.cpf && $("pCpf")) $("pCpf").value = obj.cpf;
+    if(obj.cidade && $("pCidade")) $("pCidade").value = obj.cidade;
+    if(obj.estado && $("pEstado")) $("pEstado").value = obj.estado;
+  }
+
+  const btnSalvarPessoal = $("btnSalvarPessoal");
+  if(btnSalvarPessoal){
+    btnSalvarPessoal.onclick = salvarPessoal;
+  }
+
+  /* ===============================
+     2) VEÍCULOS múltiplos
+  ================================== */
+  function limparVeiculo(){
+    if($("vEditId")) $("vEditId").value="";
+    if($("vTipo")) $("vTipo").value="carro";
+    if($("vMarca")) $("vMarca").value="";
+    if($("vModelo")) $("vModelo").value="";
+    if($("vAno")) $("vAno").value="";
+    if($("vCor")) $("vCor").value="";
+    if($("vPlaca")) $("vPlaca").value="";
+    if($("vKm")) $("vKm").value="";
+    if(vFotoPreview) vFotoPreview.src="";
+  }
+
+  function salvarVeiculo(){
+    const vTipo   = $("vTipo");
+    const vMarca  = $("vMarca");
+    const vModelo = $("vModelo");
+    const vAno    = $("vAno");
+    const vCor    = $("vCor");
+    const vPlaca  = $("vPlaca");
+    const vKm     = $("vKm");
+    const vEditId = $("vEditId");
+
+    if(!vMarca?.value.trim() || !vModelo?.value.trim()){
+  alert("Marca e Modelo são obrigatórios!");
+  return;
+}
+
+    const tipo = vTipo ? vTipo.value : "carro";
+    const mk   = vMarca.value.trim();
+    const md   = vModelo.value.trim();
+    const ano  = vAno ? vAno.value.trim() : "";
+    const cor  = vCor ? vCor.value.trim() : "";
+    const pl   = vPlaca ? vPlaca.value.trim() : "";
+    const km   = vKm ? vKm.value.trim() : "";
+
+    if(!mk || !md){
+      alert("Marca e Modelo são obrigatórios!");
+      return;
+    }
+
+    const arr = load(KEY_VEICULOS)||[];
+
+    if(vEditId && vEditId.value){
+      const id = Number(vEditId.value);
+      const idx= arr.findIndex(x=>x.id===id);
+      if(idx>=0){
+        arr[idx] = {
+          ...arr[idx],
+          tipo,marca:mk,modelo:md,ano,cor,placa:pl,km,
+          foto: vFotoPreview ? (vFotoPreview.src || arr[idx].foto) : arr[idx].foto
+        };
+        save(KEY_VEICULOS,arr);
+        limparVeiculo();
+        renderVeiculos();
+        alert("Veículo atualizado!");
+      }
+      return;
+    }
+
+    const novo = {
+      id: Date.now(),
+      tipo,
+      marca:mk,modelo:md,ano,cor,placa:pl,km,
+      foto: vFotoPreview ? (vFotoPreview.src || "") : ""
+    };
+    arr.push(novo);
+    save(KEY_VEICULOS,arr);
+    limparVeiculo();
+    renderVeiculos();
+    alert("Veículo salvo!");
+  }
+
+  function renderVeiculos(){
+    const box = $("listaVeiculos");
+    if(!box) return;
+    const arr = load(KEY_VEICULOS)||[];
+    box.innerHTML="";
+
+    if(!arr.length){
+      box.innerHTML = `<div style="opacity:.6;">Nenhum veículo cadastrado</div>`;
+      return;
+    }
+
+    arr.forEach(v=>{
+      const div=document.createElement("div");
+      div.className="vehicle-card";
+      div.innerHTML=`
+        <img src="${v.foto||''}">
+        <div class="v-info">
+          <strong>${v.tipo==="carro"?"🚗":"🏍"} ${v.marca} ${v.modelo}</strong><br>
+          Placa: ${v.placa||"-"}<br>
+          Ano: ${v.ano||"-"} • KM: ${v.km||"-"}
+        </div>
+        <div class="v-ops">
+          <button type="button" onclick="editarVeiculoPerfil(${v.id})">Editar</button>
+          <button type="button" class="danger" onclick="removerVeiculoPerfil(${v.id})">Remover</button>
+        </div>
+      `;
+      box.appendChild(div);
+    });
+  }
+
+  // exponho no window para funcionar no onclick
+  window.editarVeiculoPerfil = function(id){
+    const arr = load(KEY_VEICULOS)||[];
+    const v   = arr.find(x=>x.id===id);
+    if(!v) return;
+
+    if($("vEditId")) $("vEditId").value = v.id;
+    if($("vTipo")) $("vTipo").value     = v.tipo;
+    if($("vMarca")) $("vMarca").value   = v.marca;
+    if($("vModelo")) $("vModelo").value = v.modelo;
+    if($("vAno")) $("vAno").value       = v.ano;
+    if($("vCor")) $("vCor").value       = v.cor;
+    if($("vPlaca")) $("vPlaca").value   = v.placa;
+    if($("vKm")) $("vKm").value         = v.km;
+    if(vFotoPreview && v.foto) vFotoPreview.src = v.foto;
+
+    showAba("veiculos");
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+
+  window.removerVeiculoPerfil = function(id){
+    if(!confirm("Confirma remover este veículo?"))return;
+    const arr = (load(KEY_VEICULOS)||[]).filter(v=>v.id!==id);
+    save(KEY_VEICULOS,arr);
+    renderVeiculos();
+  };
+
+  const btnSalvarVeiculo = $("btnSalvarVeiculo");
+  if(btnSalvarVeiculo){
+    btnSalvarVeiculo.onclick = salvarVeiculo;
+  }
+
+  /* ===============================
+     3) FINANCEIRO
+  ================================== */
+  function salvarFinanceiro(){
+    const obj = {
+      titular: $("fTitular")?.value.trim() || "",
+      banco: $("fBanco")?.value.trim() || "",
+      tipoConta: $("fTipoConta")?.value || "",
+      tipoPix: $("fTipoPix")?.value || "",
+      chavePix: $("fChavePix")?.value.trim() || "",
+      fotoQr: fQrPreview ? (fQrPreview.src || "") : "",
+      obs: $("fObs")?.value.trim() || ""
+    };
+    save(KEY_FINANCEIRO,obj);
+    alert("Financeiro salvo!");
+  }
+
+  function carregarFinanceiro(){
+    const f = load(KEY_FINANCEIRO)||{};
+    if(f.titular && $("fTitular")) $("fTitular").value=f.titular;
+    if(f.banco && $("fBanco")) $("fBanco").value=f.banco;
+    if(f.tipoConta && $("fTipoConta")) $("fTipoConta").value=f.tipoConta;
+    if(f.tipoPix && $("fTipoPix")) $("fTipoPix").value=f.tipoPix;
+    if(f.chavePix && $("fChavePix")) $("fChavePix").value=f.chavePix;
+    if(f.fotoQr && fQrPreview) fQrPreview.src=f.fotoQr;
+    if(f.obs && $("fObs")) $("fObs").value=f.obs;
+  }
+
+  const btnSalvarFinanceiro = $("btnSalvarFinanceiro");
+  if(btnSalvarFinanceiro){
+    btnSalvarFinanceiro.onclick = salvarFinanceiro;
+  }
+
+  /* ===============================
+     BOOT
+  ================================== */
+  carregarPessoal();
+  carregarFinanceiro();
+  renderVeiculos();
+});
+</script>
+</body>
+</html>
