@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Planos - RF Driver</title>
+
+<style>
+body{
+  margin:0;
+  font-family: 'Inter', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:.3s;
+}
+
+/* ===========================================
+   PALETA
+=========================================== */
+:root{
+
+  /* dourado principal para DARK */
+  --gold-dark:#d6b25f;
+  --gold-dark2:#e8d08a;
+
+  /* dourado mais escuro para LIGHT */
+  --gold-light:#90731b;
+  --gold-light2:#b08c2e;
+
+  /* dark mode */
+  --bg-dark:#0d0d0d;
+  --text-dark:#f4f4f4;
+  --card-dark:#161616;
+  --border-dark:#242424;
+
+  /* light mode */
+  --bg-light:#f7f7f7;
+  --text-light:#222;
+  --card-light:#ffffff;
+  --border-light:#d6d6d6;
+}
+
+/* DARK MODE */
+body.dark{
+  --bg:var(--bg-dark);
+  --text:var(--text-dark);
+  --card:var(--card-dark);
+  --border:var(--border-dark);
+
+  --gold-main:var(--gold-dark);
+  --gold-main2:var(--gold-dark2);
+}
+
+/* LIGHT MODE */
+body.light{
+  --bg:var(--bg-light);
+  --text:var(--text-light);
+  --card:var(--card-light);
+  --border:var(--border-light);
+
+  --gold-main:var(--gold-light);
+  --gold-main2:var(--gold-light2);
+}
+
+/* classes douradas */
+.gold{
+  color:var(--gold-main);
+}
+.gold2{
+  color:var(--gold-main2);
+}
+
+/* ===========================================
+   MENU LATERAL
+=========================================== */
+.drawer{
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:260px;
+  height:100%;
+  background:var(--card);
+  transition: left .3s;
+  z-index:9999;
+  padding-top:70px;
+}
+.drawer.open{ left:0; }
+.drawer a{
+  display:block;
+  padding:15px 22px;
+  color:var(--text);
+  border-bottom:1px solid var(--border);
+  font-size:17px;
+}
+.drawer-toggle{
+  position:fixed;
+  left:15px;
+  top:15px;
+  font-size:28px;
+  cursor:pointer;
+  z-index:10000;
+}
+.theme-toggle{
+  position:fixed;
+  right:15px;
+  top:15px;
+  font-size:24px;
+  cursor:pointer;
+  z-index:10001;
+}
+
+/* ===========================================
+   MENU INFERIOR
+=========================================== */
+.tabbar{
+  position:fixed;
+  bottom:0;
+  left:0;right:0;
+  height:70px;
+  background:var(--card);
+  border-top:1px solid var(--border);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:9990;
+}
+.tabbar a{
+  text-decoration:none;
+  text-align:center;
+  font-size:20px;
+  flex:1;
+  color:var(--text);
+}
+.tabbar small{ font-size:12px; display:block; }
+.tabbar a.active{
+  color:var(--gold-main);
+}
+
+/* botão central */
+.action-btn{
+  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+  width:58px;
+  height:58px;
+  border:none;
+  border-radius:30px;
+  color:#000;
+  font-size:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:-35px;
+  box-shadow:0 0 12px rgba(0,0,0,.5);
+}
+
+/* ===========================================
+   CONTEÚDO
+=========================================== */
+.container{
+  padding:20px;
+  padding-top:80px;
+  padding-bottom:120px;
+}
+h1{
+  text-align:center;
+  font-size:26px;
+}
+
+/* cards */
+.plan{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px;
+  margin-bottom:20px;
+}
+.plan:hover{ border-color:var(--gold-main); }
+.plan h2{
+  margin:0;
+  font-size:20px;
+  font-weight:600;
+}
+.price{
+  margin:12px 0;
+  font-size:22px;
+  font-weight:700;
+}
+ul{ padding-left:20px; margin:0; line-height:1.6; }
+
+/* botão */
+.btn{
+  width:100%;
+  margin-top:16px;
+  padding:14px;
+  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+  border:none;
+  border-radius:12px;
+  font-size:18px;
+  font-weight:600;
+  color:#000;
+}
+</style>
+</head>
+
+<body>
+
+<div class="drawer-toggle gold" onclick="toggleDrawer()">☰</div>
+<div class="theme-toggle gold" onclick="toggleTheme()">🌓</div>
+
+<nav class="drawer" id="drawer">
+  <a href="index.html">🏠 Dashboard</a>
+  <a href="entradas.html">💵 Caixa</a>
+  <a href="resumo.html">📊 Resumo</a>
+  <a href="calculadora.html">📟 Calculadora</a>
+  <a href="planos.html">💎 Planos</a>
+  <a href="perfil.html">👤 Perfil</a>
+  <a href="recibo_empresa.html">🏭 Empresa</a>
+  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="manutencao.html">🛠 Manutenção</a>
+</nav>
+
+
+<div class="container">
+  <h1 class="gold">Escolha seu Plano</h1>
+
+  <!-- FREEMIUM -->
+  <div class="plan">
+    <h2 class="gold">Freemium</h2>
+    <div class="price gold2">R$ 0,00</div>
+    <ul>
+      <li>Acesso total por 24h</li>
+      <li>Apenas 1 vez por conta/aparelho</li>
+      <li>Após 24h → apenas Página Caixa</li>
+    </ul>
+    <!-- Freemium ativa direto, sem pagamento -->
+    <button class="btn" onclick="ativarFreemium24h()">Ativar Freemium por 24h</button>
+  </div>
+
+  <!-- BÁSICO - MENSAL -->
+  <div class="plan">
+    <h2 class="gold">Básico - Mensal</h2>
+    <div class="price gold2">R$ 9,90</div>
+    <ul>
+      <li>Acesso total a todas as páginas</li>
+      <li>Validade: 30 dias</li>
+    </ul>
+    <!-- ESTE BOTÃO LEVA PARA O CHECKOUT DO MERCADO PAGO -->
+    <button class="btn" onclick="abrirPagamento('BASICO')">Assinar Básico (Mensal)</button>
+  </div>
+
+  <!-- PREMIUM - SEMESTRAL -->
+  <div class="plan">
+    <h2 class="gold">Premium - Semestral ⭐</h2>
+    <div class="price gold2">R$ 49,90</div>
+    <ul>
+      <li>Acesso total</li>
+      <li>Validade: 6 meses</li>
+    </ul>
+    <button class="btn" onclick="abrirPagamento('PREMIUM')">Assinar Premium (Semestral)</button>
+  </div>
+
+  <!-- PRO - VITALÍCIO -->
+  <div class="plan">
+    <h2 class="gold">Pro - Vitalício 🔥</h2>
+    <div class="price gold2">R$ 149,90</div>
+    <ul>
+      <li>Acesso total para sempre</li>
+      <li>Direito a atualizações</li>
+    </ul>
+    <button class="btn" onclick="abrirPagamento('PRO')">Assinar Vitalício (Pro)</button>
+  </div>
+
+  <!-- BLOCO: JÁ PAGUEI, LIBERAR PLANO -->
+  <div class="plan">
+    <h2 class="gold">Já pagou seu plano?</h2>
+    <p>Depois de fazer o pagamento pelo Mercado Pago, clique abaixo para liberar o plano neste aparelho:</p>
+
+    <button class="btn" onclick="liberarPlano('BASICO')">Já paguei o Plano Básico (Mensal)</button>
+    <button class="btn" onclick="liberarPlano('PREMIUM')">Já paguei o Plano Premium (Semestral)</button>
+    <button class="btn" onclick="liberarPlano('PRO')">Já paguei o Plano Pro (Vitalício)</button>
+  </div>
+
+</div>
+
+
+<div class="tabbar">
+  <a href="index.html">🏠<small>Home</small></a>
+  <a href="entradas.html">💵<small>Caixa</small></a>
+  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
+  <a href="resumo.html">📊<small>Resumo</small></a>
+  <a class="active gold" href="planos.html">💎<small>Planos</small></a>
+</div>
+
+
+<script>
+function toggleDrawer(){
+  document.getElementById('drawer').classList.toggle('open');
+}
+
+/* ==========================
+   CHECKOUT + PLANOS
+   ========================== */
+
+// 1) ABRIR PAGAMENTO NO MERCADO PAGO
+function abrirPagamento(plano){
+  let url = "";
+
+  if(plano === "BASICO"){
+    url = "https://mpago.la/1ne24Ba";
+  } 
+  else if(plano === "PREMIUM"){
+    url = "https://mpago.la/33kSr4F";
+  } 
+  else if(plano === "PRO"){
+    url = "https://mpago.li/2yainfn";
+  }
+
+  if(!url){
+    alert("Link de pagamento ainda não configurado.");
+    return;
+  }
+
+  window.open(url, "_blank");
+}
+
+// 2) LIBERAR PLANO APÓS PAGAMENTO
+function liberarPlano(plano){
+  localStorage.setItem('planoAtivo', plano);
+  alert("Plano liberado neste aparelho: " + plano);
+  // redireciona para o dashboard (ajuste se o nome do arquivo for outro)
+  location.href = "index.html";
+}
+
+// 3) FREEMIUM 24H
+function ativarFreemium24h(){
+  const agora = Date.now();
+  const expira = agora + 24 * 60 * 60 * 1000; // 24 horas
+
+  localStorage.setItem('planoAtivo','FREE');         // nome do plano Freemium
+  localStorage.setItem('freemiumExpira', String(expira));
+
+  alert("Freemium ativado por 24h neste aparelho.");
+  location.href = "index.html";
+}
+
+/* ==========================
+   TEMA CLARO/ESCURO
+   ========================== */
+
+function toggleTheme(){
+  const body=document.body;
+  const newTheme = body.classList.contains("dark") ? "light" : "dark";
+  body.classList.remove("dark","light");
+  body.classList.add(newTheme);
+  localStorage.setItem("theme",newTheme);
+}
+(function(){
+  const th = localStorage.getItem("theme") || "dark";
+  document.body.classList.add(th);
+})();
+</script>
+
+</body>
+</html>
