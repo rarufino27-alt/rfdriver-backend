@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Manutenção - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ==============================
+   PALETA GOLD
+=================================*/
+:root{
+  --gold-dark:#d6b25f;
+  --gold-dark2:#e8d08a;
+
+  --gold-light:#90731b;
+  --gold-light2:#b08c2e;
+
+  --bg-dark:#0d0d0d;
+  --text-dark:#f4f4f4;
+  --card-dark:#161616;
+  --border-dark:#242424;
+
+  --bg-light:#f7f7f7;
+  --text-light:#222;
+  --card-light:#ffffff;
+  --border-light:#d6d6d6;
+
+  --accent-success:#1DB954;
+  --accent-danger:#ff3b30;
+
+  --radius:14px;
+}
+
+/* DARK */
+body.dark{
+  --bg:var(--bg-dark);
+  --text:var(--text-dark);
+  --card:var(--card-dark);
+  --border:var(--border-dark);
+  --gold-main:var(--gold-dark);
+  --gold-main2:var(--gold-dark2);
+}
+
+/* LIGHT */
+body.light{
+  --bg:var(--bg-light);
+  --text:var(--text-light);
+  --card:var(--card-light);
+  --border:var(--border-light);
+  --gold-main:var(--gold-light);
+  --gold-main2:var(--gold-light2);
+}
+
+/* BASE */
+*{box-sizing:border-box;font-family:Inter,system-ui;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:160px;
+  padding-top:70px;
+  transition:.3s;
+}
+
+/******************************************
+ MENU LATERAL
+*******************************************/
+.drawer{
+  position:fixed; top:0; left:-260px;
+  width:260px; height:100%;
+  background:var(--card);
+  transition:left .3s;
+  z-index:9999;
+  padding-top:70px;
+}
+.drawer.open{left:0;}
+.drawer a{
+  display:block;
+  padding:15px 22px;
+  border-bottom:1px solid var(--border);
+  text-decoration:none;
+  font-size:17px;
+  color:var(--text);
+}
+.drawer-toggle{
+  position:fixed;
+  left:15px; top:15px;
+  font-size:28px;
+  cursor:pointer;
+  z-index:10000;
+  color:var(--gold-main);
+}
+.theme-toggle{
+  position:fixed;
+  right:15px; top:15px;
+  font-size:24px;
+  cursor:pointer;
+  z-index:10001;
+  color:var(--gold-main);
+}
+
+/******************************************
+ TABBAR INFERIOR
+*******************************************/
+.tabbar{
+  position:fixed;
+  bottom:0; left:0; right:0;
+  height:70px;
+  background:var(--card);
+  border-top:1px solid var(--border);
+  display:flex; justify-content:space-around;
+  align-items:center;
+  z-index:9990;
+}
+.tabbar a{
+  text-decoration:none;
+  text-align:center;
+  font-size:20px;
+  flex:1;
+  color:var(--text);
+}
+.tabbar small{font-size:12px; display:block;}
+.action-btn{
+  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+  width:58px; height:58px;
+  border:none; border-radius:30px;
+  color:#000; font-size:26px;
+  display:flex; align-items:center; justify-content:center;
+  margin-top:-35px;
+  box-shadow:0 0 12px rgba(0,0,0,.5);
+}
+
+/****************************************
+ HEADER
+*****************************************/
+h1{font-weight:800;margin:0;font-size:28px;color:var(--gold-main);}
+.sub{font-size:14px;opacity:.75;margin-top:4px;}
+
+/****************************************
+ CONTAINER
+*****************************************/
+.container{padding:20px;}
+
+/****************************************
+ CARD e INPUTS
+*****************************************/
+.card{
+  margin-top:18px;
+  background:var(--card);
+  padding:18px;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+}
+.label{font-size:13px;margin-bottom:6px;display:block;opacity:.7;}
+input{
+  width:100%;padding:12px;border-radius:var(--radius);
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  margin-bottom:12px;
+  font-size:15px;
+}
+.row{display:flex;gap:14px;flex-wrap:wrap;}
+.col{flex:1;min-width:160px;}
+.btn{
+  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+  color:#000;padding:12px;border:none;width:100%;
+  border-radius:12px;font-weight:700;cursor:pointer;
+}
+.btnGhost{
+  background:var(--card);color:var(--text);
+  padding:12px;border:1px solid var(--border);width:100%;
+  border-radius:12px;font-weight:600;cursor:pointer;
+}
+
+/****************************************
+ LISTA
+*****************************************/
+.listItem{
+  background:var(--card);
+  padding:14px;border-radius:12px;margin-bottom:12px;
+  display:flex;justify-content:space-between;gap:12px;
+  border:1px solid var(--border);
+  font-size:14px;
+}
+.hint{font-size:13px;opacity:.7;}
+
+.badge{
+  padding:6px 10px;border-radius:10px;font-size:13px;font-weight:700;
+}
+.statusGreen{background:#0b6620;color:#fff;}
+.statusWarn{background:#9d6700;color:#fff;}
+.statusRed{background:#a00000;color:#fff;}
+
+/****************************************
+ TABLE
+*****************************************/
+.table{width:100%;border-collapse:collapse;font-size:14px;}
+.table th{padding:8px;font-size:12px;opacity:.7;text-align:left;}
+.table td{padding:8px;}
+</style>
+</head>
+
+<body>
+
+<!-- BOTÕES SUPERIORES -->
+<div class="drawer-toggle" onclick="toggleDrawer()">☰</div>
+<div id="toggleTheme" class="theme-toggle" onclick="toggleTheme()">🌓</div>
+
+<!-- MENU LATERAL -->
+<nav class="drawer" id="drawer">
+  <a href="index.html">🏠 Dashboard</a>
+  <a href="entradas.html">💵 Caixa</a>
+  <a href="resumo.html">📊 Resumo</a>
+  <a href="calculadora.html">📟 Calculadora</a>
+  <a href="planos.html">💎 Planos</a>
+  <a href="perfil.html">👤 Perfil</a>
+  <a href="recibo_empresa.html">🏭 Empresa</a>
+  <a href="recibo_particular.html">🚘 Particular</a>
+  <a class="active" href="manutencao.html">🛠 Manutenção</a>
+</nav>
+
+<div class="container">
+
+<!-- HEADER -->
+<h1>Manutenção</h1>
+<div class="sub">Controle completo de revisões e itens com alertas inteligentes.</div>
+
+<!-- DADOS DO VEÍCULO -->
+<div class="card">
+  <h2>Dados do Veículo / KM Atual</h2>
+
+  <div class="row">
+    <div class="col">
+      <label class="label">Nome / Proprietário</label>
+      <input id="perfilNome" type="text" placeholder="Nome do proprietário">
+    </div>
+
+    <div class="col">
+      <label class="label">Marca</label>
+      <input id="perfilMarca" type="text" placeholder="Marca">
+    </div>
+
+    <div class="col">
+      <label class="label">Modelo</label>
+      <input id="perfilModelo" type="text" placeholder="Modelo">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label class="label">Ano</label>
+      <input id="perfilAno" type="text" placeholder="Ano">
+    </div>
+
+    <div class="col">
+      <label class="label">Placa</label>
+      <input id="perfilPlaca" type="text" placeholder="Placa">
+    </div>
+
+    <div class="col">
+      <label class="label">KM atual</label>
+      <input id="kmAtual" type="number" placeholder="KM atual">
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <button id="salvarPerfil" class="btn" style="flex:2;">Salvar / Atualizar KM</button>
+    <button id="limparPerfil" class="btnGhost" style="flex:1;">Recarregar</button>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <button id="exportWhats" class="btnGhost">WhatsApp</button>
+    <button id="exportPdf" class="btnGhost">PDF</button>
+  </div>
+</div>
+
+<!-- CADASTRAR MANUTENÇÃO -->
+<div class="card">
+  <h2>Cadastrar manutenção / item</h2>
+
+  <label class="label">Nome</label>
+  <input id="mNome" type="text" placeholder="Ex: Troca de óleo">
+
+  <div class="row">
+    <div class="col">
+      <label class="label">KM última troca</label>
+      <input id="mKmUltima" type="number" placeholder="KM">
+    </div>
+
+    <div class="col">
+      <label class="label">Intervalo (km)</label>
+      <input id="mIntervalo" type="number" placeholder="Intervalo em km">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label class="label">Custo estimado</label>
+      <input id="mCusto" type="number" step="0.01" placeholder="R$">
+    </div>
+
+    <div class="col">
+      <label class="label">Observação</label>
+      <input id="mObs" type="text" placeholder="Observações">
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <button id="addManut" class="btn" style="flex:2;">Adicionar / Salvar</button>
+    <button id="limparFormManut" class="btnGhost" style="flex:1;">Limpar</button>
+  </div>
+</div>
+
+<!-- LISTA -->
+<div class="card">
+  <h2>Manutenções cadastradas</h2>
+  <div id="listaManutencoes"></div>
+</div>
+
+<!-- HISTORICO -->
+<div class="card">
+  <h2>Histórico</h2>
+  <div style="width:100%; overflow-x:auto;">
+    <table class="table" id="histTable">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Nome</th>
+          <th>KM</th>
+          <th>Valor</th>
+          <th>Obs</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- ./container -->
+
+<!-- Modal Maquineta (mantido para uso futuro) -->
+<div id="modalMaquineta" style="display:none;">
+  <div class="card" style="max-width:420px;margin:40px auto;">
+    <h2>Cadastrar Maquineta</h2>
+
+    <input id="maqNome" type="text" placeholder="Nome da maquineta">
+    <input id="maqDebito" type="number" placeholder="Taxa débito (%)">
+    <input id="maqCreditoAvista" type="number" placeholder="Taxa crédito à vista (%)">
+    <input id="maq2x" type="number" placeholder="Taxa 2x (%)">
+    <input id="maq3x" type="number" placeholder="Taxa 3x (%)">
+    <input id="maq4x" type="number" placeholder="Taxa 4x (%)">
+    <input id="maq5x" type="number" placeholder="Taxa 5x (%)">
+
+    <div class="row" style="margin-top:16px;">
+      <button type="button" id="btnSalvarMaquineta" class="btn">Salvar</button>
+      <button type="button" id="btnCancelarMaquineta" class="btnGhost" style="background:var(--accent-danger);color:#fff;">Cancelar</button>
+    </div>
+  </div>
+</div>
+<!-- MENU INFERIOR -->
+<div class="tabbar">
+  <a href="index.html">🏠<small>Home</small></a>
+  <a href="entradas.html">💵<small>Caixa</small></a>
+  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
+  <a href="resumo.html">📊<small>Resumo</small></a>
+  <a href="planos.html">💎<small>Planos</small></a>
+</div>
+
+<!-- LIBS PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="planos.js"></script>
+
+<script>
+/* ============================
+   BLOQUEIO POR PLANO (PRO)
+   ============================ */
+(function(){
+  if (typeof planoTem === "function") {
+    if (!planoTem("manutencao")) {
+      alert("A página Manutenção é liberada apenas no plano PRO.");
+      location.href = "planos.html";
+      return;
+    }
+  }
+})();
+</script>
+
+<script>
+/* ============================
+   THEME + MENU LATERAL
+   ============================ */
+function toggleDrawer(){
+  document.getElementById("drawer").classList.toggle("open");
+}
+
+function toggleTheme(){
+  const isDark = document.body.classList.contains("dark");
+  if(isDark){
+    document.body.classList.remove("dark");
+    document.body.classList.add("light");
+    localStorage.setItem("theme","light");
+    document.getElementById("toggleTheme").innerText="🌙";
+  } else {
+    document.body.classList.add("dark");
+    document.body.classList.remove("light");
+    localStorage.setItem("theme","dark");
+    document.getElementById("toggleTheme").innerText="☀️";
+  }
+}
+
+// inicia o tema salvo
+(function(){
+  const saved = localStorage.getItem("theme") || "light";
+  if(saved==="dark"){
+    document.body.classList.add("dark");
+    document.getElementById("toggleTheme").innerText="☀️";
+  } else {
+    document.body.classList.add("light");
+    document.getElementById("toggleTheme").innerText="🌙";
+  }
+})();
+</script>
+
+<script>
+/* ============================
+   LÓGICA MANUTENÇÃO COMPLETA
+   ============================ */
+
+/* HELPERS BÁSICOS */
+const $ = id => document.getElementById(id);
+const currency = v => Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const now = () => new Date().toISOString();
+const esc = t => t ? String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : "";
+
+/* LOAD / SAVE */
+const load = key=>{
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw){
+      if(key==='manutHistorico' || key==='manutencoes') return [];
+      return {};
+    }
+    return JSON.parse(raw);
+  }catch(e){
+    return (key==='manutHistorico' || key==='manutencoes') ? [] : {};
+  }
+};
+const save = (k,v)=>localStorage.setItem(k, JSON.stringify(v));
+
+/* PERFIL / VEÍCULO */
+function renderPerfil(){
+  const p = load("perfilMotorista");
+  $("perfilNome").value   = p.nome   || "";
+  $("perfilMarca").value  = p.carro  || "";
+  $("perfilModelo").value = p.modelo || "";
+  $("perfilAno").value    = p.ano    || "";
+  $("perfilPlaca").value  = p.placa  || "";
+  $("kmAtual").value      = p.kmAtual|| "";
+}
+
+function salvarPerfil(){
+  const p = load("perfilMotorista");
+  p.nome   = $("perfilNome").value.trim();
+  p.carro  = $("perfilMarca").value.trim();
+  p.modelo = $("perfilModelo").value.trim();
+  p.ano    = $("perfilAno").value.trim();
+  p.placa  = $("perfilPlaca").value.trim();
+
+  const km = Number($("kmAtual").value);
+  if(km || km===0) p.kmAtual = km;
+
+  save("perfilMotorista", p);
+
+  const man = load("manutencoes");
+  man.forEach(m=>calc(m, p.kmAtual || 0));
+  save("manutencoes", man);
+
+  renderManutencoes();
+  alert("Dados salvos!");
+}
+
+/* CÁLCULOS DAS MANUTENÇÕES */
+function calc(m, kmAtual){
+  m.kmProxima  = Number(m.kmUltimaTroca) + Number(m.intervaloKm);
+  m.kmRestante = m.kmProxima - (Number(kmAtual)||0);
+  m.valorPorKm = (Number(m.custoEstimado)||0)/(Number(m.intervaloKm)||1);
+}
+
+/* RENDER LISTA */
+function renderManutencoes(){
+  const box = $("listaManutencoes");
+  box.innerHTML = "";
+  const man = load("manutencoes");
+  const perfil = load("perfilMotorista");
+  const kmAtual = Number(perfil.kmAtual || 0);
+
+  man.forEach(m=>calc(m, kmAtual));
+  man.sort((a,b)=>a.kmRestante - b.kmRestante);
+  save("manutencoes", man);
+
+  if(!man.length){
+    box.innerHTML = "<div class='hint'>Nenhuma manutenção cadastrada</div>";
+    return;
+  }
+
+  man.forEach(m=>{
+    const color =
+      m.kmRestante <= 800  ? "statusRed"  :
+      m.kmRestante <= 2000 ? "statusWarn" : "statusGreen";
+
+    const div = document.createElement("div");
+    div.className = "listItem";
+    div.innerHTML = `
+      <div style="flex:1;">
+        <div style="font-weight:700;">${esc(m.nome)}</div>
+        <div class="hint">Última: ${esc(m.kmUltimaTroca)} • Próx: ${esc(m.kmProxima)}</div>
+        <div class="hint">Custo: ${currency(m.custoEstimado)}</div>
+        ${m.obs ? `<div class="hint">${esc(m.obs)}</div>` : ""}
+      </div>
+      <div style="text-align:right;">
+        <div class="badge ${color}">${m.kmRestante} km</div>
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">
+          <button class="btnGhost" onclick="editar(${m.id})">Editar</button>
+          <button class="btnGhost" onclick="remover(${m.id})">Remover</button>
+          <button class="btn" onclick="realizada(${m.id})">Realizar</button>
+        </div>
+      </div>`;
+    box.appendChild(div);
+  });
+}
+
+/* ADICIONAR / EDITAR / REMOVER / REALIZAR */
+function adicionar(){
+  const nome = $("mNome").value.trim();
+  const u    = Number($("mKmUltima").value);
+  const i    = Number($("mIntervalo").value);
+
+  if(!nome || !u || !i){
+    alert("Preencha nome, KM da última troca e intervalo.");
+    return;
+  }
+
+  const custo = Number($("mCusto").value);
+  const obs   = $("mObs").value.trim();
+  const perfil = load("perfilMotorista");
+  const kmAtual = Number(perfil.kmAtual || 0);
+
+  const m = {
+    id: Date.now(),
+    nome,
+    kmUltimaTroca: u,
+    intervaloKm: i,
+    custoEstimado: custo,
+    obs,
+    criadoEm: now()
+  };
+  calc(m, kmAtual);
+
+  const arr = load("manutencoes");
+  arr.push(m);
+  save("manutencoes", arr);
+
+  renderManutencoes();
+  limparFormManut();
+}
+
+function editar(id){
+  const arr = load("manutencoes");
+  const m   = arr.find(x=>x.id===id);
+  if(!m) return;
+
+  $("mNome").value      = m.nome;
+  $("mKmUltima").value  = m.kmUltimaTroca;
+  $("mIntervalo").value = m.intervaloKm;
+  $("mCusto").value     = m.custoEstimado;
+  $("mObs").value       = m.obs;
+
+  remover(id);
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function remover(id){
+  if(!confirm("Deseja remover esta manutenção?")) return;
+  const arr = load("manutencoes").filter(x=>x.id!==id);
+  save("manutencoes", arr);
+  renderManutencoes();
+}
+
+function realizada(id){
+  const arr = load("manutencoes");
+  const m   = arr.find(x=>x.id===id);
+  if(!m) return;
+
+  const perfil  = load("perfilMotorista");
+  const kmAtual = Number(perfil.kmAtual || 0);
+
+  const km = Number(prompt("KM da troca:", kmAtual));
+  if(!km && km !== 0) return;
+
+  const valor = Number(prompt("Valor pago:", m.custoEstimado)) || 0;
+  const obs   = prompt("Obs:", "") || "";
+
+  const hist = load("manutHistorico");
+  hist.push({
+    id: Date.now(),
+    nome: m.nome,
+    kmTroca: km,
+    custoPago: valor,
+    data: now(),
+    obs
+  });
+  save("manutHistorico", hist);
+
+  m.kmUltimaTroca = km;
+  calc(m, kmAtual);
+  save("manutencoes", arr);
+
+  if(km > kmAtual){
+    perfil.kmAtual = km;
+    save("perfilMotorista", perfil);
+    renderPerfil();
+  }
+
+  renderManutencoes();
+  renderHistorico();
+  alert("Manutenção registrada!");
+}
+
+/* HISTÓRICO TABELA */
+function renderHistorico(){
+  const hist  = load("manutHistorico");
+  const tbody = document.querySelector("#histTable tbody");
+  tbody.innerHTML = "";
+
+  if(!hist.length){
+    tbody.innerHTML = "<tr><td colspan='5' class='hint'>Nenhum registro</td></tr>";
+    return;
+  }
+
+  hist.slice().reverse().forEach(h=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${new Date(h.data).toLocaleString()}</td>
+      <td>${esc(h.nome)}</td>
+      <td>${h.kmTroca}</td>
+      <td>${currency(h.custoPago)}</td>
+      <td>${esc(h.obs)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* EXPORTAÇÕES */
+function exportWhats(){
+  const p   = load("perfilMotorista");
+  const man = load("manutencoes") || [];
+
+  let msg = `Relatório de Manutenção - ${new Date().toLocaleDateString()}\n\n`;
+  msg += `Veículo: ${p.carro||""} ${p.modelo||""} - Placa: ${p.placa||""}\nKM Atual: ${p.kmAtual||0}\n\n`;
+
+  man.forEach(m=>{
+    msg += `• ${m.nome}: Próx ${m.kmProxima} (${m.kmRestante} km)\n`;
+  });
+
+  window.open("https://wa.me/?text="+encodeURIComponent(msg), "_blank");
+}
+
+async function exportPdf(){
+  const el = document.querySelector(".container");
+  if(!el) return alert("Erro ao gerar PDF.");
+  try{
+    const canvas = await html2canvas(el, {scale:2});
+    const img    = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("p","mm","a4");
+    const W   = pdf.internal.pageSize.getWidth();
+    const H   = canvas.height * (W / canvas.width);
+    pdf.addImage(img, "PNG", 0, 0, W, H);
+    pdf.save("manutencao-rfdriver.pdf");
+  }catch(e){
+    alert("Falha ao exportar PDF.");
+  }
+}
+
+/* UTIL */
+function limparFormManut(){
+  $("mNome").value      = "";
+  $("mKmUltima").value  = "";
+  $("mIntervalo").value = "";
+  $("mCusto").value     = "";
+  $("mObs").value       = "";
+}
+
+/* BOOT */
+(function boot(){
+  renderPerfil();
+  renderManutencoes();
+  renderHistorico();
+
+  $("salvarPerfil").onclick     = salvarPerfil;
+  $("limparPerfil").onclick     = ()=>{renderPerfil();renderManutencoes();renderHistorico();};
+  $("addManut").onclick         = adicionar;
+  $("limparFormManut").onclick  = limparFormManut;
+  $("exportWhats").onclick      = exportWhats;
+  $("exportPdf").onclick        = exportPdf;
+})();
+</script>
+
+</body>
+</html>
