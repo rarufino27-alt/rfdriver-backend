@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Resumo - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* ==============================
+   PALETA GOLD (NOVO TEMA PADRÃO)
+=================================*/
+:root{
+  --gold-dark:#d6b25f;
+  --gold-dark2:#e8d08a;
+
+  --gold-light:#90731b;
+  --gold-light2:#b08c2e;
+
+  --bg-dark:#0d0d0d;
+  --text-dark:#f4f4f4;
+  --card-dark:#161616;
+  --border-dark:#242424;
+
+  --bg-light:#f7f7f7;
+  --text-light:#222;
+  --card-light:#ffffff;
+  --border-light:#d6d6d6;
+
+  --accent-success:#1DB954;
+  --accent-danger:#ff3b30;
+
+  --radius:14px;
+}
+
+/* DARK */
+body.dark{
+  --bg:var(--bg-dark);
+  --text:var(--text-dark);
+  --card:var(--card-dark);
+  --border:var(--border-dark);
+  --gold-main:var(--gold-dark);
+  --gold-main2:var(--gold-dark2);
+}
+
+/* LIGHT */
+body.light{
+  --bg:var(--bg-light);
+  --text:var(--text-light);
+  --card:var(--card-light);
+  --border:var(--border-light);
+  --gold-main:var(--gold-light);
+  --gold-main2:var(--gold-light2);
+}
+
+/* BASE */
+*{ box-sizing:border-box; font-family:Inter,system-ui; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:160px;
+  padding-top:70px;
+  transition:.3s;
+}
+
+/******************************************
+ MENU LATERAL
+*******************************************/
+.drawer{
+  position:fixed; top:0; left:-260px;
+  width:260px; height:100%;
+  background:var(--card);
+  transition:left .3s;
+  z-index:9999;
+  padding-top:70px;
+}
+.drawer.open{ left:0; }
+
+.drawer a{
+  display:block;
+  padding:15px 22px;
+  border-bottom:1px solid var(--border);
+  text-decoration:none;
+  font-size:17px;
+  color:var(--text);
+}
+
+.drawer-toggle{
+  position:fixed;
+  left:15px; top:15px;
+  font-size:28px;
+  cursor:pointer;
+  z-index:10000;
+  color:var(--gold-main);
+}
+
+.theme-toggle{
+  position:fixed;
+  right:15px; top:15px;
+  font-size:24px;
+  cursor:pointer;
+  z-index:10001;
+  color:var(--gold-main);
+}
+
+/******************************************
+ MENU INFERIOR – TABBAR
+*******************************************/
+.tabbar{
+  position:fixed;
+  bottom:0; left:0; right:0;
+  height:70px;
+  background:var(--card);
+  border-top:1px solid var(--border);
+  display:flex; justify-content:space-around;
+  align-items:center;
+  z-index:9990;
+}
+.tabbar a{
+  text-decoration:none;
+  text-align:center;
+  font-size:20px;
+  flex:1;
+  color:var(--text);
+}
+.tabbar small{ font-size:12px; display:block; }
+.tabbar a.active{ color:var(--gold-main); }
+
+.action-btn{
+  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+  width:58px; height:58px;
+  border:none; border-radius:30px;
+  color:#000; font-size:26px;
+  display:flex; align-items:center; justify-content:center;
+  margin-top:-35px;
+  box-shadow:0 0 12px rgba(0,0,0,.5);
+}
+
+/******************************************
+ HEADER
+*******************************************/
+h1{
+  font-weight:800;
+  margin:0;
+  font-size:28px;
+  color:var(--gold-main);
+}
+
+.sub{
+  font-size:14px;
+  opacity:.75;
+  margin-top:4px;
+}
+
+/******************************************
+ CONTAINER
+*******************************************/
+.container{
+  padding:20px;
+}
+
+/******************************************
+ CARDS & LINHAS
+*******************************************/
+.card{
+  margin-top:18px;
+  background:var(--card);
+  padding:18px;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+}
+
+.line{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.line:last-child{ border-bottom:none; }
+
+/******************************************
+ CHART
+*******************************************/
+.chartRow{
+  display:flex;
+  gap:12px;
+  align-items:flex-end;
+}
+
+.barShell{
+  width:48px; height:140px;
+  background:var(--card);
+  border-radius:12px;
+  display:flex;
+  align-items:flex-end;
+}
+
+.barInner{
+  width:100%;
+  border-radius:10px 10px 0 0;
+  transition:height .6s cubic-bezier(.17,.67,.6,1.35);
+}
+
+/******************************************
+ PRINT / PDF
+*******************************************/
+@media print{
+  .drawer,
+  .tabbar,
+  .drawer-toggle,
+  .theme-toggle,
+  #btnPDF{
+    display:none !important;
+  }
+  body{
+    background:#fff !important;
+    color:#000 !important;
+  }
+  header.report-header{
+    text-align:center;
+    margin-bottom:20px;
+  }
+  .meta-section{
+    display:block !important;
+  }
+}
+
+@media screen{
+  .meta-section{ display:none; }
+}
+
+/******************************************
+ CONFETTI
+*******************************************/
+.confetti-piece{
+  position:fixed;
+  top:-10px;
+  width:8px;
+  height:14px;
+  background:var(--gold-main);
+  opacity:0.9;
+  border-radius:2px;
+  z-index:99999;
+  animation: confetti-fall 1.5s linear forwards;
+}
+
+@keyframes confetti-fall{
+  0%{
+    transform:translate3d(0,-10vh,0) rotateZ(0deg);
+  }
+  100%{
+    transform:translate3d(0,110vh,0) rotateZ(360deg);
+  }
+}
+
+/************************ END CSS *************************/
+</style>
+</head>
+
+<body>
+
+<!-- BOTÕES SUPERIORES -->
+<div class="drawer-toggle" onclick="toggleDrawer()">☰</div>
+<div id="toggleTheme" class="theme-toggle" onclick="toggleTheme()">🌓</div>
+
+<!-- MENU LATERAL -->
+<nav class="drawer" id="drawer">
+  <a href="index.html">🏠 Dashboard</a>
+  <a href="entradas.html">💵 Caixa</a>
+  <a href="resumo.html">📊 Resumo</a>
+  <a href="calculadora.html">📟 Calculadora</a>
+  <a href="planos.html">💎 Planos</a>
+  <a href="perfil.html">👤 Perfil</a>
+  <a href="recibo_empresa.html">🏭 Empresa</a>
+  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="manutencao.html">🛠 Manutenção</a>
+</nav>
+
+<div class="container">
+
+<header class="report-header">
+  <h2>Relatório Financeiro</h2>
+  <small id="periodoPDF"></small>
+</header>
+
+<!-- HEADER -->
+<h1>Financeiro</h1>
+<div class="sub">Visão geral da sua performance financeira.</div>
+
+<button id="btnPDF" style="
+ background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+ border:none;padding:10px 18px;
+ border-radius:12px; font-weight:700;
+ color:#000; margin-top:10px;
+ cursor:pointer; font-size:15px;">
+ 📄 Exportar PDF
+</button>
+
+<!-- META -->
+<div class="card">
+  <h2>Meta de Ganhos</h2>
+
+  <div class="line">
+    <span>Meta semanal:</span>
+    <input id="metaSemanal" type="number" placeholder="R$ 0,00" style="width:120px;">
+  </div>
+
+  <div class="line">
+    <span>Meta mensal:</span>
+    <input id="metaMensal" type="number" placeholder="R$ 0,00" style="width:120px;">
+  </div>
+
+  <button onclick="salvarMeta()" style="
+    width:100%;padding:10px;border:none;border-radius:8px;
+    background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
+    font-weight:700;color:#000;margin-top:10px;
+  ">Salvar Meta</button>
+
+  <div style="margin-top:14px;">
+    <div style="font-size:14px;margin-bottom:6px">Progresso semanal</div>
+    <div style="background:var(--border);height:14px;border-radius:8px;overflow:hidden;">
+      <div id="barMetaSemanal" style="background:var(--gold-main);height:14px;width:0%;transition:.4s;"></div>
+    </div>
+    <small id="txtMetaSemanal"></small>
+  </div>
+
+</div>
+
+<!-- TOP VALUES -->
+<div class="card">
+  <h2>Totais</h2>
+  <div class="line"><span>Faturamento:</span> <strong id="valFaturamento">R$ 0,00</strong></div>
+  <div class="line"><span>Despesas:</span>    <strong id="valDespesas">R$ 0,00</strong></div>
+  <div class="line"><span>Lucro Líquido:</span> <strong id="valLucro">R$ 0,00</strong></div>
+</div>
+
+<!-- CARDS -->
+<div class="card">
+  <h2>Resumo por Método</h2>
+  <div class="line"><span>Dinheiro:</span> <strong id="mDinheiro">R$ 0,00</strong></div>
+  <div class="line"><span>PIX:</span> <strong id="mPix">R$ 0,00</strong></div>
+  <div class="line"><span>Cartão:</span> <strong id="mCartao">R$ 0,00</strong></div>
+  <div class="line"><span>App (Uber/99):</span> <strong id="mApp">R$ 0,00</strong></div>
+  <div class="line"><span>Outras entradas:</span> <strong id="mOutras">R$ 0,00</strong></div>
+</div>
+
+<div class="card">
+  <h2>Resumo por Categoria</h2>
+  <div class="line"><span>Uber:</span> <strong id="cUber">R$ 0,00</strong></div>
+  <div class="line"><span>99:</span> <strong id="c99">R$ 0,00</strong></div>
+  <div class="line"><span>InDriver:</span> <strong id="cInDriver">R$ 0,00</strong></div>
+  <div class="line"><span>Particular:</span> <strong id="cParticular">R$ 0,00</strong></div>
+  <div class="line"><span>Empresa:</span> <strong id="cEmpresa">R$ 0,00</strong></div>
+</div>
+
+<div class="card">
+  <h2>Desempenho</h2>
+
+  <!-- GRÁFICO -->
+  <div class="chartRow">
+    <div style="text-align:center;">
+      <div class="barShell">
+        <div id="barFat" class="barInner" style="background:var(--gold-main); height:10%;"></div>
+      </div>
+      <small>Faturamento</small>
+      <small id="barFatLabel">0%</small>
+    </div>
+
+    <div style="text-align:center;">
+      <div class="barShell">
+        <div id="barDesp" class="barInner" style="background:var(--accent-danger); height:10%;"></div>
+      </div>
+      <small>Despesas</small>
+      <small id="barDespLabel">0%</small>
+    </div>
+
+    <div style="text-align:center%;">
+      <div class="barShell">
+        <div id="barLucro" class="barInner" style="background:var(--accent-success); height:10%;"></div>
+      </div>
+      <small>Lucro</small>
+      <small id="barLucroLabel">0%</small>
+    </div>
+  </div>
+</div>
+
+<div class="meta-section" id="metaPDFsection">
+  <h3>Metas do período</h3>
+
+  <div class="meta-line"><span>Meta Faturamento</span>
+    <strong id="pdfMetaFat"></strong></div>
+
+  <div class="meta-line"><span>Faturamento atual</span>
+    <strong id="pdfFat"></strong></div>
+
+  <div class="meta-line"><span>Progressão</span>
+    <strong id="pdfMetaProgress"></strong></div>
+</div>
+
+</div> <!-- ./container -->
+<script src="planos.js"></script>
+
+<script>
+// Bloqueio por plano
+if(typeof planoTem === "function"){
+  if(!planoTem("resumo")){
+    alert("Disponível apenas no plano PRO.");
+    location.href="planos.html";
+  }
+}
+
+/* helpers */
+const $ = id => document.getElementById(id);
+const brl = v => Number(v || 0).toLocaleString(
+  "pt-BR",{ style:"currency", currency:"BRL" }
+);
+
+/* RESUMO PRINCIPAL – lê localStorage e preenche tela */
+function atualizarResumo(){
+  const registros = JSON.parse(localStorage.getItem('entradasSaidas')||'[]');
+
+  let fat=0, desp=0;
+  let mDin=0,mPix=0,mCar=0,mApp=0,mOut=0;
+  let cU=0,c99=0,cInd=0,cPar=0,cEmp=0;
+
+  registros.forEach(r=>{
+    const v = Number(r.valor||r.valorBruto||0);
+
+    if(r.tipo==='entrada'){
+      fat+=v;
+      if(r.formaPag==='dinheiro') mDin+=v;
+      else if(r.formaPag==='pix') mPix+=v;
+      else if(r.formaPag==='cartao') mCar+=v;
+      else if(r.formaPag==='appMobile') mApp+=v;
+      else mOut+=v;
+
+      if(r.appTipo==='uber') cU+=v;
+      if(r.appTipo==='99') c99+=v;
+      if(r.appTipo==='indriver') cInd+=v;
+      if(r.categoria==='particular') cPar+=v;
+      if(r.categoria==='empresa') cEmp+=v;
+
+    } else {
+      desp+=v;
+      if(r.formaPag==='dinheiro') mDin-=v;
+      else if(r.formaPag==='pix') mPix-=v;
+      else if(r.formaPag==='cartao') mCar-=v;
+    }
+  });
+
+  const lucro = fat-desp;
+
+  // Totais
+  $('valFaturamento').innerText = brl(fat);
+  $('valDespesas').innerText    = brl(desp);
+  $('valLucro').innerText       = brl(lucro);
+  $('valLucro').style.color     = lucro>=0?'var(--accent-success)':'var(--accent-danger)';
+
+  // Métodos
+  $('mDinheiro').innerText = brl(mDin);
+  $('mPix').innerText      = brl(mPix);
+  $('mCartao').innerText   = brl(mCar);
+  $('mApp').innerText      = brl(mApp);
+  $('mOutras').innerText   = brl(mOut);
+
+  // Categorias
+  $('cUber').innerText       = brl(cU);
+  $('c99').innerText         = brl(c99);
+  $('cInDriver').innerText   = brl(cInd);
+  $('cParticular').innerText = brl(cPar);
+  $('cEmpresa').innerText    = brl(cEmp);
+
+  // Gráfico
+  const max = Math.max(Math.abs(fat), Math.abs(desp), Math.abs(lucro), 1);
+  const pctFat   = Math.round(fat/max*100);
+  const pctDesp  = Math.round(desp/max*100);
+  const pctLucro = Math.round(Math.abs(lucro)/max*100);
+
+  $('barFat').style.height   = Math.max(6,pctFat)+'%';
+  $('barDesp').style.height  = Math.max(6,pctDesp)+'%';
+  $('barLucro').style.height = Math.max(6,pctLucro)+'%';
+
+  $('barFatLabel').innerText   = pctFat+'%';
+  $('barDespLabel').innerText  = pctDesp+'%';
+  $('barLucroLabel').innerText = pctLucro+'%';
+
+  $('barLucro').style.background = lucro>=0?'var(--accent-success)':'var(--accent-danger)';
+
+  // Cabeçalho PDF (data geração)
+  const hoje = new Date();
+  $('periodoPDF').innerText = "Gerado em " + hoje.toLocaleDateString("pt-BR");
+
+  // metas
+  aplicarMeta(fat);
+  preencherMetasPDF(fat);
+}
+
+/* META: salvar + aplicar + PDF + CONFETTI */
+function salvarMeta(){
+  const s = Number(document.getElementById("metaSemanal").value || 0);
+  const m = Number(document.getElementById("metaMensal").value || 0);
+
+  localStorage.setItem("metaSemanal", s);
+  localStorage.setItem("metaMensal", m);
+
+  alert("Meta salva com sucesso! 🎯");
+  launchConfetti();
+
+  atualizarResumo();
+}
+
+function aplicarMeta(fat){
+  const metaS = Number(localStorage.getItem("metaSemanal") || 0);
+  const metaM = Number(localStorage.getItem("metaMensal") || 0);
+
+  document.getElementById("metaSemanal").value = metaS || "";
+  document.getElementById("metaMensal").value  = metaM || "";
+
+  if(metaS > 0){
+    const pct = Math.min(100, Math.round(fat/metaS*100));
+    document.getElementById("barMetaSemanal").style.width = pct+"%";
+    document.getElementById("txtMetaSemanal").innerText = `Atingido: ${pct}%`;
+  } else {
+    document.getElementById("barMetaSemanal").style.width = "0%";
+    document.getElementById("txtMetaSemanal").innerText = "";
+  }
+}
+
+function preencherMetasPDF(fat){
+  const meta = Number(localStorage.getItem("metaMensal") || 0);
+
+  document.getElementById("pdfMetaFat").innerText = meta>0 ? brl(meta) : "Nenhuma";
+  document.getElementById("pdfFat").innerText     = brl(fat);
+
+  if(meta>0){
+    const p = Math.round(fat/meta*100);
+    document.getElementById("pdfMetaProgress").innerText = p+"%";
+  } else {
+    document.getElementById("pdfMetaProgress").innerText = "-";
+  }
+}
+
+/* PDF com download (html2canvas + jsPDF) */
+async function exportarPDF(){
+  const { jsPDF } = window.jspdf;
+
+  const tabbar = document.querySelector(".tabbar");
+  const drawerToggle = document.querySelector(".drawer-toggle");
+  const themeToggle = document.querySelector(".theme-toggle");
+
+  if(tabbar) tabbar.style.display = "none";
+  if(drawerToggle) drawerToggle.style.display = "none";
+  if(themeToggle) themeToggle.style.display = "none";
+
+  const canvas = await html2canvas(document.body, { scale:2 });
+  const imgData = canvas.toDataURL("image/png");
+
+  const pdf = new jsPDF('p','mm','a4');
+  const imgProps  = pdf.getImageProperties(imgData);
+  const pdfWidth  = pdf.internal.pageSize.getWidth();
+  const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+  pdf.addImage(imgData,'PNG',0,0,pdfWidth,pdfHeight);
+  pdf.save("relatorio-rfdriver.pdf");
+
+  if(tabbar) tabbar.style.display = "";
+  if(drawerToggle) drawerToggle.style.display = "";
+  if(themeToggle) themeToggle.style.display = "";
+}
+
+/* ligar botão do PDF */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const btn = document.getElementById("btnPDF");
+  if(btn) btn.addEventListener("click", exportarPDF);
+});
+
+/* INIT GERAL */
+window.addEventListener('load', atualizarResumo);
+</script>
+<!-- MENU INFERIOR -->
+<div class="tabbar">
+  <a href="index.html">🏠<small>Home</small></a>
+  <a href="entradas.html">💵<small>Caixa</small></a>
+  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
+  <a class="active" href="resumo.html">📊<small>Resumo</small></a>
+  <a href="planos.html">💎<small>Planos</small></a>
+</div>
+
+<script>
+// MENU LATERAL
+function toggleDrawer(){
+   document.getElementById("drawer").classList.toggle("open");
+}
+
+// TEMA CLARO / ESCURO
+function toggleTheme(){
+  const isDark = document.body.classList.contains("dark");
+  if(isDark){
+     document.body.classList.remove("dark");
+     document.body.classList.add("light");
+     localStorage.setItem("theme","light");
+     document.getElementById("toggleTheme").innerText="🌙";
+  } else {
+     document.body.classList.add("dark");
+     document.body.classList.remove("light");
+     localStorage.setItem("theme","dark");
+     document.getElementById("toggleTheme").innerText="☀️";
+  }
+}
+
+// inicia o tema salvo
+(function(){
+  const saved = localStorage.getItem("theme") || "light";
+  if(saved==="dark"){
+    document.body.classList.add("dark");
+    document.getElementById("toggleTheme").innerText="☀️";
+  } else {
+    document.body.classList.add("light");
+    document.getElementById("toggleTheme").innerText="🌙";
+  }
+})();
+</script>
+
+<script>
+// CONFETTI SIMPLES
+function launchConfetti(){
+  const total = 35;
+  for(let i=0;i<total;i++){
+    const piece = document.createElement("div");
+    piece.className = "confetti-piece";
+    piece.style.left = Math.random()*100 + "vw";
+    piece.style.background = Math.random()>0.5 ? "var(--gold-main)" : "var(--gold-main2)";
+    piece.style.animationDelay = (Math.random()*0.4)+"s";
+    piece.style.transform = `translate3d(0,0,0) rotateZ(${Math.random()*360}deg)`;
+    document.body.appendChild(piece);
+    setTimeout(()=>piece.remove(), 1800);
+  }
+}
+</script>
+
+<footer class="report-footer" style="text-align:center;margin:18px 0 90px 0;font-size:12px;opacity:.6;">
+  Relatório gerado automaticamente pelo RF Driver
+</footer>
+
+<!-- LIBS PARA PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</body>
+</html>
