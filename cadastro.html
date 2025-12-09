@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cadastro - RF Driver</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Inter', Arial, sans-serif;
+  background:#0d0d0d;
+  color:#f4f4f4;
+}
+.container{
+  max-width:420px;
+  margin:0 auto;
+  padding:24px 16px 60px;
+}
+h1{
+  text-align:center;
+  margin-bottom:24px;
+}
+label{
+  display:block;
+  margin:12px 0 4px;
+  font-size:14px;
+}
+input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #444;
+  background:#161616;
+  color:#f4f4f4;
+  font-size:16px;
+}
+button{
+  width:100%;
+  margin-top:20px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-size:17px;
+  font-weight:600;
+  background:linear-gradient(90deg,#d6b25f,#e8d08a);
+  color:#000;
+}
+.msg{
+  margin-top:12px;
+  font-size:14px;
+  min-height:18px;
+}
+a{
+  color:#e8d08a;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Crie sua conta</h1>
+
+  <label for="cpf">CPF *</label>
+  <input id="cpf" type="text" placeholder="000.000.000-00" />
+
+  <label for="email">E-mail *</label>
+  <input id="email" type="email" placeholder="voce@exemplo.com" />
+
+  <label for="celular">Celular *</label>
+  <input id="celular" type="tel" placeholder="(00) 00000-0000" />
+
+  <label for="senha">Senha *</label>
+  <input id="senha" type="password" placeholder="mínimo 4 caracteres" />
+
+  <button onclick="cadastrar()">Cadastrar</button>
+
+  <div class="msg" id="msg"></div>
+
+  <p style="margin-top:18px;text-align:center;font-size:14px;">
+    Já tem conta?
+    <a href="login.html">Entrar</a>
+  </p>
+</div>
+
+<script>
+// URL do backend
+const API_BASE = "https://rfdriver-backend-1.onrender.com";
+
+function mostrarMensagem(texto, erro=false){
+  const msg = document.getElementById("msg");
+  msg.style.color = erro ? "#ff7676" : "#7CFC00";
+  msg.textContent = texto;
+}
+
+async function cadastrar(){
+  const cpf = document.getElementById("cpf").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const celular = document.getElementById("celular").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+
+  if(!cpf || !email || !celular || !senha){
+    mostrarMensagem("Preencha todos os campos obrigatórios.", true);
+    return;
+  }
+
+  try{
+    mostrarMensagem("Enviando cadastro...");
+    const resp = await fetch(API_BASE + "/auth/register", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ cpf, email, celular, senha })
+    });
+    const data = await resp.json();
+
+    if(!data.ok){
+      mostrarMensagem(data.message || "Erro no cadastro.", true);
+      return;
+    }
+
+    // salvar token localmente para manter logado
+    localStorage.setItem("authToken", data.token);
+    localStorage.setItem("userCpf", data.user.cpf);
+
+    mostrarMensagem("Cadastro concluído! Redirecionando...");
+
+    // depois do cadastro, envia direto pro app (ex: index ou planos)
+    setTimeout(()=>{
+      window.location.href = "index.html";
+    }, 1000);
+  }catch(e){
+    console.error(e);
+    mostrarMensagem("Erro de comunicação com o servidor.", true);
+  }
+}
+</script>
+</body>
+</html>
