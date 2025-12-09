@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Login - RF Driver</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Inter', Arial, sans-serif;
+  background:#0d0d0d;
+  color:#f4f4f4;
+}
+.container{
+  max-width:420px;
+  margin:0 auto;
+  padding:24px 16px 60px;
+}
+h1{
+  text-align:center;
+  margin-bottom:24px;
+}
+label{
+  display:block;
+  margin:12px 0 4px;
+  font-size:14px;
+}
+input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #444;
+  background:#161616;
+  color:#f4f4f4;
+  font-size:16px;
+}
+button{
+  width:100%;
+  margin-top:20px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-size:17px;
+  font-weight:600;
+  background:linear-gradient(90deg,#d6b25f,#e8d08a);
+  color:#000;
+}
+.msg{
+  margin-top:12px;
+  font-size:14px;
+  min-height:18px;
+}
+a{
+  color:#e8d08a;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Entrar</h1>
+
+  <label for="cpf">CPF</label>
+  <input id="cpf" type="text" placeholder="000.000.000-00" />
+
+  <label for="senha">Senha</label>
+  <input id="senha" type="password" />
+
+  <button onclick="login()">Login</button>
+
+  <div class="msg" id="msg"></div>
+
+  <p style="margin-top:18px;text-align:center;font-size:14px;">
+    Ainda não tem conta?
+    <a href="cadastro.html">Cadastrar</a>
+  </p>
+</div>
+
+<script>
+const API_BASE = "https://rfdriver-backend-1.onrender.com";
+
+function mostrarMensagem(texto, erro=false){
+  const msg = document.getElementById("msg");
+  msg.style.color = erro ? "#ff7676" : "#7CFC00";
+  msg.textContent = texto;
+}
+
+async function login(){
+  const cpf = document.getElementById("cpf").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+
+  if(!cpf || !senha){
+    mostrarMensagem("Informe CPF e senha.", true);
+    return;
+  }
+
+  try{
+    mostrarMensagem("Validando login...");
+    const resp = await fetch(API_BASE + "/auth/login", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ cpf, senha })
+    });
+    const data = await resp.json();
+
+    if(!data.ok){
+      mostrarMensagem(data.message || "Falha no login.", true);
+      return;
+    }
+
+    localStorage.setItem("authToken", data.token);
+    localStorage.setItem("userCpf", data.user.cpf);
+
+    mostrarMensagem("Login realizado! Redirecionando...");
+    setTimeout(()=>{
+      window.location.href = "index.html";
+    }, 800);
+  }catch(e){
+    console.error(e);
+    mostrarMensagem("Erro de comunicação com o servidor.", true);
+  }
+}
+</script>
+
+</body>
+</html>
