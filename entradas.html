@@ -330,6 +330,13 @@ button{
 
 <body>
 
+<script>
+const token=localStorage.getItem("authToken");
+if(!token){
+  window.location.href="login.html";
+}
+</script>
+
 <!-- MENU LATERAL NOVO -->
 <div class="drawer-toggle" onclick="toggleDrawer()">☰</div>
 <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
@@ -341,8 +348,7 @@ button{
   <a href="calculadora.html">📟 Calculadora</a>
   <a href="planos.html">💎 Planos</a>
   <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo_empresa.html">🏭 Empresa</a>
-  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="recibo.html">📠 Emissão de Recibo</a>
   <a href="manutencao.html">🛠 Manutenção</a>
 </nav>
 
@@ -497,31 +503,6 @@ button{
 </div>
 
 <!-- ============================ -->
-<!--   FILTRO POR PERÍODO        -->
-<!-- ============================ -->
-
-<div class="card" id="filtrosPeriodo">
-    <h3>Período das movimentações</h3>
-    <div class="period-filters">
-        <button type="button" class="period-btn active" id="btnPeriodoHoje">Hoje</button>
-        <button type="button" class="period-btn" id="btnPeriodoSemana">Semana</button>
-        <button type="button" class="period-btn" id="btnPeriodoMes">Mês</button>
-        <button type="button" class="period-btn" id="btnPeriodoPersonalizado">Período</button>
-    </div>
-    <div class="period-range" id="periodoPersonalizadoContainer" style="display:none; margin-top:10px;">
-        <label>De:
-            <input type="date" id="dataInicioFiltro">
-        </label>
-        <label>Até:
-            <input type="date" id="dataFimFiltro">
-        </label>
-        <button type="button" id="btnAplicarFiltroDatas" class="period-apply">Aplicar filtro</button>
-    </div>
-    <small class="period-note" id="legendaPeriodoAtivo">Mostrando movimentações de hoje.</small>
-</div>
-
-
-<!-- ============================ -->
 <!-- LISTAS                       -->
 <!-- ============================ -->
 
@@ -604,34 +585,31 @@ function getPlanoAtualSeguro(){
   return (localStorage.getItem("planoAtual") || "free").toLowerCase();
 }
 function isPlanoFree(){
-  return getPlanoAtualSeguro() === "free";
+  return getPlano() === "FREEMIUM";
 }
 
 /*
 Regras de período:
-- free:   hoje
-- basico: hoje + semana
-- premium: hoje + semana + mes + periodo
-- pro:    tudo
+FREEMIUM = apenas HOJE
+TRIAL = tudo
+MENSAL, SEMESTRAL, VITALICIO = tudo
 */
 function bloquearSePlanoNaoPermite(tipoPeriodo){
-    const plano = getPlanoAtualSeguro(); // free, basico, premium, pro
+  const p = getPlano(); // utiliza planos.js
 
-    if(tipoPeriodo === 'semana'){
-        if(plano === 'free'){
-            alert("Recurso de período por SEMANA está disponível a partir do plano BÁSICO.");
-            window.location.href = "planos.html";
-            return true;
-        }
-    }
-    if(tipoPeriodo === 'mes' || tipoPeriodo === 'personalizado'){
-        if(plano === 'free' || plano === 'basico'){
-            alert("Recurso de período por MÊS e PERÍODO personalizado está disponível a partir do plano PREMIUM.");
-            window.location.href = "planos.html";
-            return true;
-        }
-    }
-    return false;
+  // TRIAL libera tudo
+  if (p === "TRIAL") return false;
+
+  // pagos liberam tudo
+  if (["MENSAL","SEMESTRAL","VITALICIO"].includes(p)) return false;
+
+  // FREEMIUM: somente hoje
+  if(tipoPeriodo !== 'hoje'){
+      alert("Períodos diferentes de HOJE disponíveis apenas nos planos pagos.");
+      window.location.href = "planos.html";
+      return true;
+  }
+  return false;
 }
 
 /* ==================== STORAGE & STATE ==================== */
@@ -1110,281 +1088,6 @@ function limparFormSaida(){
     document.getElementById('modalMaquineta')?.addEventListener('click', (e)=>{
         if(e.target && e.target.id === 'modalMaquineta') fecharCadastroMaquineta();
     });
-})();
-</script>
-
-</body>
-</html>
-<!-- ============================ -->
-<!-- FILTRO DE PERÍODO            -->
-<!-- ============================ -->
-
-<div class="card" id="filtrosPeriodo">
-    <h3>Período das movimentações</h3>
-    <div class="period-filters">
-        <button type="button" class="period-btn active" id="btnPeriodoHoje">Hoje</button>
-        <button type="button" class="period-btn" id="btnPeriodoSemana">Semana</button>
-        <button type="button" class="period-btn" id="btnPeriodoMes">Mês</button>
-        <button type="button" class="period-btn" id="btnPeriodoPersonalizado">Período</button>
-    </div>
-    <div class="period-range" id="periodoPersonalizadoContainer" style="display:none; margin-top:10px;">
-        <label>De:
-            <input type="date" id="dataInicioFiltro">
-        </label>
-        <label>Até:
-            <input type="date" id="dataFimFiltro">
-        </label>
-        <button type="button" id="btnAplicarFiltroDatas" class="period-apply">Aplicar filtro</button>
-    </div>
-    <small class="period-note" id="legendaPeriodoAtivo">Mostrando movimentações de hoje.</small>
-</div>
-
-
-<!-- LISTAS -->
-<div class="lists" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:10px;">
-
-    <div class="list-panel" style="flex:1 1 320px; min-width:280px;">
-        <div class="card">
-            <h3>Entradas (Corridas + Outras)</h3>
-            <div id="totalEntradas" class="totals">R$ 0,00</div>
-            <div id="listaEntradas"></div>
-        </div>
-    </div>
-
-    <div class="list-panel" style="flex:1 1 320px; min-width:280px;">
-        <div class="card">
-            <h3 style="color:var(--accent-danger)">Saídas</h3>
-            <div id="totalSaidas" class="totals" style="color:var(--accent-danger)">R$ 0,00</div>
-            <div id="listaSaidas"></div>
-        </div>
-    </div>
-
-</div><!-- ./lists -->
-
-</div><!-- ./container -->
-
-<!-- MODAL -->
-<div id="modalMaquineta">
-  <div class="modalBox">
-    <h3 style="margin-top:0;">Cadastrar Maquineta</h3>
-
-    <input id="maqNome" type="text" placeholder="Nome da maquineta">
-    <input id="maqDebito" type="number" placeholder="Taxa débito (%)">
-    <input id="maqCreditoAvista" type="number" placeholder="Taxa crédito à vista (%)">
-    <input id="maq2x" type="number" placeholder="Taxa 2x (%)">
-    <input id="maq3x" type="number" placeholder="Taxa 3x (%)">
-    <input id="maq4x" type="number" placeholder="Taxa 4x (%)">
-    <input id="maq5x" type="number" placeholder="Taxa 5x (%)">
-
-    <div style="display:flex; gap:10px; margin-top:16px;">
-        <button type="button" id="btnSalvarMaquineta">Salvar</button>
-        <button type="button" id="btnCancelarMaquineta" style="background:var(--accent-danger);color:#fff;">
-          Cancelar
-        </button>
-    </div>
-  </div>
-</div>
-
-<!-- MENU INFERIOR -->
-<div class="tabbar">
-  <a href="index.html">🏠<small>Home</small></a>
-  <a class="active" href="entradas.html">💵<small>Caixa</small></a>
-  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
-  <a href="resumo.html">📊<small>Resumo</small></a>
-  <a href="planos.html">💎<small>Planos</small></a>
-</div>
-
-
-<!-- JS ORIGINAL + Ajustado -->
-<script>
-/* THEME */
-function toggleTheme(){
-  const b=document.body;
-  const isDark=b.classList.contains('dark');
-  b.classList.remove('dark','light');
-  b.classList.add(isDark?'light':'dark');
-  localStorage.setItem('theme', isDark?'light':'dark');
-}
-(function(){
-  const th=localStorage.getItem('theme')||'light';
-  document.body.classList.add(th);
-})();
-
-/* MENU */
-function toggleDrawer(){
-  document.getElementById('drawer').classList.toggle('open');
-}
-
-/* PLANO */
-function getPlanoAtualSeguro(){
-  try{ if(typeof getPlano==='function')return getPlano(); }catch(e){}
-  return (localStorage.getItem("planoAtual")||"free").toLowerCase();
-}
-function isPlanoFree(){ return getPlanoAtualSeguro()==="free"; }
-
-function bloquearSePlanoNaoPermite(tipo){
-  const p=getPlanoAtualSeguro();
-  if(tipo==='semana' && p==='free'){ alert('Semana disponível no Básico'); location.href='planos.html'; return true; }
-  if((tipo==='mes'||tipo==='personalizado') && (p==='free'||p==='basico')){
-    alert('Mês e Período somente Premium'); location.href='planos.html'; return true;
-  }
-  return false;
-}
-
-/* STORAGE */
-let registros=JSON.parse(localStorage.getItem('entradasSaidas')||'[]');
-let maquinetas=JSON.parse(localStorage.getItem('maquinetas')||'[]');
-
-function persist(){ localStorage.setItem('entradasSaidas',JSON.stringify(registros)); }
-function persistMaquinetas(){ localStorage.setItem('maquinetas',JSON.stringify(maquinetas)); }
-
-/* PERIOD STATE */
-let periodoAtivo='hoje';
-let dataInicioCustom=null;
-let dataFimCustom=null;
-
-function normalizarData(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
-
-function passaFiltroPeriodo(reg){
-  if(!reg.criadoEm)return true;
-  const d=new Date(reg.criadoEm);
-  if(isNaN(d))return true;
-
-  const hoje=new Date();
-  const h=normalizarData(hoje);
-  const dn=normalizarData(d);
-
-  if(periodoAtivo==='hoje')return dn.getTime()===h.getTime();
-  if(periodoAtivo==='semana'){
-    const lim=new Date(h);lim.setDate(lim.getDate()-6);
-    return dn>=lim && dn<=h;
-  }
-  if(periodoAtivo==='mes'){
-    return d.getMonth()===hoje.getMonth() && d.getFullYear()===hoje.getFullYear();
-  }
-  if(periodoAtivo==='personalizado'){
-    if(!dataInicioCustom||!dataFimCustom)return true;
-    const ini=normalizarData(dataInicioCustom);
-    const fim=normalizarData(dataFimCustom);
-    return dn>=ini && dn<=fim;
-  }
-  return true;
-}
-
-function atualizarUIPeriodo(){
-  const legenda=document.getElementById('legendaPeriodoAtivo');
-  const btnHoje=document.getElementById('btnPeriodoHoje');
-  const btnSemana=document.getElementById('btnPeriodoSemana');
-  const btnMes=document.getElementById('btnPeriodoMes');
-  const btnPers=document.getElementById('btnPeriodoPersonalizado');
-  const contPers=document.getElementById('periodoPersonalizadoContainer');
-
-  [btnHoje,btnSemana,btnMes,btnPers].forEach(b=>b.classList.remove('active'));
-  if(periodoAtivo==='hoje')btnHoje.classList.add('active');
-  if(periodoAtivo==='semana')btnSemana.classList.add('active');
-  if(periodoAtivo==='mes')btnMes.classList.add('active');
-  if(periodoAtivo==='personalizado')btnPers.classList.add('active');
-
-  contPers.style.display=(periodoAtivo==='personalizado'?'flex':'none');
-
-  if(periodoAtivo==='hoje')legenda.innerText='Mostrando movimentações de hoje.';
-  if(periodoAtivo==='semana')legenda.innerText='Mostrando últimos 7 dias.';
-  if(periodoAtivo==='mes')legenda.innerText='Mostrando mês atual.';
-  if(periodoAtivo==='personalizado')legenda.innerText='Mostrando período selecionado.';
-}
-
-function setPeriodo(t){
-  if(bloquearSePlanoNaoPermite(t))return;
-  periodoAtivo=t;
-  atualizarUIPeriodo();
-  mostrarListas();
-}
-
-function aplicarFiltroPersonalizado(){
-  if(bloquearSePlanoNaoPermite('personalizado'))return;
-  const d1=document.getElementById('dataInicioFiltro').value;
-  const d2=document.getElementById('dataFimFiltro').value;
-  if(!d1||!d2){alert('Selecione datas');return;}
-  const ini=new Date(d1+'T00:00:00');
-  const fim=new Date(d2+'T23:59:59');
-  if(ini>fim){alert('Início maior que final');return;}
-  dataInicioCustom=ini;dataFimCustom=fim;
-  periodoAtivo='personalizado';
-  atualizarUIPeriodo();
-  mostrarListas();
-}
-
-/* TABS + RESTRIÇÃO FREE */
-function setActiveTab(name){
-  if(isPlanoFree() && (name==='outras'||name==='saidas')){
-    alert("No plano FREE somente 'Corridas' está liberado.");
-    location.href='planos.html';
-    return;
-  }
-  document.querySelectorAll('.tab').forEach(t=>{
-    t.classList.toggle('active',t.dataset.tab===name);
-  });
-  document.getElementById('form-corridas').style.display=(name==='corridas'?'block':'none');
-  document.getElementById('form-outras').style.display=(name==='outras'?'block':'none');
-  document.getElementById('form-saidas').style.display=(name==='saidas'?'block':'none');
-}
-
-/* MAQUINETA */
-function abrirCadastroMaquineta(){ document.getElementById('modalMaquineta').style.display='block'; }
-function fecharCadastroMaquineta(){ document.getElementById('modalMaquineta').style.display='none'; }
-
-/* LISTAGEM */
-function mostrarListas(){
-  const listaE=document.getElementById('listaEntradas');
-  const listaS=document.getElementById('listaSaidas');
-  listaE.innerHTML='';listaS.innerHTML='';
-
-  const filtrados=registros.filter(passaFiltroPeriodo);
-  let totalEntr=0,totalSai=0;
-
-  filtrados.forEach(r=>{
-    const div=document.createElement('div');
-    div.className='item';
-    if(r.tipo==='entrada'){
-      totalEntr+=Number(r.valorBruto||0);
-    }else{
-      totalSai+=Number(r.valor||0);
-    }
-    // resumindo HTML:
-    div.innerHTML=`
-      <div><strong>${r.descricao||''}</strong>
-      <small>${r.subtipo||''}</small></div>
-      <div><button class="remove" onclick="remover(${r.id})">Excluir</button></div>`;
-    if(r.tipo==='entrada')listaE.appendChild(div);
-    else listaS.appendChild(div);
-  });
-
-  document.getElementById('totalEntradas').innerText=totalEntr.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-  document.getElementById('totalSaidas').innerText=totalSai.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-}
-
-function remover(id){
-  if(!confirm('Excluir registro?'))return;
-  registros=registros.filter(r=>r.id!==id);
-  persist();
-  mostrarListas();
-}
-
-/* BOOT */
-(function(){
-  document.getElementById('btnPeriodoHoje').onclick=()=>setPeriodo('hoje');
-  document.getElementById('btnPeriodoSemana').onclick=()=>setPeriodo('semana');
-  document.getElementById('btnPeriodoMes').onclick=()=>setPeriodo('mes');
-  document.getElementById('btnPeriodoPersonalizado').onclick=()=>setPeriodo('personalizado');
-  document.getElementById('btnAplicarFiltroDatas').onclick=aplicarFiltroPersonalizado;
-
-  atualizarUIPeriodo();
-  mostrarListas();
-  setActiveTab('corridas');
-
-  document.getElementById('modalMaquineta').addEventListener('click',ev=>{
-    if(ev.target.id==='modalMaquineta')fecharCadastroMaquineta();
-  });
 })();
 </script>
 
