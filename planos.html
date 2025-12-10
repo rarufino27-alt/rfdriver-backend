@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Planos - RF Driver</title>
 
+<!-- IMPORTA regras de plano -->
+<script src="planos.js"></script>
+
 <style>
 body{
   margin:0;
@@ -213,74 +216,78 @@ ul{ padding-left:20px; margin:0; line-height:1.6; }
   <a href="calculadora.html">📟 Calculadora</a>
   <a href="planos.html">💎 Planos</a>
   <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo_empresa.html">🏭 Empresa</a>
-  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="recibo.html">📠 Emissão de Recibo</a>
   <a href="manutencao.html">🛠 Manutenção</a>
 </nav>
-
 
 <div class="container">
   <h1 class="gold">Escolha seu Plano</h1>
 
-  <!-- FREEMIUM -->
-  <div class="plan">
-    <h2 class="gold">Freemium</h2>
-    <div class="price gold2">R$ 0,00</div>
-    <ul>
-      <li>Acesso total por 24h</li>
-      <li>Apenas 1 vez por conta/aparelho</li>
-      <li>Após 24h → apenas Página Caixa</li>
-    </ul>
-    <!-- Freemium ativa direto, sem pagamento -->
-    <button class="btn" onclick="ativarFreemium24h()">Ativar Freemium por 24h</button>
-  </div>
-
-  <!-- BÁSICO - MENSAL -->
-  <div class="plan">
-    <h2 class="gold">Básico - Mensal</h2>
-    <div class="price gold2">R$ 9,90</div>
-    <ul>
-      <li>Acesso total a todas as páginas</li>
-      <li>Validade: 30 dias</li>
-    </ul>
-    <!-- ESTE BOTÃO LEVA PARA O CHECKOUT DO MERCADO PAGO -->
-    <button class="btn" onclick="abrirPagamento('BASICO')">Assinar Básico (Mensal)</button>
-  </div>
-
-  <!-- PREMIUM - SEMESTRAL -->
-  <div class="plan">
-    <h2 class="gold">Premium - Semestral ⭐</h2>
-    <div class="price gold2">R$ 49,90</div>
-    <ul>
-      <li>Acesso total</li>
-      <li>Validade: 6 meses</li>
-    </ul>
-    <button class="btn" onclick="abrirPagamento('PREMIUM')">Assinar Premium (Semestral)</button>
-  </div>
-
-  <!-- PRO - VITALÍCIO -->
-  <div class="plan">
-    <h2 class="gold">Pro - Vitalício 🔥</h2>
-    <div class="price gold2">R$ 149,90</div>
-    <ul>
-      <li>Acesso total para sempre</li>
-      <li>Direito a atualizações</li>
-    </ul>
-    <button class="btn" onclick="abrirPagamento('PRO')">Assinar Vitalício (Pro)</button>
-  </div>
-
-  <!-- BLOCO: JÁ PAGUEI, LIBERAR PLANO -->
-  <div class="plan">
-    <h2 class="gold">Já pagou seu plano?</h2>
-    <p>Depois de fazer o pagamento pelo Mercado Pago, clique abaixo para liberar o plano neste aparelho:</p>
-
-    <button class="btn" onclick="liberarPlano('BASICO')">Já paguei o Plano Básico (Mensal)</button>
-    <button class="btn" onclick="liberarPlano('PREMIUM')">Já paguei o Plano Premium (Semestral)</button>
-    <button class="btn" onclick="liberarPlano('PRO')">Já paguei o Plano Pro (Vitalício)</button>
-  </div>
-
+<!-- TESTE 36H -->
+<div class="plan">
+  <h2 class="gold">🎁 Teste Grátis 36h 🎁</h2>
+  <div class="price gold2">R$ 0,00</div>
+  <ul>
+    <li>Acesso total a todas as páginas</li>
+    <li>Duração: 36 horas</li>
+  </ul>
+  <button class="btn" onclick="iniciarTrial36h()">Iniciar Teste 36h</button>
 </div>
 
+<!-- FREEMIUM -->
+<div class="plan">
+  <h2 class="gold">Freemium</h2>
+  <div class="price gold2">R$ 0,00</div>
+  <ul>
+    <li>Acesso apenas à Página Caixa</li>
+    <li>Sem acesso às outras</li>
+  </ul>
+</div>
+
+<!-- MENSAL -->
+<div class="plan">
+  <h2 class="gold">Plano Mensal</h2>
+  <div class="price gold2">R$ 9,90</div>
+  <ul>
+    <li>Acesso total</li>
+    <li>Validade: 30 dias</li>
+  </ul>
+  <button class="btn" onclick="abrirPagamento('MENSAL')">Assinar Plano Mensal</button>
+</div>
+
+<!-- SEMESTRAL -->
+<div class="plan">
+  <h2 class="gold">Plano Semestral ⭐</h2>
+  <div class="price gold2">R$ 49,90</div>
+  <ul>
+    <li>Acesso total</li>
+    <li>Validade: 6 meses</li>
+  </ul>
+  <button class="btn" onclick="abrirPagamento('SEMESTRAL')">Assinar Plano Semestral</button>
+</div>
+
+<!-- VITALICIO -->
+<div class="plan">
+  <h2 class="gold">Plano Vitalício 🔥</h2>
+  <div class="price gold2">R$ 149,90</div>
+  <ul>
+    <li>Acesso total para sempre</li>
+    <li>Direito a atualizações futuras</li>
+  </ul>
+  <button class="btn" onclick="abrirPagamento('VITALICIO')">Comprar Vitalício</button>
+</div>
+
+<!-- JÁ PAGUEI -->
+<div class="plan">
+  <h2 class="gold">Já paguei meu plano</h2>
+  <p>Caso já tenha pago no Mercado Pago, clique abaixo para liberar neste aparelho:</p>
+
+  <button class="btn" onclick="setPlano('MENSAL')">Liberar Mensal</button>
+  <button class="btn" onclick="setPlano('SEMESTRAL')">Liberar Semestral</button>
+  <button class="btn" onclick="setPlano('VITALICIO')">Liberar Vitalício</button>
+</div>
+
+</div>
 
 <div class="tabbar">
   <a href="index.html">🏠<small>Home</small></a>
@@ -291,61 +298,31 @@ ul{ padding-left:20px; margin:0; line-height:1.6; }
 </div>
 
 
+<!-- ========================= -->
+<!-- JS NECESSÁRIO             -->
+<!-- ========================= -->
 <script>
+// drawer
 function toggleDrawer(){
   document.getElementById('drawer').classList.toggle('open');
 }
 
-/* ==========================
-   CHECKOUT + PLANOS
-   ========================== */
-
-// 1) ABRIR PAGAMENTO NO MERCADO PAGO
+// pagamento (links reais)
 function abrirPagamento(plano){
-  let url = "";
+  let link = "";
 
-  if(plano === "BASICO"){
-    url = "https://mpago.la/1ne24Ba";
-  } 
-  else if(plano === "PREMIUM"){
-    url = "https://mpago.la/33kSr4F";
-  } 
-  else if(plano === "PRO"){
-    url = "https://mpago.li/2yainfn";
-  }
+  if(plano==="MENSAL")     link = "https://mpago.la/1ne24Ba";
+  if(plano==="SEMESTRAL")  link = "https://mpago.la/33kSr4F";
+  if(plano==="VITALICIO")  link = "https://mpago.li/2yainfn";
 
-  if(!url){
-    alert("Link de pagamento ainda não configurado.");
+  if(!link){
+    alert("Link de pagamento não configurado.");
     return;
   }
-
-  window.open(url, "_blank");
+  window.open(link, "_blank");
 }
 
-// 2) LIBERAR PLANO APÓS PAGAMENTO
-function liberarPlano(plano){
-  localStorage.setItem('planoAtivo', plano);
-  alert("Plano liberado neste aparelho: " + plano);
-  // redireciona para o dashboard (ajuste se o nome do arquivo for outro)
-  location.href = "index.html";
-}
-
-// 3) FREEMIUM 24H
-function ativarFreemium24h(){
-  const agora = Date.now();
-  const expira = agora + 24 * 60 * 60 * 1000; // 24 horas
-
-  localStorage.setItem('planoAtivo','FREE');         // nome do plano Freemium
-  localStorage.setItem('freemiumExpira', String(expira));
-
-  alert("Freemium ativado por 24h neste aparelho.");
-  location.href = "index.html";
-}
-
-/* ==========================
-   TEMA CLARO/ESCURO
-   ========================== */
-
+// tema
 function toggleTheme(){
   const body=document.body;
   const newTheme = body.classList.contains("dark") ? "light" : "dark";
