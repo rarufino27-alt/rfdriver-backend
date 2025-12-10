@@ -241,6 +241,13 @@ button{
 
 <body>
 
+<script>
+const token = localStorage.getItem("authToken");
+if(!token){
+  window.location.href = "login.html";
+}
+</script>
+
 <!-- BOTÕES SUPERIORES -->
 <div class="drawer-toggle" onclick="toggleDrawer()">☰</div>
 <div id="toggleTheme" class="theme-toggle" onclick="toggleTheme()">🌓</div>
@@ -253,8 +260,7 @@ button{
   <a href="calculadora.html">📟 Calculadora</a>
   <a href="planos.html">💎 Planos</a>
   <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo_empresa.html">🏭 Empresa</a>
-  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="recibo.html">📠 Emissão de Recibo</a>
   <a href="manutencao.html">🛠 Manutenção</a>
 </nav>
 
@@ -388,24 +394,26 @@ button{
 <script src="planos.js"></script>
 
 <script>
-/* =====================
-   BLOQUEIO POR PLANO
-===================== */
 (function aplicarBloqueioPorPlano(){
-  if(typeof planoTem === "function"){
-    // free -> bloqueia tudo
-    if(!planoTem("calc_simple")){
-      alert("A Calculadora está disponível apenas a partir do plano Básico.");
-      location.href="planos.html";
-      return;
-    }
-    // básico -> simples apenas
-    if(planoTem("calc_simple") && !planoTem("calc_premium")){
-      document.getElementById('tabPremium').style.display='none';
-      document.getElementById('abaPremium').style.display='none';
-    }
-  }
+
+  const plano = getPlano(); // FREEMIUM, TRIAL, MENSAL, SEMESTRAL, VITALICIO
+
+  // TRIAL tem acesso total
+  if(plano === "TRIAL") return;
+
+  // Pagos tem acesso total
+  if(["MENSAL","SEMESTRAL","VITALICIO"].includes(plano)) return;
+
+  // FREEMIUM bloqueado
+  alert("A Calculadora está disponível apenas em planos pagos.");
+  location.href = "planos.html";
+
 })();
+
+</script>
+
+<script>
+validarTrial(); // impede acesso trial expirado
 </script>
 
 <script>
