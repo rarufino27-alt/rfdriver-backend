@@ -263,6 +263,11 @@ h1{
 
 <body>
 
+const token = localStorage.getItem("authToken");
+if(!token){
+    window.location.href = "login.html";
+}
+
 <!-- BOTÕES SUPERIORES -->
 <div class="drawer-toggle" onclick="toggleDrawer()">☰</div>
 <div id="toggleTheme" class="theme-toggle" onclick="toggleTheme()">🌓</div>
@@ -275,8 +280,7 @@ h1{
   <a href="calculadora.html">📟 Calculadora</a>
   <a href="planos.html">💎 Planos</a>
   <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo_empresa.html">🏭 Empresa</a>
-  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="recibo.html">📠 Emissão de Recibo</a>
   <a href="manutencao.html">🛠 Manutenção</a>
 </nav>
 
@@ -405,13 +409,20 @@ h1{
 <script src="planos.js"></script>
 
 <script>
-// Bloqueio por plano
-if(typeof planoTem === "function"){
-  if(!planoTem("resumo")){
-    alert("Disponível apenas no plano PRO.");
-    location.href="planos.html";
-  }
-}
+// =====================================================
+// BLOQUEIO DE ACESSO POR PLANO (mesma lógica de caixa)
+// =====================================================
+(function(){
+  const p = getPlano(); // FREEMIUM, TRIAL, MENSAL, SEMESTRAL, VITALICIO
+
+  // TRIAL e Pagos liberam
+  if(p === "TRIAL") return;
+  if(["MENSAL","SEMESTRAL","VITALICIO"].includes(p)) return;
+
+  // FREEMIUM bloqueia
+  alert("Disponível somente para planos pagos. Faça upgrade para acessar o resumo.");
+  location.href = "planos.html";
+})();
 
 /* helpers */
 const $ = id => document.getElementById(id);
