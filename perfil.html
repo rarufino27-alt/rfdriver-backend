@@ -203,8 +203,7 @@ button{
   <a href="calculadora.html">📟 Calculadora</a>
   <a href="planos.html">💎 Planos</a>
   <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo_empresa.html">🏭 Empresa</a>
-  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="recibo.html">📠 Emissão de Recibo</a>
   <a href="manutencao.html">🛠 Manutenção</a>
 </nav>
 
@@ -224,42 +223,70 @@ button{
   <!-- ======================
        ABA PESSOAL
   ========================== -->
-  <section id="abaPessoal" class="card">
-    <h2>Dados Pessoais</h2>
+ <section id="abaPessoal" class="card">
+  <h2>Dados Pessoais</h2>
 
-    <label>Foto do motorista</label>
-    <img id="fotoPessoalPreview" class="photo-preview" alt="Foto do motorista"/>
-    <input id="fotoPessoalInput" type="file" accept="image/*"/>
+  <label>Foto do motorista</label>
+  <img id="fotoPessoalPreview" class="photo-preview" alt="Foto do motorista"/>
+  <input id="fotoPessoalInput" type="file" accept="image/*"/>
 
-    <div class="row">
-      <div class="col">
-        <label>Nome completo</label>
-        <input id="pNome" type="text" placeholder="Seu nome completo">
-      </div>
-      <div class="col">
-        <label>Telefone</label>
-        <input id="pTelefone" type="tel" placeholder="(00) 00000-0000">
-      </div>
+  <div class="row">
+    <div class="col">
+      <label>Nome completo</label>
+      <input id="pNome" type="text" placeholder="Seu nome completo">
     </div>
-
-    <div class="row">
-      <div class="col">
-        <label>CPF</label>
-        <input id="pCpf" type="text" placeholder="000.000.000-00">
-      </div>
-      <div class="col">
-        <label>Cidade</label>
-        <input id="pCidade" type="text" placeholder="Cidade">
-      </div>
-      <div class="col">
-        <label>Estado</label>
-        <input id="pEstado" type="text" placeholder="UF">
-      </div>
+    <div class="col">
+      <label>Telefone</label>
+      <input id="pTelefone" type="tel" placeholder="(00) 00000-0000">
     </div>
+  </div>
 
-    <button id="btnSalvarPessoal">Salvar dados pessoais</button>
-  </section>
+  <div class="row">
+    <div class="col">
+      <label>CPF</label>
+      <input id="pCpf" type="text" placeholder="000.000.000-00">
+    </div>
+    <div class="col">
+      <label>Cidade</label>
+      <input id="pCidade" type="text" placeholder="Cidade">
+    </div>
+    <div class="col">
+      <label>Estado</label>
+      <input id="pEstado" type="text" placeholder="UF">
+    </div>
+  </div>
 
+  <button id="btnSalvarPessoal">Salvar dados pessoais</button>
+
+  <!-- NOVO BLOCO -->
+  <div class="card" style="margin-top:20px;">
+    <h3>Dados Cadastrais</h3>
+
+    <label>Email</label>
+    <input id="cEmail" type="email">
+
+    <label>Confirmar Email</label>
+    <input id="cEmail2" type="email">
+
+    <label>Celular</label>
+    <input id="cCel" type="tel">
+
+    <label>Confirmar Celular</label>
+    <input id="cCel2" type="tel">
+
+    <label>CPF (somente leitura)</label>
+    <input id="cCpf" type="text" readonly>
+
+    <label>Nova senha</label>
+    <input id="cSenha" type="password">
+
+    <label>Confirmar nova senha</label>
+    <input id="cSenha2" type="password">
+
+    <button onclick="salvarCadastroPerfil()">Salvar alterações</button>
+  </div>
+
+</section>
 
   <!-- ======================
        ABA VEÍCULOS
@@ -398,14 +425,17 @@ document.addEventListener("DOMContentLoaded", function(){
     try{ return getPlano(); }catch(e){}
     return (localStorage.getItem('planoAtual')||'free').toLowerCase();
   }
-  (function(){
-    const p = plano();
-    if(p!=='premium' && p!=='pro' && p!=='básico' && p!=='basic'){
-       alert("Perfil é liberado apenas nos planos basico, Premium e Pro.");
-       location.href="planos.html";
-       return;
-    }
-  })();
+
+(function bloquearPerfil(){
+  const p = getPlano();
+
+  const liberados = ["TRIAL","MENSAL","SEMESTRAL","VITALICIO"];
+
+  if(liberados.includes(p)) return;
+
+  alert("A página Perfil é liberada apenas em planos pagos.");
+  location.href = "planos.html";
+})();
 
   /* ===============================
      HELPERS
@@ -579,6 +609,19 @@ document.addEventListener("DOMContentLoaded", function(){
     btnSalvarPessoal.onclick = salvarPessoal;
   }
 
+function carregarCadastroPerfil(){
+   const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
+   if(!user) return;
+
+   cEmail.value = user.email || "";
+   cEmail2.value = user.email || "";
+   cCel.value = user.celular || "";
+   cCel2.value = user.celular || "";
+   cCpf.value = user.cpf || "";
+}
+
+carregarCadastroPerfil();
+
   /* ===============================
      2) VEÍCULOS múltiplos
   ================================== */
@@ -748,6 +791,49 @@ document.addEventListener("DOMContentLoaded", function(){
   if(btnSalvarFinanceiro){
     btnSalvarFinanceiro.onclick = salvarFinanceiro;
   }
+
+function salvarCadastroPerfil(){
+   const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
+   if(!user) return;
+
+   const email = cEmail.value.trim();
+   const email2 = cEmail2.value.trim();
+   const cel = cCel.value.trim();
+   const cel2 = cCel2.value.trim();
+   const senha = cSenha.value.trim();
+   const senha2 = cSenha2.value.trim();
+
+   if(!email || !cel){
+     alert("Preencha email e celular");
+     return;
+   }
+
+   if(email !== email2){
+     alert("Emails não conferem");
+     return;
+   }
+   if(cel !== cel2){
+     alert("Celular não confere");
+     return;
+   }
+   if(senha){
+      if(senha !== senha2){
+        alert("Senhas não conferem");
+        return;
+      }
+      user.senha = senha; // troca a senha
+   }
+
+   // atualiza os outros
+   user.email = email;
+   user.celular = cel;
+   // CPF mantém o mesmo, não mudar!
+
+   localStorage.setItem("usuarioRF", JSON.stringify(user));
+
+   alert("Dados atualizados!");
+}
+
 
   /* ===============================
      BOOT
