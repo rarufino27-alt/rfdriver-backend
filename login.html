@@ -1,126 +1,99 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Login - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 body{
-  margin:0;
-  font-family:'Inter', Arial, sans-serif;
-  background:#0d0d0d;
-  color:#f4f4f4;
-}
-.container{
-  max-width:420px;
-  margin:0 auto;
-  padding:24px 16px 60px;
+ font-family:Inter,system-ui;
+ background:#0d0d0d;
+ color:#fff;
+ padding:40px 20px;
 }
 h1{
-  text-align:center;
-  margin-bottom:24px;
+ font-size:28px;
+ color:#d6b25f;
+ margin-bottom:20px;
+ text-align:center;
 }
-label{
-  display:block;
-  margin:12px 0 4px;
-  font-size:14px;
-}
+label{display:block;margin-top:14px;font-size:14px;}
 input{
-  width:100%;
-  padding:10px 12px;
-  border-radius:8px;
-  border:1px solid #444;
-  background:#161616;
-  color:#f4f4f4;
-  font-size:16px;
+ width:100%;padding:12px;border-radius:10px;
+ border:1px solid #333;
+ background:#161616;color:#fff;
+ margin-top:6px;
+ font-size:14px;
 }
 button{
-  width:100%;
-  margin-top:20px;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  font-size:17px;
-  font-weight:600;
-  background:linear-gradient(90deg,#d6b25f,#e8d08a);
-  color:#000;
+ width:100%;padding:14px;margin-top:25px;
+ background:linear-gradient(90deg,#d6b25f,#e8d08a);
+ border:none;border-radius:10px;font-weight:700;color:#000;
+ cursor:pointer;font-size:16px;
 }
-.msg{
-  margin-top:12px;
-  font-size:14px;
-  min-height:18px;
-}
-a{
-  color:#e8d08a;
-}
+.container{max-width:480px;margin:auto;}
+p{text-align:center;margin-top:20px;}
+a{color:#d6b25f;text-decoration:none;}
 </style>
 </head>
+
 <body>
 
 <div class="container">
-  <h1>Entrar</h1>
+<h1>Entrar</h1>
 
-  <label for="cpf">CPF</label>
-  <input id="cpf" type="text" placeholder="000.000.000-00" />
+<label>Email</label>
+<input id="logEmail" type="email">
 
-  <label for="senha">Senha</label>
-  <input id="senha" type="password" />
+<label>Senha</label>
+<input id="logSenha" type="password">
 
-  <button onclick="login()">Login</button>
+<button onclick="login()">Entrar</button>
 
-  <div class="msg" id="msg"></div>
+<p><a href="#" onclick="recover()">Esqueci minha senha</a></p>
 
-  <p style="margin-top:18px;text-align:center;font-size:14px;">
-    Ainda não tem conta?
-    <a href="cadastro.html">Cadastrar</a>
-  </p>
+<p>Não possui conta? <a href="cadastro.html">Criar conta</a></p>
 </div>
 
 <script>
-const API_BASE = "https://rfdriver-backend-1.onrender.com";
+function login(){
+ const email=logEmail.value.trim();
+ const pass = logSenha.value.trim();
+ const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
 
-function mostrarMensagem(texto, erro=false){
-  const msg = document.getElementById("msg");
-  msg.style.color = erro ? "#ff7676" : "#7CFC00";
-  msg.textContent = texto;
+ if(!user){ alert("Usuário não encontrado");return; }
+ if(email!==user.email){ alert("Email incorreto");return; }
+ if(pass!==user.senha){ alert("Senha incorreta");return; }
+
+ localStorage.setItem("logado","1");
+ location.href="index.html";
 }
 
-async function login(){
-  const cpf = document.getElementById("cpf").value.trim();
-  const senha = document.getElementById("senha").value.trim();
+function recover(){
+   const num = prompt("Digite seu número de celular cadastrado:");
 
-  if(!cpf || !senha){
-    mostrarMensagem("Informe CPF e senha.", true);
-    return;
-  }
+   if(!num){
+     alert("Digite o número.");
+     return;
+   }
 
-  try{
-    mostrarMensagem("Validando login...");
-    const resp = await fetch(API_BASE + "/auth/login", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ cpf, senha })
-    });
-    const data = await resp.json();
+   const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
+   if(!user){
+     alert("Nenhum usuário cadastrado.");
+     return;
+   }
 
-    if(!data.ok){
-      mostrarMensagem(data.message || "Falha no login.", true);
+   if(num !== user.celular){
+      alert("Número não encontrado.");
       return;
-    }
+   }
 
-    localStorage.setItem("authToken", data.token);
-    localStorage.setItem("userCpf", data.user.cpf);
-
-    mostrarMensagem("Login realizado! Redirecionando...");
-    setTimeout(()=>{
-      window.location.href = "index.html";
-    }, 800);
-  }catch(e){
-    console.error(e);
-    mostrarMensagem("Erro de comunicação com o servidor.", true);
-  }
+   alert("Sua senha é: " + user.senha);
 }
+
 </script>
 
 </body>
