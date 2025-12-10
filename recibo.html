@@ -442,15 +442,18 @@ button{
 
 <script>
 /* ============================================================
-   BLOQUEIO POR PLANO (Freemium NÃO acessa)
-============================================================ */
+// BLOQUEIO POR PLANO – Emissão de Recibo
 (function(){
-  let p = localStorage.getItem("planoAtual")||"free";
-  p=p.toLowerCase();
-  if(p==="free"||p==="freemium"){
-    alert("Emissão de Recibo não disponível no plano Freemium.");
-    location.href="planos.html";
-  }
+  try{
+    const p = getPlano(); // “FREEMIUM”, “MENSAL”, etc
+    const liberados = ["TRIAL","MENSAL","SEMESTRAL","VITALICIO"];
+
+    if(!liberados.includes(p)){
+      alert("Emissão de Recibo é liberada somente em planos pagos.");
+      location.href = "planos.html";
+      return;
+    }
+  }catch(e){}
 })();
 </script>
 <script>
