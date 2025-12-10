@@ -337,6 +337,8 @@ body.light .h-bar-wrap{
   margin-top:12px;
 }
 
+</style>
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#fbbf24">
 
@@ -346,7 +348,6 @@ body.light .h-bar-wrap{
 <meta name="apple-mobile-web-app-title" content="RF Driver">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-</style>
 </head>
 
 <body>
@@ -691,8 +692,7 @@ render();
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
-    navigator.serviceWorker
-      .register("./service-worker.js")
+      navigator.serviceWorker.register("service-worker.js")
       .then(function (reg) {
         console.log("Service Worker registrado:", reg.scope);
       })
