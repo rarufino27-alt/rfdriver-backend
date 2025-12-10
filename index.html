@@ -353,8 +353,7 @@ body.light .h-bar-wrap{
   <a href="calculadora.html">📟 Calculadora</a>
   <a href="planos.html">💎 Planos</a>
   <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo_empresa.html">🏭 Empresa</a>
-  <a href="recibo_particular.html">🚘 Particular</a>
+  <a href="recibo.html">📠 Emissão de Recibo</a>
   <a href="manutencao.html">🛠 Manutenção</a>
 </nav>
 
@@ -441,14 +440,26 @@ function toggleTheme(){
 })();
 
 /* ============ PLANO E BLOQUEIO ============ */
-function plano(){
-  try{ return localStorage.getItem('planoAtivo') || 'FREE'; }catch(e){}
-  return 'FREE';
+
+function getPlano(){
+  return (localStorage.getItem("planoAtivo") || "FREEMIUM").toUpperCase();
 }
-if(plano()==='FREE'){
-  alert("O Dashboard é liberado apenas no plano Básico ou superior.");
-  location.href="planos.html";
+
+function validarAcessoDashboard(){
+  const p = getPlano();
+
+  // Trial sempre pode
+  if(p === "TRIAL") return;
+
+  // Planos pagos (novos nomes)
+  if(["MENSAL","SEMESTRAL","VITALICIO"].includes(p)) return;
+
+  // Freemium não permite
+  alert("O Dashboard é liberado apenas em planos pagos.");
+  location.href = "planos.html";
 }
+
+validarAcessoDashboard();
 
 /* ============ STATE ============ */
 let periodo='hoje';
@@ -466,7 +477,7 @@ function block(p){
     alert('Semana disponível a partir do Básico.');
     location.href='planos.html'; return true;
   }
-  if((p==='mes' || p==='pers') && (pl==='FREE' || pl==='BASICO')){
+  if((p==='mes' || p==='pers') && (pl==='FREE' || pl==='MENSAL')){
     alert('Mês e Período disponíveis a partir do Premium.');
     location.href='planos.html'; return true;
   }
