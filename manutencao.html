@@ -218,9 +218,8 @@ input{
   <a href="calculadora.html">📟 Calculadora</a>
   <a href="planos.html">💎 Planos</a>
   <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo_empresa.html">🏭 Empresa</a>
-  <a href="recibo_particular.html">🚘 Particular</a>
-  <a class="active" href="manutencao.html">🛠 Manutenção</a>
+  <a href="recibo.html">📠 Emissão de Recibo</a>
+  <a href="manutencao.html">🛠 Manutenção</a>
 </nav>
 
 <div class="container">
@@ -376,17 +375,19 @@ input{
 <script src="planos.js"></script>
 
 <script>
-/* ============================
-   BLOQUEIO POR PLANO (PRO)
-   ============================ */
-(function(){
-  if (typeof planoTem === "function") {
-    if (!planoTem("manutencao")) {
-      alert("A página Manutenção é liberada apenas no plano PRO.");
-      location.href = "planos.html";
-      return;
-    }
-  }
+(function aplicarBloqueioManutencao(){
+
+  const plano = getPlano(); // FREEMIUM, TRIAL, MENSAL, SEMESTRAL, VITALICIO
+
+  // TRIAL tem acesso
+  if(plano === "TRIAL") return;
+
+  // Pagos tem acesso total
+  if(["MENSAL","SEMESTRAL","VITALICIO"].includes(plano)) return;
+
+  alert("A página Manutenção está disponível apenas em planos pagos.");
+  location.href = "planos.html";
+
 })();
 </script>
 
