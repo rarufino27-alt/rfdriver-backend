@@ -336,6 +336,16 @@ body.light .h-bar-wrap{
   opacity:.7;
   margin-top:12px;
 }
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#fbbf24">
+
+<!-- iOS (Safari) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="RF Driver">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
 </style>
 </head>
 
@@ -347,6 +357,7 @@ body.light .h-bar-wrap{
 
 <!-- MENU LATERAL -->
 <nav class="drawer" id="drawer">
+  <a href="instalar-app.html"> CLIQUE AQUI Instale Seu app AGORA MESMO!</a>
   <a href="index.html">🏠 Dashboard</a>
   <a href="entradas.html">💵 Caixa</a>
   <a href="resumo.html">📊 Resumo</a>
@@ -675,6 +686,21 @@ function updateUI(){
 /* inicialização */
 updateUI();
 render();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker
+      .register("./service-worker.js")
+      .then(function (reg) {
+        console.log("Service Worker registrado:", reg.scope);
+      })
+      .catch(function (err) {
+        console.log("Erro ao registrar o Service Worker:", err);
+      });
+  });
+}
 </script>
 
 </body>
