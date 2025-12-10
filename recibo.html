@@ -441,11 +441,10 @@ button{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-/* ============================================================
 // BLOQUEIO POR PLANO – Emissão de Recibo
 (function(){
   try{
-    const p = getPlano(); // “FREEMIUM”, “MENSAL”, etc
+    const p = getPlano(); 
     const liberados = ["TRIAL","MENSAL","SEMESTRAL","VITALICIO"];
 
     if(!liberados.includes(p)){
@@ -456,6 +455,7 @@ button{
   }catch(e){}
 })();
 </script>
+
 <script>
 /* ============================================================
    HELPERS GERAIS
