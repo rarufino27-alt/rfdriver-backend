@@ -1,8 +1,8 @@
 {
   "name": "RF Driver Control",
   "short_name": "RF Driver",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/rf-drive-control/index.html",
+  "scope": "/rf-drive-control/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#050816",
@@ -10,12 +10,12 @@
   "description": "Controle financeiro diário para motoristas de aplicativo.",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "/rf-drive-control/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "/rf-drive-control/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
