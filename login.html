@@ -43,57 +43,91 @@ a{color:#d6b25f;text-decoration:none;}
 <body>
 
 <div class="container">
-<h1>Entrar</h1>
+  <h1>Login</h1>
 
-<label>Email</label>
-<input id="logEmail" type="email">
+  <form onsubmit="fazerLogin(); return false;">
+    <label>Usuário ou E-mail</label>
+    <input type="text" id="usuario" required>
 
-<label>Senha</label>
-<input id="logSenha" type="password">
+    <label>Senha</label>
+    <input type="password" id="senha" required>
 
-<button onclick="login()">Entrar</button>
+    <button type="submit">Entrar</button>
+  </form>
 
-<p><a href="#" onclick="recover()">Esqueci minha senha</a></p>
-
-<p>Não possui conta? <a href="cadastro.html">Criar conta</a></p>
+  <p><a href="#" onclick="recover()">Esqueci minha senha</a></p>
 </div>
 
 <script>
-function login(){
- const email=logEmail.value.trim();
- const pass = logSenha.value.trim();
- const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
+function fazerLogin(){
+  const usuarioInput = document.getElementById("usuario").value.trim();
+  const senhaInput   = document.getElementById("senha").value.trim();
 
- if(!user){ alert("Usuário não encontrado");return; }
- if(email!==user.email){ alert("Email incorreto");return; }
- if(pass!==user.senha){ alert("Senha incorreta");return; }
+  /* ===== LOGIN MASTER ===== */
+  const MASTER_USER  = "master";
+  const MASTER_PASS  = "senha123";
 
- localStorage.setItem("logado","1");
- location.href="index.html";
+  if(usuarioInput === MASTER_USER && senhaInput === MASTER_PASS){
+    localStorage.setItem("logado","1");
+    localStorage.setItem("planoAtivo","MASTER");
+    localStorage.setItem("isMaster","true");
+
+    location.href = "index.html";
+    return;
+  }
+
+  /* ===== LOGIN NORMAL ===== */
+  const user = JSON.parse(localStorage.getItem("usuarioRF") || "null");
+
+  if(!user){
+    alert("Usuário não encontrado");
+    return;
+  }
+
+  const loginValido =
+    usuarioInput === user.email ||
+    usuarioInput === user.usuario;
+
+  if(!loginValido){
+    alert("Usuário ou e-mail incorreto");
+    return;
+  }
+
+  if(senhaInput !== user.senha){
+    alert("Senha incorreta");
+    return;
+  }
+
+  localStorage.setItem("logado","1");
+  localStorage.setItem("planoAtivo", user.plano || "FREE");
+  localStorage.removeItem("isMaster");
+
+  location.href = "index.html";
 }
 
+/* ===== RECUPERAÇÃO ===== */
 function recover(){
-   const num = prompt("Digite seu número de celular cadastrado:");
+  const num = prompt("Digite seu número de celular cadastrado:");
 
-   if(!num){
-     alert("Digite o número.");
-     return;
-   }
+  if(!num){
+    alert("Digite o número.");
+    return;
+  }
 
-   const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
-   if(!user){
-     alert("Nenhum usuário cadastrado.");
-     return;
-   }
+  const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
 
-   if(num !== user.celular){
-      alert("Número não encontrado.");
-      return;
-   }
+  if(!user){
+    alert("Nenhum usuário cadastrado.");
+    return;
+  }
 
-   alert("Sua senha é: " + user.senha);
+  if(num !== user.celular){
+    alert("Número não encontrado.");
+    return;
+  }
+
+  alert("Sua senha é: " + user.senha);
 }
-
 </script>
 
 </body>
