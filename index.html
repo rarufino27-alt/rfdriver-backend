@@ -1,706 +1,241 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard - RF Driver</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
 <style>
+:root{
+  --gold:#f5c542;
+  --bg:#0d0d0d;
+  --text:#f4f4f4;
+  --card:#161616;
+  --border:#242424;
+  --green:#1DB954;
+  --red:#ff3b30;
+}
+body[data-theme="light"]{
+  --bg:#f4f4f4;
+  --text:#111;
+  --card:#ffffff;
+  --border:#ddd;
+}
+*{box-sizing:border-box;font-family:Inter}
 body{
   margin:0;
-  font-family:'Inter',sans-serif;
   background:var(--bg);
   color:var(--text);
-  transition:.3s;
+  padding:80px 16px 150px;
 }
 
-/* ===========================================
-   PALETA (compatível com planos)
-=========================================== */
-:root{
-  /* dourado escuro para light */
-  --gold-light:#90731b;
-  --gold-light2:#b08c2e;
-
-  /* dourado para dark */
-  --gold-dark:#d6b25f;
-  --gold-dark2:#e8d08a;
-
-  /* dark */
-  --bg-dark:#0d0d0d;
-  --text-dark:#f4f4f4;
-  --card-dark:#161616;
-  --panel-dark:#131313;
-  --border-dark:#242424;
-
-  /* light */
-  --bg-light:#f7f7f7;
-  --text-light:#222;
-  --card-light:#ffffff;
-  --panel-light:#ffffff;
-  --border-light:#d6d6d6;
+.drawer-toggle,.theme-toggle{
+  position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:20
 }
+.drawer-toggle{left:15px}
+.theme-toggle{right:15px}
 
-/* THEME */
-body.dark{
-  --bg:var(--bg-dark);
-  --text:var(--text-dark);
-  --card:var(--card-dark);
-  --panel:var(--panel-dark);
-  --border:var(--border-dark);
-  --gold-main:var(--gold-dark);
-  --gold-main2:var(--gold-dark2);
-}
-body.light{
-  --bg:var(--bg-light);
-  --text:var(--text-light);
-  --card:var(--card-light);
-  --panel:var(--panel-light);
-  --border:var(--border-light);
-  --gold-main:var(--gold-light);
-  --gold-main2:var(--gold-light2);
-}
-
-/* gold */
-.gold{ color:var(--gold-main); }
-.gold2{ color:var(--gold-main2); }
-
-/* ===========================================
-   MENU LATERAL
-=========================================== */
 .drawer{
-  position:fixed;
-  top:0; left:-260px;
-  width:260px; height:100%;
-  background:var(--card);
-  padding-top:70px;
-  transition:left .3s;
-  z-index:9999;
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:15
 }
-.drawer.open{ left:0; }
+.drawer.open{left:0}
+
 .drawer a{
-  display:block;
-  padding:15px 22px;
-  border-bottom:1px solid var(--border);
-  text-decoration:none;
-  color:var(--text);
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;color:var(--text);
+  text-decoration:none;border-bottom:1px solid var(--border)
 }
 
-/* toggles */
-.drawer-toggle{
-  position:fixed; left:15px; top:15px;
-  font-size:28px; cursor:pointer; z-index:10000;
+.kpi,.small,.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:16px;margin-bottom:16px
 }
-.theme-toggle{
-  position:fixed; right:15px; top:15px;
-  font-size:24px; cursor:pointer; z-index:10000;
-}
+#lucroValor{font-size:32px;font-weight:700}
 
-/* ===========================================
-   MENU INFERIOR
-=========================================== */
-.tabbar{
-  position:fixed; bottom:0; left:0; right:0;
-  height:70px; z-index:9990;
-  background:var(--panel);
-  border-top:1px solid var(--border);
-  display:flex; justify-content:space-around; align-items:center;
-}
-.tabbar a{
-  text-decoration:none;
-  color:var(--text);
-  text-align:center;
-  font-size:20px;
-  flex:1;
-}
-.tabbar small{ font-size:12px; display:block; }
-.tabbar a.active{ color:var(--gold-main); }
+.progress{height:10px;background:var(--border);border-radius:10px;overflow:hidden}
+.progress-bar{height:100%;background:var(--gold);width:0%}
 
-/* botão central */
-.action-btn{
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  width:58px; height:58px;
-  border:none; border-radius:30px;
-  color:#000; font-size:26px;
-  display:flex; align-items:center; justify-content:center;
-  margin-top:-35px;
-  box-shadow:0 0 12px rgba(0,0,0,.5);
-}
-
-/* ===========================================
-   CONTEÚDO
-=========================================== */
-.container{
-  padding:20px;
-  padding-top:80px;
-  padding-bottom:110px;
-}
-h1{
-  font-size:26px;
-  margin-bottom:8px;
-}
-
-/* filtros */
-.filters{
-  display:flex;
-  gap:8px;
-  margin:12px 0;
-  flex-wrap:wrap;
-}
-.filter{
-  padding:8px 12px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:999px;
-  font-size:12px;
-  opacity:.7;
-  cursor:pointer;
-}
-.filter.active{
-  opacity:1;
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  color:#000;
-  border:none;
-}
-
-/* período custom */
-.period{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  align-items:center;
-  margin-bottom:10px;
-}
-.period input{
-  padding:6px 8px;
+.badge{
+  display:inline-block;
+  padding:4px 8px;
   border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--panel);
-  color:var(--text);
-}
-
-.note{
-  font-size:13px;
-  opacity:.7;
-  margin-bottom:10px;
-}
-
-/* KPI cards */
-.kpi{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:18px 18px 16px;
-  margin-bottom:14px;
-}
-.kpi .label{
-  font-size:14px;
-  opacity:.8;
-}
-.kpi .value{
-  font-size:28px;
-  font-weight:700;
-  margin-top:4px;
-}
-.kpi.positivo{ border-left:4px solid #1DB954; }
-.kpi.negativo{ border-left:4px solid #ff3b30; }
-
-/* row cards */
-.row{
-  display:flex;
-  gap:14px;
-  flex-wrap:wrap;
-}
-.small{
-  flex:1;
-  min-width:200px;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:16px;
-}
-.small .title{
-  font-size:13px;
-  opacity:.75;
-}
-.small .value{
-  font-size:22px;
-  font-weight:700;
-  margin-top:6px;
-}
-.small .gastos{ color:#ff3b30; }
-
-/* ===========================================
-   GRÁFICOS
-=========================================== */
-.chart-card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:16px 14px 12px;
-  margin-top:16px;
-}
-.chart-title{
-  font-size:14px;
-  font-weight:600;
-  margin-bottom:4px;
-}
-.chart-legend{
-  font-size:11px;
-  opacity:.65;
-  margin-top:6px;
-}
-
-/* gráfico de barras vertical */
-.chart-bars{
-  display:flex;
-  align-items:flex-end;
-  gap:6px;
-  height:160px;
-  margin-top:10px;
-}
-.bar{
-  flex:1;
-  min-width:20px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-end;
-}
-.bar-value{
-  font-size:10px;
-  opacity:.8;
-  margin-bottom:4px;
-}
-.bar-inner{
-  width:100%;
-  border-radius:8px 8px 4px 4px;
-  background:linear-gradient(180deg,var(--gold-main2),var(--gold-main));
-  height:10%;
-  transition:height .4s ease;
-}
-.bar-label{
-  font-size:10px;
-  opacity:.7;
-  margin-top:4px;
-}
-
-/* gráfico horizontal gastos x lucro */
-.chart-bars-h{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.h-row{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-.h-label{
-  font-size:11px;
-  width:80px;
-  opacity:.8;
-}
-.h-bar-wrap{
-  flex:1;
-  height:14px;
-  border-radius:999px;
-  background:rgba(0,0,0,0.10);
-  overflow:hidden;
-}
-body.light .h-bar-wrap{
-  background:rgba(0,0,0,0.06);
-}
-.h-bar-inner{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  transition:width .4s ease;
-}
-.h-bar-inner.gastos{
-  background:linear-gradient(90deg,#ff7b7b,#ff3b30);
-}
-.h-bar-inner.lucroNeg{
-  background:linear-gradient(90deg,#666,#999);
-}
-.h-value{
-  font-size:11px;
-  min-width:70px;
-  text-align:right;
-}
-
-/* estado vazio de gráfico */
-.chart-empty{
+  background:var(--gold);
+  color:#000;
   font-size:12px;
-  opacity:.7;
-  margin-top:12px;
 }
 
+table{width:100%;border-collapse:collapse}
+td{padding:10px;border-bottom:1px solid var(--border)}
+
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:8px 0
+}
+.bottom-nav a{color:var(--text);font-size:20px;text-decoration:none}
+.center-btn{
+  width:58px;height:58px;border-radius:50%;
+  background:var(--gold);color:#000;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-top:-28px
+}
+
+.suporte-whatsapp{
+  margin:16px;
+  padding:10px 14px;
+  background:#25d366;
+  color:#fff;
+  border-radius:999px;
+  text-align:center;
+  font-weight:600;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
 </style>
-
-<link rel="manifest" href="/rf-drive-control/manifest.json">
-<meta name="theme-color" content="#fbbf24">
-
-<!-- iOS (Safari) -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="RF Driver">
-<link rel="apple-touch-icon" href="/rf-drive-control/icons/icon-192.png">
-
 </head>
 
 <body>
 
-<!-- BOTÕES SUPERIORES -->
-<div class="drawer-toggle gold" onclick="toggleDrawer()">☰</div>
-<div class="theme-toggle gold" onclick="toggleTheme()">🌓</div>
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
-<!-- MENU LATERAL -->
 <nav class="drawer" id="drawer">
-  <a href="/rf-drive-control/instalar-app.html">📲 Instalar App</a>
-  <a href="/rf-drive-control/index.html">🏠 Dashboard</a>
-  <a href="/rf-drive-control/entradas.html">💵 Caixa</a>
-  <a href="/rf-drive-control/resumo.html">📊 Resumo</a>
-  <a href="/rf-drive-control/calculadora.html">📟 Calculadora</a>
-  <a href="/rf-drive-control/planos.html">💎 Planos</a>
-  <a href="/rf-drive-control/perfil.html">👤 Perfil</a>
-  <a href="/rf-drive-control/recibo.html">📠 Recibo</a>
-  <a href="/rf-drive-control/manutencao.html">🛠 Manutenção</a>
+  <div class="close-btn" onclick="toggleDrawer()">
+    <i class="fa fa-xmark"></i>
+  </div>
+
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Instalar App</a>
+  <a href="index.html"><i class="fa fa-chart-line"></i> Dashboard</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos de Viagens</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Caixa</a>
+  <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira</a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i> Despesas Pessoais</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
+  <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
+  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a class="suporte-whatsapp"
+     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
+     target="_blank">
+    <i class="fa fa-whatsapp"></i> Suporte WhatsApp
+  </a>
 </nav>
 
-<div class="container">
-  <h1 class="gold">Dashboard</h1>
-  <div class="note">Resumo financeiro rápido do seu desempenho.</div>
+<h1 style="color:var(--gold)">Dashboard</h1>
 
-  <!-- FILTROS DE PERÍODO -->
-  <div class="filters">
-    <button class="filter active" id="btnHoje">Hoje</button>
-    <button class="filter" id="btnSemana">Semana</button>
-    <button class="filter" id="btnMes">Mês</button>
-    <button class="filter" id="btnPers">Período</button>
-  </div>
-
-  <div class="period" id="rangePers" style="display:none">
-    <input type="date" id="ini">
-    <input type="date" id="fim">
-    <button class="filter" id="applyPers">Aplicar</button>
-  </div>
-
-  <div class="note" id="periodNote">Mostrando dados de hoje</div>
-
-  <!-- LUCRO -->
-  <div id="cardLucro" class="kpi">
-    <div class="label">Lucro Estimado</div>
-    <div id="lucroValor" class="value">R$ 0,00</div>
-  </div>
-
-  <!-- CARDS GERAIS -->
-  <div class="row">
-    <div class="small">
-      <div class="title">Gastos</div>
-      <div id="gastos" class="value gastos">R$ 0,00</div>
-    </div>
-    <div class="small">
-      <div class="title">Faturado</div>
-      <div id="fat" class="value">R$ 0,00</div>
-    </div>
-  </div>
-
-  <!-- GRÁFICO DE BARRAS: FATURAMENTO POR DIA -->
-  <div class="chart-card">
-    <div class="chart-title">Faturamento por dia</div>
-    <div id="chartFaturamento" class="chart-bars"></div>
-    <div class="chart-legend">Baseado nas entradas do período selecionado.</div>
-  </div>
-
-  <!-- GRÁFICO HORIZONTAL: GASTOS x FATURAMENTO x LUCRO -->
-  <div class="chart-card">
-    <div class="chart-title">Gastos x Faturamento x Lucro</div>
-    <div id="chartGastosLucro" class="chart-bars-h"></div>
-    <div class="chart-legend">Comparativo simples para enxergar o equilíbrio financeiro.</div>
-  </div>
-
+<div class="kpi">
+  <div>Lucro do Dia</div>
+  <div id="lucroValor">R$ 0,00</div>
 </div>
 
-<!-- MENU INFERIOR -->
-<div class="tabbar">
-  <a class="active gold" href="index.html">🏠<small>Home</small></a>
-  <a href="entradas.html">💵<small>Caixa</small></a>
-  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
-  <a href="resumo.html">📊<small>Resumo</small></a>
-  <a href="planos.html">💎<small>Planos</small></a>
+<div class="kpi">
+  <div>Meta do Dia</div>
+  <div class="progress"><div class="progress-bar" id="meta"></div></div>
 </div>
+
+<div class="small">
+  <div>Faturado</div>
+  <div id="fat" style="color:var(--green)">R$ 0,00</div>
+</div>
+
+<div class="small">
+  <div>Gastos</div>
+  <div id="gastos" style="color:var(--red)">R$ 0,00</div>
+</div>
+
+<!-- 🔥 NOVO BLOCO: AGENDAMENTOS -->
+<div class="card">
+  <h3>Próximas Viagens</h3>
+  <table>
+    <tbody id="listaAgendamentos"></tbody>
+  </table>
+</div>
+
+<div class="small" id="timestamp"></div>
+
+<nav class="bottom-nav">
+  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i></a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i></a>
+
+  <!-- BOTÃO CENTRAL (DASHBOARD) -->
+  <a href="index.html" class="center-btn">
+    <i class="fa fa-house"></i>
+  </a>
+
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+</nav>
 
 <script>
-/* ============ MENU LATERAL ============ */
-function toggleDrawer(){
-  document.getElementById('drawer').classList.toggle('open');
-}
-
-/* ============ TEMA ============ */
-function toggleTheme(){
-  const b=document.body;
-  const newTheme=b.classList.contains('dark')?'light':'dark';
-  b.classList.remove('dark','light');
-  b.classList.add(newTheme);
-  localStorage.setItem('theme',newTheme);
-}
 (function(){
-  const th=localStorage.getItem('theme')||'dark';
-  document.body.classList.add(th);
+ document.body.dataset.theme=localStorage.getItem("tema")||"dark";
 })();
 
-/* ============ PLANO E BLOQUEIO ============ */
+function toggleTheme(){
+ const t=document.body.dataset.theme==="light"?"dark":"light";
+ document.body.dataset.theme=t;
+ localStorage.setItem("tema",t);
+}
+function toggleDrawer(){drawer.classList.toggle("open")}
 
-function getPlano(){
-  return (localStorage.getItem("planoAtivo") || "FREEMIUM").toUpperCase();
+function atualizarDashboard(){
+ const entradas=Number(localStorage.getItem("rf_caixa_total_entradas"))||0;
+ const saidas=Number(localStorage.getItem("rf_caixa_total_saidas"))||0;
+ const lucro=entradas-saidas;
+
+ lucroValor.textContent=lucro.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+ fat.textContent=entradas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+ gastos.textContent=saidas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+ const metaDia=Number(localStorage.getItem("rf_meta_diaria"))||250;
+ meta.style.width=Math.min((entradas/metaDia)*100,100)+"%";
+
+ timestamp.textContent="Atualizado em "+new Date().toLocaleTimeString("pt-BR");
+ carregarAgendamentos();
 }
 
-function validarAcessoDashboard(){
-  const p = getPlano();
+function carregarAgendamentos(){
+ const lista=document.getElementById("listaAgendamentos");
+ const ag=JSON.parse(localStorage.getItem("rf_agendamentos"))||[];
 
-  // Trial sempre pode
-  if(p === "TRIAL") return;
+ if(!ag.length){
+   lista.innerHTML="<tr><td>Nenhuma viagem agendada</td></tr>";
+   return;
+ }
 
-  // Planos pagos (novos nomes)
-  if(["MENSAL","SEMESTRAL","VITALICIO"].includes(p)) return;
+ const hoje=new Date().toISOString().split("T")[0];
 
-  // Freemium não permite
-  alert("O Dashboard é liberado apenas em planos pagos.");
-  location.href = "planos.html";
+ lista.innerHTML=ag
+  .filter(a=>a.data>=hoje)
+  .slice(0,5)
+  .map(a=>`
+   <tr>
+     <td>
+       <strong>${a.data.split("-").reverse().join("/")}</strong> ${a.hora}<br>
+       ${a.origem} → ${a.destino}<br>
+       <span class="badge">${a.tipo}</span>
+     </td>
+     <td>
+       ${a.valor.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+     </td>
+   </tr>
+  `).join("");
 }
 
-validarAcessoDashboard();
-
-/* ============ STATE ============ */
-let periodo='hoje';
-let ini=null,fim=null;
-
-function load(){
-  return JSON.parse(localStorage.getItem('entradasSaidas')||'[]');
-}
-function norm(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
-
-/* regra de bloqueio por plano nos filtros */
-function block(p){
-  const pl = plano();
-  if(p==='semana' && pl==='FREE'){
-    alert('Semana disponível a partir do Básico.');
-    location.href='planos.html'; return true;
-  }
-  if((p==='mes' || p==='pers') && (pl==='FREE' || pl==='MENSAL')){
-    alert('Mês e Período disponíveis a partir do Premium.');
-    location.href='planos.html'; return true;
-  }
-  return false;
-}
-
-/* filtro por período */
-function ok(r){
-  const d = new Date(r.criadoEm);
-  if(isNaN(d)) return true;
-  const h = norm(new Date());
-  const dn = norm(d);
-
-  if(periodo==='hoje') return dn.getTime()===h.getTime();
-
-  if(periodo==='semana'){
-    const lim=new Date(h);
-    lim.setDate(lim.getDate()-6);
-    return dn>=lim && dn<=h;
-  }
-
-  if(periodo==='mes'){
-    return d.getMonth()===h.getMonth() && d.getFullYear()===h.getFullYear();
-  }
-
-  if(periodo==='pers'){
-    if(!ini || !fim) return true;
-    const d0=norm(ini), d1=norm(fim);
-    return dn>=d0 && dn<=d1;
-  }
-  return true;
-}
-
-/* ============ RENDER PRINCIPAL ============ */
-function render(){
-  const regs = load().filter(ok);
-  let entr=0, said=0;
-
-  regs.forEach(r=>{
-    if(r.tipo==='entrada') entr += Number(r.valor || r.valorBruto || 0);
-    else said += Number(r.valor || 0);
-  });
-
-  document.getElementById('fat').innerText = fmt(entr);
-  document.getElementById('gastos').innerText = fmt(said);
-
-  const lucro = entr - said;
-  document.getElementById('lucroValor').innerText = fmt(lucro);
-
-  const card = document.getElementById('cardLucro');
-  card.classList.remove('positivo','negativo');
-  card.classList.add(lucro>=0 ? 'positivo' : 'negativo');
-
-  // ATUALIZA OS DOIS GRÁFICOS
-  updateCharts(regs, entr, said, lucro);
-}
-
-function fmt(v){
-  return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-}
-
-/* ============ GRÁFICOS ============ */
-
-// coordena os dois gráficos
-function updateCharts(regs, entr, said, lucro){
-  renderChartFaturamento(regs);
-  renderChartGastosLucro(entr, said, lucro);
-}
-
-/* gráfico de barras verticais: faturamento por dia */
-function renderChartFaturamento(regs){
-  const box = document.getElementById('chartFaturamento');
-  if(!box) return;
-
-  const map = {};
-
-  regs.forEach(r=>{
-    // detectar tipo de movimentação
-    const tipo = (r.tipo || r.movimento || r.categoria || '').toLowerCase();
-    if(tipo.indexOf('entrada')===-1) return;
-
-    // detectar campo de data
-    const rawDate = r.criadoEm || r.data || r.dataHora || r.dataMov || r.registro || null;
-    const d = new Date(rawDate);
-    if(isNaN(d)) return;
-
-    const key = d.toISOString().slice(0,10); // yyyy-mm-dd
-    map[key] = (map[key]||0) + Number(r.valor||r.valorBruto||0);
-  });
-
-  const entries = Object.entries(map).sort((a,b)=>a[0].localeCompare(b[0]));
-  if(entries.length===0){
-    box.innerHTML = '<div class="chart-empty">Sem dados de faturamento neste período.</div>';
-    return;
-  }
-
-  const max = Math.max(...entries.map(e=>e[1])) || 1;
-  let html = '';
-
-  entries.forEach(([dStr,val])=>{
-    const d = new Date(dStr);
-    const dia = String(d.getDate()).padStart(2,'0');
-    const pct = Math.max(8,(val/max)*100);
-
-    html += `
-    <div class="bar">
-      <div class="bar-value">${fmt(val)}</div>
-      <div class="bar-inner" style="height:${pct}%"></div>
-      <div class="bar-label">${dia}</div>
-    </div>
-    `;
-  });
-
-  box.innerHTML = html;
-}
-
-/* gráfico horizontal: gastos x faturamento x lucro */
-function renderChartGastosLucro(entr, said, lucro){
-  const box = document.getElementById('chartGastosLucro');
-  if(!box) return;
-
-  if(entr===0 && said===0){
-    box.innerHTML = '<div class="chart-empty">Sem dados suficientes para comparação.</div>';
-    return;
-  }
-
-  const base = Math.max(entr, said, Math.abs(lucro)) || 1;
-
-  function row(label, valor, extraClass){
-    const pct = Math.max(6,(Math.abs(valor)/base)*100);
-    const cls = extraClass ? ' '+extraClass : '';
-    return `
-      <div class="h-row">
-        <div class="h-label">${label}</div>
-        <div class="h-bar-wrap">
-          <div class="h-bar-inner${cls}" style="width:${pct}%"></div>
-        </div>
-        <div class="h-value">${fmt(valor)}</div>
-      </div>
-    `;
-  }
-
-  const lucroClass = lucro<0 ? 'lucroNeg' : '';
-  box.innerHTML =
-    row('Faturado', entr, '') +
-    row('Gastos', said, 'gastos') +
-    row('Lucro', lucro, lucroClass);
-}
-
-/* ============ UI DOS FILTROS ============ */
-document.getElementById('btnHoje').onclick = ()=>{
-  periodo='hoje'; updateUI(); render();
-};
-document.getElementById('btnSemana').onclick = ()=>{
-  if(block('semana')) return;
-  periodo='semana'; updateUI(); render();
-};
-document.getElementById('btnMes').onclick = ()=>{
-  if(block('mes')) return;
-  periodo='mes'; updateUI(); render();
-};
-document.getElementById('btnPers').onclick = ()=>{
-  if(block('pers')) return;
-  periodo='pers'; updateUI(); render();
-};
-
-document.getElementById('applyPers').onclick = ()=>{
-  const iniV = document.getElementById('ini').value;
-  const fimV = document.getElementById('fim').value;
-  ini = iniV ? new Date(iniV) : null;
-  fim = fimV ? new Date(fimV) : null;
-  if(!ini || !fim){ alert('Selecione as duas datas.'); return; }
-  if(ini > fim){ alert('Data inicial maior que a final.'); return; }
-  periodo='pers'; updateUI(); render();
-};
-
-function updateUI(){
-  ['btnHoje','btnSemana','btnMes','btnPers'].forEach(id=>{
-    document.getElementById(id).classList.remove('active');
-  });
-  if(periodo==='hoje') document.getElementById('btnHoje').classList.add('active');
-  if(periodo==='semana') document.getElementById('btnSemana').classList.add('active');
-  if(periodo==='mes') document.getElementById('btnMes').classList.add('active');
-  if(periodo==='pers') document.getElementById('btnPers').classList.add('active');
-
-  document.getElementById('rangePers').style.display = (periodo==='pers') ? 'flex':'none';
-
-  const note = document.getElementById('periodNote');
-  if(periodo==='hoje') note.innerText='Mostrando dados de hoje';
-  if(periodo==='semana') note.innerText='Últimos 7 dias';
-  if(periodo==='mes') note.innerText='Mês atual';
-  if(periodo==='pers') note.innerText='Período selecionado';
-}
-
-/* inicialização */
-updateUI();
-render();
-</script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-      navigator.serviceWorker.register("service-worker.js")
-      .then(function (reg) {
-        console.log("Service Worker registrado:", reg.scope);
-      })
-      .catch(function (err) {
-        console.log("Erro ao registrar o Service Worker:", err);
-      });
-  });
-}
+atualizarDashboard();
 </script>
 
 </body>
