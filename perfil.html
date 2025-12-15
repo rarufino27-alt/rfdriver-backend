@@ -2,846 +2,267 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Perfil - RF Driver</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
-/* ==============================
-   GOLD THEME + DARK/LIGHT
-=================================*/
 :root{
-  --gold-dark:#d6b25f;
-  --gold-dark2:#e8d08a;
-
-  --gold-light:#90731b;
-  --gold-light2:#b08c2e;
-
-  --bg-dark:#0d0d0d;
-  --text-dark:#f4f4f4;
-  --card-dark:#161616;
-  --border-dark:#242424;
-
-  --bg-light:#f7f7f7;
-  --text-light:#222;
-  --card-light:#ffffff;
-  --border-light:#d6d6d6;
-
-  --radius:14px;
+  --gold:#f5c542;
+  --bg:#0d0d0d;
+  --text:#f4f4f4;
+  --card:#161616;
+  --border:#242424;
 }
-
-body.dark{
-  --bg:var(--bg-dark);
-  --text:var(--text-dark);
-  --card:var(--card-dark);
-  --border:var(--border-dark);
-  --gold-main:var(--gold-dark);
-  --gold-main2:var(--gold-dark2);
+body[data-theme="light"]{
+  --bg:#f4f4f4;
+  --text:#111;
+  --card:#fff;
+  --border:#ddd;
 }
-body.light{
-  --bg:var(--bg-light);
-  --text:var(--text-light);
-  --card:var(--card-light);
-  --border:var(--border-light);
-  --gold-main:var(--gold-light);
-  --gold-main2:var(--gold-light2);
-}
-
-*{ box-sizing:border-box; font-family:Inter,system-ui; }
-
+*{box-sizing:border-box;font-family:Inter}
 body{
-  margin:0; background:var(--bg); color:var(--text);
-  padding-top:70px; padding-bottom:100px; transition:.3s;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  padding:70px 16px 150px;
 }
 
-/*********************************
- DRAWER
-**********************************/
+/* BOTÕES TOPO */
+.drawer-toggle,.theme-toggle{
+  position:fixed;top:15px;font-size:22px;color:var(--gold);
+  cursor:pointer;z-index:20
+}
+.drawer-toggle{left:15px}
+.theme-toggle{right:15px}
+
+/* DRAWER */
 .drawer{
-  position:fixed; top:0; left:-260px;
-  width:260px; height:100%;
-  background:var(--card);
-  transition:left .3s;
-  z-index:9999; padding-top:70px;
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:15
 }
-.drawer.open{left:0;}
+.drawer.open{left:0}
 .drawer a{
-  display:block; padding:15px 22px;
-  border-bottom:1px solid var(--border);
-  text-decoration:none; color:var(--text);
+  display:flex;gap:12px;padding:14px 20px;
+  color:var(--text);text-decoration:none;
+  border-bottom:1px solid var(--border)
+}
+.suporte-whatsapp{
+  margin:16px;padding:10px 14px;background:#25d366;
+  color:#fff;border-radius:999px;text-align:center;
+  font-weight:600;text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:8px
 }
 
-.drawer-toggle{
-  position:fixed; left:15px; top:15px;
-  font-size:24px; cursor:pointer; z-index:10000;
-  background:var(--gold-main);
-  padding:6px 10px; border-radius:10px; color:#000;
-}
+/* HEADER */
+.header{text-align:center;margin-bottom:12px}
+.header h1{margin:0;font-size:26px;color:var(--gold)}
+.header small{opacity:.7}
 
-/*********************************
- THEME BTN
-**********************************/
-.theme-toggle{
-  position:fixed; right:15px; top:15px;
-  font-size:22px; cursor:pointer; z-index:10001;
-  background:var(--card); padding:6px 10px; border-radius:10px;
-}
-
-/*********************************
- TABBAR
-**********************************/
-.tabbar{
-  position:fixed; bottom:0; left:0; right:0;
-  height:70px; background:var(--card);
-  border-top:1px solid var(--border);
-  display:flex; justify-content:space-around; align-items:center;
-  z-index:9990;
-}
-.tabbar a{
-  text-decoration:none; text-align:center;
-  font-size:20px; flex:1; color:var(--text);
-}
-.tabbar small{font-size:12px; display:block;}
-
-.action-btn{
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  width:58px; height:58px; border:none; border-radius:30px;
-  display:flex; justify-content:center; align-items:center;
-  margin-top:-35px; color:#000; font-size:26px;
-}
-
-/*********************************
- PAGE + TABS
-**********************************/
-h1{margin:0; font-size:28px; font-weight:800; color:var(--gold-main);}
-.sub{font-size:14px; opacity:.8;}
-.page-header{padding:0 20px 10px;}
-
-.container{padding:0 20px 20px;}
-
-.tabs{display:flex; gap:10px; margin-top:10px;}
+/* TABS */
+.tabs{display:flex;gap:10px;margin-bottom:12px}
 .tab-btn{
-  flex:1; padding:10px; border-radius:999px;
-  border:1px solid var(--border); cursor:pointer;
-  text-align:center; font-weight:700;
+  flex:1;padding:10px;border-radius:999px;
+  background:var(--card);border:1px solid var(--border);
+  text-align:center;font-weight:600;cursor:pointer
 }
-.tab-btn.active{
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  border:none; color:#000;
-}
+.tab-btn.active{background:var(--gold);color:#000;border:none}
 
-/*********************************
- CARDS + FORM
-**********************************/
+/* CARD */
 .card{
-  background:var(--card); border:1px solid var(--border);
-  border-radius:var(--radius); padding:18px; margin-top:18px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:15px
 }
-
-label{display:block; margin-top:10px; font-size:13px;}
+label{font-size:13px;margin-top:10px;display:block}
 input,select,textarea{
-  width:100%; margin-top:6px; padding:11px;
-  border-radius:10px; border:1px solid var(--border);
-  background:var(--card); color:var(--text);
+  width:100%;padding:11px;margin-top:6px;
+  border-radius:10px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text)
 }
-textarea{min-height:90px; resize:vertical;}
-
+textarea{min-height:90px}
 button{
-  padding:11px 14px; border-radius:10px; border:none;
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  font-weight:700; margin-top:14px; cursor:pointer; color:#000;
+  width:100%;padding:12px;margin-top:14px;
+  background:var(--gold);border:none;
+  border-radius:10px;font-weight:700;cursor:pointer
 }
 
-.row{display:flex; flex-wrap:wrap; gap:10px;}
-.col{flex:1; min-width:120px;}
-
-/************
- PREVIEW
-*************/
-.photo-preview{
-  width:100px; height:100px; border-radius:50%;
-  object-fit:cover; background:var(--border); margin-top:8px;
-}
-.vehicle-photo{
-  width:90px; height:60px; border-radius:10px;
-  object-fit:cover; background:var(--border);
-}
-.qr-preview{
-  width:120px; height:120px; border-radius:14px;
-  object-fit:cover; background:var(--border);
-}
-
-/**************
- VEHICLE LIST
-**************/
+/* VEÍCULOS */
 .vehicle-card{
-  background:var(--card); border:1px solid var(--border);
-  border-radius:12px; padding:12px; margin-top:10px;
-  display:flex; gap:12px; align-items:center;
+  display:flex;gap:12px;align-items:center;
+  padding:12px;border-radius:12px;
+  border:1px solid var(--border);margin-top:10px
 }
-.vehicle-card img{width:70px; height:50px; object-fit:cover; border-radius:10px;}
-.vehicle-card .v-info{flex:1; font-size:13px;}
-.vehicle-card .v-ops{display:flex; flex-direction:column; gap:8px;}
-.vehicle-card button{margin-top:0; padding:6px 10px; font-size:13px;}
-.vehicle-card button.danger{
-  background:var(--border); color:#900; font-weight:700;
+.vehicle-card img{
+  width:70px;height:50px;object-fit:cover;border-radius:8px
+}
+.vehicle-card .v-info{flex:1;font-size:13px}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;padding:8px 0
+}
+.bottom-nav a{color:var(--text);font-size:20px;text-decoration:none}
+.center-btn{
+  background:var(--gold);color:#000;width:58px;height:58px;
+  border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:24px;margin-top:-30px
 }
 </style>
 </head>
 
-<body class="light">
-<!-- BOTÕES TOPO -->
-<div class="drawer-toggle" onclick="toggleDrawer()">☰</div>
-<div id="toggleTheme" class="theme-toggle" onclick="toggleTheme()">🌓</div>
+<body>
 
-<!-- DRAWER -->
+<div class="drawer-toggle" onclick="toggleDrawer()">
+  <i class="fa fa-bars"></i>
+</div>
+<div class="theme-toggle" onclick="toggleTheme()">
+  <i class="fa fa-moon"></i>
+</div>
+
 <nav class="drawer" id="drawer">
-  <a href="index.html">🏠 Dashboard</a>
-  <a href="entradas.html">💵 Caixa</a>
-  <a href="resumo.html">📊 Resumo</a>
-  <a href="calculadora.html">📟 Calculadora</a>
-  <a href="planos.html">💎 Planos</a>
-  <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo.html">📠 Emissão de Recibo</a>
-  <a href="manutencao.html">🛠 Manutenção</a>
+  <div class="close-btn" onclick="toggleDrawer()">
+    <i class="fa fa-xmark"></i>
+  </div>
+
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Instalar App</a>
+  <a href="index.html"><i class="fa fa-chart-line"></i> Dashboard</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos de Viagens</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Caixa</a>
+  <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira</a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i> Despesas Pessoais</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
+  <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
+  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a class="suporte-whatsapp"
+     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
+     target="_blank">
+    <i class="fa fa-whatsapp"></i> Suporte WhatsApp
+  </a>
 </nav>
 
-<div class="page-header">
+<div class="header">
   <h1>Perfil</h1>
-  <div class="sub">Gerencie seus dados pessoais, veículos e informações financeiras.</div>
-
-  <div class="tabs">
-    <div id="tabPessoal" class="tab-btn active">Pessoal</div>
-    <div id="tabVeiculos" class="tab-btn">Veículos</div>
-    <div id="tabFinanceiro" class="tab-btn">Financeiro</div>
-  </div>
+  <small>Dados pessoais, veículos e financeiro</small>
 </div>
 
-<div class="container">
-
-  <!-- ======================
-       ABA PESSOAL
-  ========================== -->
- <section id="abaPessoal" class="card">
-  <h2>Dados Pessoais</h2>
-
-  <label>Foto do motorista</label>
-  <img id="fotoPessoalPreview" class="photo-preview" alt="Foto do motorista"/>
-  <input id="fotoPessoalInput" type="file" accept="image/*"/>
-
-  <div class="row">
-    <div class="col">
-      <label>Nome completo</label>
-      <input id="pNome" type="text" placeholder="Seu nome completo">
-    </div>
-    <div class="col">
-      <label>Telefone</label>
-      <input id="pTelefone" type="tel" placeholder="(00) 00000-0000">
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col">
-      <label>CPF</label>
-      <input id="pCpf" type="text" placeholder="000.000.000-00">
-    </div>
-    <div class="col">
-      <label>Cidade</label>
-      <input id="pCidade" type="text" placeholder="Cidade">
-    </div>
-    <div class="col">
-      <label>Estado</label>
-      <input id="pEstado" type="text" placeholder="UF">
-    </div>
-  </div>
-
-  <button id="btnSalvarPessoal">Salvar dados pessoais</button>
-
-  <!-- NOVO BLOCO -->
-  <div class="card" style="margin-top:20px;">
-    <h3>Dados Cadastrais</h3>
-
-    <label>Email</label>
-    <input id="cEmail" type="email">
-
-    <label>Confirmar Email</label>
-    <input id="cEmail2" type="email">
-
-    <label>Celular</label>
-    <input id="cCel" type="tel">
-
-    <label>Confirmar Celular</label>
-    <input id="cCel2" type="tel">
-
-    <label>CPF (somente leitura)</label>
-    <input id="cCpf" type="text" readonly>
-
-    <label>Nova senha</label>
-    <input id="cSenha" type="password">
-
-    <label>Confirmar nova senha</label>
-    <input id="cSenha2" type="password">
-
-    <button onclick="salvarCadastroPerfil()">Salvar alterações</button>
-  </div>
-
-</section>
-
-  <!-- ======================
-       ABA VEÍCULOS
-  ========================== -->
-  <section id="abaVeiculos" class="card" style="display:none;">
-    <h2>Veículos</h2>
-
-    <h3 style="margin-top:0;font-size:18px;">Cadastro de veículo</h3>
-
-    <!-- hidden id para edição -->
-    <input type="hidden" id="vEditId"/>
-
-    <div class="row">
-      <div class="col">
-        <label>Tipo</label>
-        <select id="vTipo">
-          <option value="carro">Carro</option>
-          <option value="moto">Moto</option>
-        </select>
-      </div>
-      <div class="col">
-        <label>Foto do veículo</label>
-        <input id="vFotoInput" type="file" accept="image/*"/>
-        <img id="vFotoPreview" class="vehicle-photo"/>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label>Marca</label>
-        <input id="vMarca" type="text" placeholder="Ex: Toyota">
-      </div>
-      <div class="col">
-        <label>Modelo</label>
-        <input id="vModelo" type="text" placeholder="Ex: Corolla">
-      </div>
-      <div class="col">
-        <label>Ano</label>
-        <input id="vAno" type="text" placeholder="Ex: 2020">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label>Cor</label>
-        <input id="vCor" type="text" placeholder="Ex: Preto">
-      </div>
-      <div class="col">
-        <label>Placa</label>
-        <input id="vPlaca" type="text" placeholder="ABC-1D23">
-      </div>
-      <div class="col">
-        <label>KM Atual</label>
-        <input id="vKm" type="number" placeholder="0">
-      </div>
-    </div>
-
-    <button id="btnSalvarVeiculo">Salvar veículo</button>
-
-    <h3 style="margin-top:20px;font-size:18px;">Meus veículos</h3>
-    <div id="listaVeiculos"></div>
-  </section>
-
-
-  <!-- ======================
-       ABA FINANCEIRO
-  ========================== -->
-  <section id="abaFinanceiro" class="card" style="display:none;">
-    <h2>Cadastro Financeiro</h2>
-
-    <div class="row">
-      <div class="col">
-        <label>Nome do titular</label>
-        <input id="fTitular" type="text" placeholder="Nome do titular">
-      </div>
-      <div class="col">
-        <label>Banco (opcional)</label>
-        <input id="fBanco" type="text" placeholder="Ex: Nubank, Itaú...">
-      </div>
-      <div class="col">
-        <label>Tipo de conta</label>
-        <select id="fTipoConta">
-          <option value="">Não informado</option>
-          <option value="corrente">Corrente</option>
-          <option value="poupanca">Poupança</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label>Tipo de chave PIX</label>
-        <select id="fTipoPix">
-          <option value="">Nenhum</option>
-          <option value="cpf">CPF</option>
-          <option value="telefone">Telefone</option>
-          <option value="email">E-mail</option>
-          <option value="aleatoria">Aleatória</option>
-        </select>
-      </div>
-      <div class="col">
-        <label>Chave PIX (opcional)</label>
-        <input id="fChavePix" type="text" placeholder="Digite sua chave PIX">
-      </div>
-    </div>
-
-    <label>QR Code para recebimento (opcional)</label>
-    <input id="fQrInput" type="file" accept="image/*"/>
-    <img id="fQrPreview" class="qr-preview"/>
-
-    <label>Observação</label>
-    <textarea id="fObs" placeholder="Ex: Aceito apenas PIX"></textarea>
-
-    <button id="btnSalvarFinanceiro">Salvar dados financeiros</button>
-  </section>
-
-</div> <!-- ./container -->
-
-
-<!-- TABBAR -->
-<div class="tabbar">
-  <a href="index.html">🏠<small>Home</small></a>
-  <a href="entradas.html">💵<small>Caixa</small></a>
-  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
-  <a href="resumo.html">📊<small>Resumo</small></a>
-  <a class="active" href="perfil.html">👤<small>Perfil</small></a>
+<div class="tabs">
+  <div class="tab-btn active" data-tab="pessoal">Pessoal</div>
+  <div class="tab-btn" data-tab="veiculos">Veículos</div>
+  <div class="tab-btn" data-tab="financeiro">Financeiro</div>
 </div>
-<script src="planos.js"></script>
+
+<!-- ===== ABA PESSOAL ===== -->
+<div id="pessoal" class="card">
+  <label>Nome</label>
+  <input id="pNome">
+  <label>Telefone</label>
+  <input id="pTelefone">
+  <label>CPF</label>
+  <input id="pCpf">
+  <label>Cidade / Estado</label>
+  <input id="pCidade">
+  <button onclick="salvarPessoal()">Salvar dados</button>
+</div>
+
+<!-- ===== ABA VEÍCULOS ===== -->
+<div id="veiculos" class="card" style="display:none">
+  <label>Marca</label>
+  <input id="vMarca">
+  <label>Modelo</label>
+  <input id="vModelo">
+  <button onclick="salvarVeiculo()">Adicionar veículo</button>
+  <div id="listaVeiculos"></div>
+</div>
+
+<!-- ===== ABA FINANCEIRO ===== -->
+<div id="financeiro" class="card" style="display:none">
+  <label>Banco</label>
+  <input id="fBanco">
+  <label>Chave PIX</label>
+  <input id="fChavePix">
+  <button onclick="salvarFinanceiro()">Salvar financeiro</button>
+</div>
+
+<nav class="bottom-nav">
+  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i></a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i></a>
+
+  <!-- BOTÃO CENTRAL (DASHBOARD) -->
+  <a href="index.html" class="center-btn">
+    <i class="fa fa-house"></i>
+  </a>
+
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+</nav>
+
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-
-  /* ===============================
-     BLOQUEIO POR PLANO
-  ================================== */
-  function plano(){
-    try{ return getPlano(); }catch(e){}
-    return (localStorage.getItem('planoAtual')||'free').toLowerCase();
-  }
-
-(function bloquearPerfil(){
-  const p = getPlano();
-
-  const liberados = ["TRIAL","MENSAL","SEMESTRAL","VITALICIO"];
-
-  if(liberados.includes(p)) return;
-
-  alert("A página Perfil é liberada apenas em planos pagos.");
-  location.href = "planos.html";
+/* TEMA */
+(function(){
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark"
 })();
-
-  /* ===============================
-     HELPERS
-  ================================== */
-  const $ = id => document.getElementById(id);
-
-  /* ===============================
-     DRAWER
-  ================================== */
-  window.toggleDrawer = function(){
-    const d = $("drawer");
-    if(d) d.classList.toggle("open");
-  };
-
-  /* ===============================
-     THEME
-  ================================== */
-  window.toggleTheme = function(){
-    const isDark = document.body.classList.contains("dark");
-    if(isDark){
-       document.body.classList.remove("dark");
-       document.body.classList.add("light");
-       localStorage.setItem("theme","light");
-       const t = $("toggleTheme");
-       if(t) t.innerText="🌙";
-    } else {
-       document.body.classList.add("dark");
-       document.body.classList.remove("light");
-       localStorage.setItem("theme","dark");
-       const t = $("toggleTheme");
-       if(t) t.innerText="☀️";
-    }
-  };
-
-  // inicia tema salvo
-  (function(){
-    const saved = localStorage.getItem("theme") || "light";
-    if(saved==="dark"){
-      document.body.classList.add("dark");
-      const t = $("toggleTheme");
-      if(t) t.innerText="☀️";
-    } else {
-      document.body.classList.add("light");
-      const t = $("toggleTheme");
-      if(t) t.innerText="🌙";
-    }
-  })();
-
-  /* ===============================
-     TROCA DE ABAS
-  ================================== */
-  const abaPessoal    = $("abaPessoal");
-  const abaVeiculos   = $("abaVeiculos");
-  const abaFinanceiro = $("abaFinanceiro");
-
-  const tabPessoal    = $("tabPessoal");
-  const tabVeiculos   = $("tabVeiculos");
-  const tabFin        = $("tabFinanceiro");
-
-  function showAba(nome){
-    if(!abaPessoal || !abaVeiculos || !abaFinanceiro) return;
-    abaPessoal.style.display    = "none";
-    abaVeiculos.style.display   = "none";
-    abaFinanceiro.style.display = "none";
-
-    if(tabPessoal)  tabPessoal.classList.remove("active");
-    if(tabVeiculos) tabVeiculos.classList.remove("active");
-    if(tabFin)      tabFin.classList.remove("active");
-
-    if(nome==="pessoal" && abaPessoal){
-      abaPessoal.style.display="block";
-      if(tabPessoal) tabPessoal.classList.add("active");
-    }
-    if(nome==="veiculos" && abaVeiculos){
-      abaVeiculos.style.display="block";
-      if(tabVeiculos) tabVeiculos.classList.add("active");
-    }
-    if(nome==="financeiro" && abaFinanceiro){
-      abaFinanceiro.style.display="block";
-      if(tabFin) tabFin.classList.add("active");
-    }
-  }
-
-  if(tabPessoal)  tabPessoal.onclick  = ()=>showAba("pessoal");
-  if(tabVeiculos) tabVeiculos.onclick = ()=>showAba("veiculos");
-  if(tabFin)      tabFin.onclick      = ()=>showAba("financeiro");
-
-  /* ===============================
-     PREVIEW DE IMAGENS
-  ================================== */
-  function previewImage(input, imgEl){
-    if(!input || !imgEl) return;
-    const f = input.files[0];
-    if(!f) return;
-    const r = new FileReader();
-    r.onload = e => imgEl.src = e.target.result;
-    r.readAsDataURL(f);
-  }
-
-  const fotoPessoalInput = $("fotoPessoalInput");
-  const fotoPessoalPreview = $("fotoPessoalPreview");
-  if(fotoPessoalInput && fotoPessoalPreview){
-    fotoPessoalInput.addEventListener("change", e=>{
-      previewImage(e.target, fotoPessoalPreview);
-    });
-  }
-
-  const vFotoInput = $("vFotoInput");
-  const vFotoPreview = $("vFotoPreview");
-  if(vFotoInput && vFotoPreview){
-    vFotoInput.addEventListener("change", e=>{
-      previewImage(e.target, vFotoPreview);
-    });
-  }
-
-  const fQrInput = $("fQrInput");
-  const fQrPreview = $("fQrPreview");
-  if(fQrInput && fQrPreview){
-    fQrInput.addEventListener("change", e=>{
-      previewImage(e.target, fQrPreview);
-    });
-  }
-
-  /* ===============================
-     STORAGE KEYS / LOAD / SAVE
-  ================================== */
-  const KEY_PESSOAL    = "perfilPessoalRF";
-  const KEY_VEICULOS   = "veiculosRF";
-  const KEY_FINANCEIRO = "financeiroRF";
-
-  function load(k){
-    try{
-      const raw = localStorage.getItem(k);
-      return raw ? JSON.parse(raw) : null;
-    }catch(e){
-      return null;
-    }
-  }
-  function save(k,v){
-    localStorage.setItem(k, JSON.stringify(v));
-  }
-
-  /* ===============================
-     1) PERFIL PESSOAL
-  ================================== */
-  function salvarPessoal(){
-    const obj = {
-      foto:   fotoPessoalPreview ? (fotoPessoalPreview.src || "") : "",
-      nome:   $("pNome")?.value.trim()    || "",
-      tel:    $("pTelefone")?.value.trim()|| "",
-      cpf:    $("pCpf")?.value.trim()     || "",
-      cidade: $("pCidade")?.value.trim()  || "",
-      estado: $("pEstado")?.value.trim()  || "",
-    };
-    save(KEY_PESSOAL,obj);
-    alert("Dados pessoais salvos!");
-  }
-
-  function carregarPessoal(){
-    const obj = load(KEY_PESSOAL)||{};
-    if(obj.foto && fotoPessoalPreview) fotoPessoalPreview.src = obj.foto;
-    if(obj.nome && $("pNome")) $("pNome").value = obj.nome;
-    if(obj.tel && $("pTelefone")) $("pTelefone").value = obj.tel;
-    if(obj.cpf && $("pCpf")) $("pCpf").value = obj.cpf;
-    if(obj.cidade && $("pCidade")) $("pCidade").value = obj.cidade;
-    if(obj.estado && $("pEstado")) $("pEstado").value = obj.estado;
-  }
-
-  const btnSalvarPessoal = $("btnSalvarPessoal");
-  if(btnSalvarPessoal){
-    btnSalvarPessoal.onclick = salvarPessoal;
-  }
-
-function carregarCadastroPerfil(){
-   const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
-   if(!user) return;
-
-   cEmail.value = user.email || "";
-   cEmail2.value = user.email || "";
-   cCel.value = user.celular || "";
-   cCel2.value = user.celular || "";
-   cCpf.value = user.cpf || "";
+function toggleTheme(){
+  const t = document.body.dataset.theme==="light"?"dark":"light";
+  document.body.dataset.theme=t;
+  localStorage.setItem("tema",t);
+}
+function toggleDrawer(){
+  document.getElementById("drawer").classList.toggle("open");
 }
 
-carregarCadastroPerfil();
-
-  /* ===============================
-     2) VEÍCULOS múltiplos
-  ================================== */
-  function limparVeiculo(){
-    if($("vEditId")) $("vEditId").value="";
-    if($("vTipo")) $("vTipo").value="carro";
-    if($("vMarca")) $("vMarca").value="";
-    if($("vModelo")) $("vModelo").value="";
-    if($("vAno")) $("vAno").value="";
-    if($("vCor")) $("vCor").value="";
-    if($("vPlaca")) $("vPlaca").value="";
-    if($("vKm")) $("vKm").value="";
-    if(vFotoPreview) vFotoPreview.src="";
-  }
-
-  function salvarVeiculo(){
-    const vTipo   = $("vTipo");
-    const vMarca  = $("vMarca");
-    const vModelo = $("vModelo");
-    const vAno    = $("vAno");
-    const vCor    = $("vCor");
-    const vPlaca  = $("vPlaca");
-    const vKm     = $("vKm");
-    const vEditId = $("vEditId");
-
-    if(!vMarca?.value.trim() || !vModelo?.value.trim()){
-  alert("Marca e Modelo são obrigatórios!");
-  return;
-}
-
-    const tipo = vTipo ? vTipo.value : "carro";
-    const mk   = vMarca.value.trim();
-    const md   = vModelo.value.trim();
-    const ano  = vAno ? vAno.value.trim() : "";
-    const cor  = vCor ? vCor.value.trim() : "";
-    const pl   = vPlaca ? vPlaca.value.trim() : "";
-    const km   = vKm ? vKm.value.trim() : "";
-
-    if(!mk || !md){
-      alert("Marca e Modelo são obrigatórios!");
-      return;
-    }
-
-    const arr = load(KEY_VEICULOS)||[];
-
-    if(vEditId && vEditId.value){
-      const id = Number(vEditId.value);
-      const idx= arr.findIndex(x=>x.id===id);
-      if(idx>=0){
-        arr[idx] = {
-          ...arr[idx],
-          tipo,marca:mk,modelo:md,ano,cor,placa:pl,km,
-          foto: vFotoPreview ? (vFotoPreview.src || arr[idx].foto) : arr[idx].foto
-        };
-        save(KEY_VEICULOS,arr);
-        limparVeiculo();
-        renderVeiculos();
-        alert("Veículo atualizado!");
-      }
-      return;
-    }
-
-    const novo = {
-      id: Date.now(),
-      tipo,
-      marca:mk,modelo:md,ano,cor,placa:pl,km,
-      foto: vFotoPreview ? (vFotoPreview.src || "") : ""
-    };
-    arr.push(novo);
-    save(KEY_VEICULOS,arr);
-    limparVeiculo();
-    renderVeiculos();
-    alert("Veículo salvo!");
-  }
-
-  function renderVeiculos(){
-    const box = $("listaVeiculos");
-    if(!box) return;
-    const arr = load(KEY_VEICULOS)||[];
-    box.innerHTML="";
-
-    if(!arr.length){
-      box.innerHTML = `<div style="opacity:.6;">Nenhum veículo cadastrado</div>`;
-      return;
-    }
-
-    arr.forEach(v=>{
-      const div=document.createElement("div");
-      div.className="vehicle-card";
-      div.innerHTML=`
-        <img src="${v.foto||''}">
-        <div class="v-info">
-          <strong>${v.tipo==="carro"?"🚗":"🏍"} ${v.marca} ${v.modelo}</strong><br>
-          Placa: ${v.placa||"-"}<br>
-          Ano: ${v.ano||"-"} • KM: ${v.km||"-"}
-        </div>
-        <div class="v-ops">
-          <button type="button" onclick="editarVeiculoPerfil(${v.id})">Editar</button>
-          <button type="button" class="danger" onclick="removerVeiculoPerfil(${v.id})">Remover</button>
-        </div>
-      `;
-      box.appendChild(div);
+/* TABS */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    ["pessoal","veiculos","financeiro"].forEach(id=>{
+      document.getElementById(id).style.display =
+        btn.dataset.tab===id?"block":"none";
     });
-  }
-
-  // exponho no window para funcionar no onclick
-  window.editarVeiculoPerfil = function(id){
-    const arr = load(KEY_VEICULOS)||[];
-    const v   = arr.find(x=>x.id===id);
-    if(!v) return;
-
-    if($("vEditId")) $("vEditId").value = v.id;
-    if($("vTipo")) $("vTipo").value     = v.tipo;
-    if($("vMarca")) $("vMarca").value   = v.marca;
-    if($("vModelo")) $("vModelo").value = v.modelo;
-    if($("vAno")) $("vAno").value       = v.ano;
-    if($("vCor")) $("vCor").value       = v.cor;
-    if($("vPlaca")) $("vPlaca").value   = v.placa;
-    if($("vKm")) $("vKm").value         = v.km;
-    if(vFotoPreview && v.foto) vFotoPreview.src = v.foto;
-
-    showAba("veiculos");
-    window.scrollTo({top:0,behavior:"smooth"});
   };
-
-  window.removerVeiculoPerfil = function(id){
-    if(!confirm("Confirma remover este veículo?"))return;
-    const arr = (load(KEY_VEICULOS)||[]).filter(v=>v.id!==id);
-    save(KEY_VEICULOS,arr);
-    renderVeiculos();
-  };
-
-  const btnSalvarVeiculo = $("btnSalvarVeiculo");
-  if(btnSalvarVeiculo){
-    btnSalvarVeiculo.onclick = salvarVeiculo;
-  }
-
-  /* ===============================
-     3) FINANCEIRO
-  ================================== */
-  function salvarFinanceiro(){
-    const obj = {
-      titular: $("fTitular")?.value.trim() || "",
-      banco: $("fBanco")?.value.trim() || "",
-      tipoConta: $("fTipoConta")?.value || "",
-      tipoPix: $("fTipoPix")?.value || "",
-      chavePix: $("fChavePix")?.value.trim() || "",
-      fotoQr: fQrPreview ? (fQrPreview.src || "") : "",
-      obs: $("fObs")?.value.trim() || ""
-    };
-    save(KEY_FINANCEIRO,obj);
-    alert("Financeiro salvo!");
-  }
-
-  function carregarFinanceiro(){
-    const f = load(KEY_FINANCEIRO)||{};
-    if(f.titular && $("fTitular")) $("fTitular").value=f.titular;
-    if(f.banco && $("fBanco")) $("fBanco").value=f.banco;
-    if(f.tipoConta && $("fTipoConta")) $("fTipoConta").value=f.tipoConta;
-    if(f.tipoPix && $("fTipoPix")) $("fTipoPix").value=f.tipoPix;
-    if(f.chavePix && $("fChavePix")) $("fChavePix").value=f.chavePix;
-    if(f.fotoQr && fQrPreview) fQrPreview.src=f.fotoQr;
-    if(f.obs && $("fObs")) $("fObs").value=f.obs;
-  }
-
-  const btnSalvarFinanceiro = $("btnSalvarFinanceiro");
-  if(btnSalvarFinanceiro){
-    btnSalvarFinanceiro.onclick = salvarFinanceiro;
-  }
-
-function salvarCadastroPerfil(){
-   const user = JSON.parse(localStorage.getItem("usuarioRF")||"null");
-   if(!user) return;
-
-   const email = cEmail.value.trim();
-   const email2 = cEmail2.value.trim();
-   const cel = cCel.value.trim();
-   const cel2 = cCel2.value.trim();
-   const senha = cSenha.value.trim();
-   const senha2 = cSenha2.value.trim();
-
-   if(!email || !cel){
-     alert("Preencha email e celular");
-     return;
-   }
-
-   if(email !== email2){
-     alert("Emails não conferem");
-     return;
-   }
-   if(cel !== cel2){
-     alert("Celular não confere");
-     return;
-   }
-   if(senha){
-      if(senha !== senha2){
-        alert("Senhas não conferem");
-        return;
-      }
-      user.senha = senha; // troca a senha
-   }
-
-   // atualiza os outros
-   user.email = email;
-   user.celular = cel;
-   // CPF mantém o mesmo, não mudar!
-
-   localStorage.setItem("usuarioRF", JSON.stringify(user));
-
-   alert("Dados atualizados!");
-}
-
-
-  /* ===============================
-     BOOT
-  ================================== */
-  carregarPessoal();
-  carregarFinanceiro();
-  renderVeiculos();
 });
+
+/* STORAGE */
+function salvarPessoal(){
+  localStorage.setItem("perfilPessoalRF",JSON.stringify({
+    nome:pNome.value,telefone:pTelefone.value,cpf:pCpf.value,cidade:pCidade.value
+  }));
+  alert("Dados salvos");
+}
+function salvarVeiculo(){
+  const arr = JSON.parse(localStorage.getItem("veiculosRF")||"[]");
+  arr.push({marca:vMarca.value,modelo:vModelo.value});
+  localStorage.setItem("veiculosRF",JSON.stringify(arr));
+  renderVeiculos();
+}
+function renderVeiculos(){
+  const arr = JSON.parse(localStorage.getItem("veiculosRF")||"[]");
+  listaVeiculos.innerHTML = arr.map(v=>`
+    <div class="vehicle-card">
+      <div class="v-info"><strong>${v.marca}</strong> ${v.modelo}</div>
+    </div>`).join("");
+}
+function salvarFinanceiro(){
+  localStorage.setItem("financeiroRF",JSON.stringify({
+    banco:fBanco.value,pix:fChavePix.value
+  }));
+  alert("Financeiro salvo");
+}
+renderVeiculos();
 </script>
+
 </body>
 </html>
