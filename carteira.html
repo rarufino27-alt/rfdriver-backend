@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carteira - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --gold:#f5c542; --bg:#0d0d0d; --text:#f4f4f4;
+  --card:#161616; --border:#242424;
+  --green:#1DB954; --red:#ff3b30;
+}
+body[data-theme="light"]{
+  --bg:#f4f4f4; --text:#111; --card:#fff; --border:#ddd;
+}
+*{box-sizing:border-box;font-family:Inter}
+body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
+.header{text-align:center;margin-bottom:10px}
+.header h1{margin:0;font-size:26px;color:var(--gold)}
+.header small{opacity:.7}
+.drawer-toggle,.theme-toggle{
+  position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:20
+}
+.drawer-toggle{left:15px}.theme-toggle{right:15px}
+.drawer{
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:15
+}
+.drawer.open{left:0}
+.drawer a{
+  display:flex;gap:12px;padding:14px 20px;
+  color:var(--text);text-decoration:none;border-bottom:1px solid var(--border)
+}
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:16px;margin-bottom:15px
+}
+input{
+  width:100%;padding:12px;margin-bottom:10px;
+  border-radius:10px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text)
+}
+.summary-row{
+  display:flex;justify-content:space-between;
+  font-weight:600;margin-bottom:6px
+}
+.progress{
+  width:100%;height:10px;border-radius:10px;
+  background:var(--border);overflow:hidden;margin-top:6px
+}
+.progress span{
+  display:block;height:100%;background:var(--gold)
+}
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;padding:8px 0
+}
+.bottom-nav a{color:var(--text);font-size:20px;text-decoration:none}
+.center-btn{
+  background:var(--gold);color:#000;width:58px;height:58px;
+  border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:24px;margin-top:-30px
+}
+
+.suporte-whatsapp{
+  margin:16px;
+  padding:10px 14px;
+  background:#25d366;
+  color:#fff;
+  border-radius:999px;
+  text-align:center;
+  font-weight:600;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="drawer-toggle" onclick="drawer.classList.toggle('open')">
+  <i class="fa fa-bars"></i>
+</div>
+<div class="theme-toggle" onclick="toggleTheme()">
+  <i class="fa fa-moon"></i>
+</div>
+
+<nav class="drawer" id="drawer">
+  <div class="close-btn" onclick="toggleDrawer()">
+    <i class="fa fa-xmark"></i>
+  </div>
+
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Instalar App</a>
+  <a href="index.html"><i class="fa fa-chart-line"></i> Dashboard</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos de Viagens</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Caixa</a>
+  <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira</a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i> Despesas Pessoais</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
+  <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
+  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a class="suporte-whatsapp"
+     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
+     target="_blank">
+    <i class="fa fa-whatsapp"></i> Suporte WhatsApp
+  </a>
+</nav>
+
+<div class="header">
+  <h1>Carteira</h1>
+  <small>Controle de Metas e Saldo</small>
+</div>
+
+<div class="card">
+  <h3>Metas</h3>
+  <input type="number" id="metaDiaria" placeholder="Meta diária (R$)">
+  <input type="number" id="metaMensal" placeholder="Meta mensal (R$)">
+</div>
+
+<div class="card">
+  <h3>Resumo Financeiro</h3>
+
+  <div class="summary-row">
+    <span>Saldo do Caixa</span>
+    <span id="saldoCaixa">R$ 0,00</span>
+  </div>
+
+  <div class="summary-row">
+    <span>Despesas</span>
+    <span id="totalDespesas">R$ 0,00</span>
+  </div>
+
+  <div class="summary-row">
+    <strong>Saldo Disponível</strong>
+    <strong id="saldoDisponivel">R$ 0,00</strong>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Progresso da Meta Diária</h3>
+  <div class="summary-row">
+    <span>Falta</span>
+    <span id="faltaDiaria">R$ 0,00</span>
+  </div>
+  <div class="progress"><span id="progDiaria"></span></div>
+</div>
+
+<div class="card">
+  <h3>Progresso da Meta Mensal</h3>
+  <div class="summary-row">
+    <span>Falta</span>
+    <span id="faltaMensal">R$ 0,00</span>
+  </div>
+  <div class="progress"><span id="progMensal"></span></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i></a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i></a>
+
+  <!-- BOTÃO CENTRAL (DASHBOARD) -->
+  <a href="index.html" class="center-btn">
+    <i class="fa fa-house"></i>
+  </a>
+
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+</nav>
+
+<script>
+(function(){
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark"
+})()
+
+function toggleTheme(){
+  const t = document.body.dataset.theme === "light" ? "dark" : "light"
+  document.body.dataset.theme = t
+  localStorage.setItem("tema", t)
+}
+
+const metaDiariaInput = document.getElementById("metaDiaria")
+const metaMensalInput = document.getElementById("metaMensal")
+
+metaDiariaInput.value = localStorage.getItem("rf_meta_diaria") || ""
+metaMensalInput.value = localStorage.getItem("rf_meta_mensal") || ""
+
+metaDiariaInput.oninput = () =>
+  localStorage.setItem("rf_meta_diaria", metaDiariaInput.value)
+
+metaMensalInput.oninput = () =>
+  localStorage.setItem("rf_meta_mensal", metaMensalInput.value)
+
+function atualizarCarteira(){
+  const entradas = +localStorage.getItem("rf_caixa_total_entradas") || 0
+  const saidas = +localStorage.getItem("rf_caixa_total_saidas") || 0
+  const despesas = JSON.parse(localStorage.getItem("rf_despesas")) || []
+
+  const totalDespesas = despesas.reduce((s,d)=>s+d.valor,0)
+  const saldoCaixa = entradas - saidas
+  const saldoDisponivel = saldoCaixa - totalDespesas
+
+  saldoCaixaEl.textContent = saldoCaixa.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+  totalDespesasEl.textContent = totalDespesas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+  saldoDisponivelEl.textContent = saldoDisponivel.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+
+  const metaD = +metaDiariaInput.value || 0
+  const metaM = +metaMensalInput.value || 0
+
+  const faltaD = Math.max(metaD - saldoDisponivel, 0)
+  const faltaM = Math.max(metaM - saldoDisponivel, 0)
+
+  faltaDiaria.textContent = faltaD.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+  faltaMensal.textContent = faltaM.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+
+  progDiaria.style.width = metaD ? Math.min((saldoDisponivel/metaD)*100,100)+"%" : "0%"
+  progMensal.style.width = metaM ? Math.min((saldoDisponivel/metaM)*100,100)+"%" : "0%"
+}
+
+const saldoCaixaEl = document.getElementById("saldoCaixa")
+const totalDespesasEl = document.getElementById("totalDespesas")
+const saldoDisponivelEl = document.getElementById("saldoDisponivel")
+const faltaDiaria = document.getElementById("faltaDiaria")
+const faltaMensal = document.getElementById("faltaMensal")
+const progDiaria = document.getElementById("progDiaria")
+const progMensal = document.getElementById("progMensal")
+
+atualizarCarteira()
+</script>
+
+</body>
+</html>
