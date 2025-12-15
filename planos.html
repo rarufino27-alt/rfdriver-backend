@@ -1,340 +1,331 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Planos - RF Driver</title>
 
-<!-- IMPORTA regras de plano -->
-<script src="planos.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
+:root{
+  --gold:#f5c542;
+  --bg:#0d0d0d;
+  --text:#f4f4f4;
+  --card:#161616;
+  --border:#242424;
+}
+body[data-theme="light"]{
+  --bg:#f4f4f4;
+  --text:#111;
+  --card:#fff;
+  --border:#ddd;
+}
+*{box-sizing:border-box;font-family:Inter}
 body{
   margin:0;
-  font-family: 'Inter', Arial, sans-serif;
   background:var(--bg);
   color:var(--text);
-  transition:.3s;
+  padding:80px 16px 150px;
 }
 
-/* ===========================================
-   PALETA
-=========================================== */
-:root{
-
-  /* dourado principal para DARK */
-  --gold-dark:#d6b25f;
-  --gold-dark2:#e8d08a;
-
-  /* dourado mais escuro para LIGHT */
-  --gold-light:#90731b;
-  --gold-light2:#b08c2e;
-
-  /* dark mode */
-  --bg-dark:#0d0d0d;
-  --text-dark:#f4f4f4;
-  --card-dark:#161616;
-  --border-dark:#242424;
-
-  /* light mode */
-  --bg-light:#f7f7f7;
-  --text-light:#222;
-  --card-light:#ffffff;
-  --border-light:#d6d6d6;
+/* CONTROLES */
+.drawer-toggle,.theme-toggle{
+  position:fixed;top:15px;font-size:22px;color:var(--gold);
+  cursor:pointer;z-index:20
 }
+.drawer-toggle{left:15px}
+.theme-toggle{right:15px}
 
-/* DARK MODE */
-body.dark{
-  --bg:var(--bg-dark);
-  --text:var(--text-dark);
-  --card:var(--card-dark);
-  --border:var(--border-dark);
-
-  --gold-main:var(--gold-dark);
-  --gold-main2:var(--gold-dark2);
-}
-
-/* LIGHT MODE */
-body.light{
-  --bg:var(--bg-light);
-  --text:var(--text-light);
-  --card:var(--card-light);
-  --border:var(--border-light);
-
-  --gold-main:var(--gold-light);
-  --gold-main2:var(--gold-light2);
-}
-
-/* classes douradas */
-.gold{
-  color:var(--gold-main);
-}
-.gold2{
-  color:var(--gold-main2);
-}
-
-/* ===========================================
-   MENU LATERAL
-=========================================== */
+/* DRAWER */
 .drawer{
-  position:fixed;
-  top:0;
-  left:-260px;
-  width:260px;
-  height:100%;
-  background:var(--card);
-  transition: left .3s;
-  z-index:9999;
-  padding-top:70px;
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:15
 }
-.drawer.open{ left:0; }
+.drawer.open{left:0}
 .drawer a{
-  display:block;
-  padding:15px 22px;
-  color:var(--text);
-  border-bottom:1px solid var(--border);
-  font-size:17px;
+  display:flex;gap:12px;
+  padding:14px 20px;color:var(--text);
+  text-decoration:none;border-bottom:1px solid var(--border)
 }
-.drawer-toggle{
-  position:fixed;
-  left:15px;
-  top:15px;
-  font-size:28px;
-  cursor:pointer;
-  z-index:10000;
-}
-.theme-toggle{
-  position:fixed;
-  right:15px;
-  top:15px;
-  font-size:24px;
-  cursor:pointer;
-  z-index:10001;
-}
-
-/* ===========================================
-   MENU INFERIOR
-=========================================== */
-.tabbar{
-  position:fixed;
-  bottom:0;
-  left:0;right:0;
-  height:70px;
-  background:var(--card);
-  border-top:1px solid var(--border);
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  z-index:9990;
-}
-.tabbar a{
-  text-decoration:none;
+.suporte-whatsapp{
+  margin:16px;
+  padding:10px 14px;
+  background:#25d366;
+  color:#fff;
+  border-radius:999px;
   text-align:center;
-  font-size:20px;
-  flex:1;
-  color:var(--text);
-}
-.tabbar small{ font-size:12px; display:block; }
-.tabbar a.active{
-  color:var(--gold-main);
-}
-
-/* botão central */
-.action-btn{
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  width:58px;
-  height:58px;
-  border:none;
-  border-radius:30px;
-  color:#000;
-  font-size:26px;
+  font-weight:600;
+  text-decoration:none;
   display:flex;
   align-items:center;
   justify-content:center;
-  margin-top:-35px;
-  box-shadow:0 0 12px rgba(0,0,0,.5);
+  gap:8px;
 }
 
-/* ===========================================
-   CONTEÚDO
-=========================================== */
-.container{
-  padding:20px;
-  padding-top:80px;
-  padding-bottom:120px;
-}
-h1{
+/* HERO */
+.hero{
   text-align:center;
-  font-size:26px;
+  margin-bottom:28px;
+}
+.hero h1{
+  color:var(--gold);
+  font-size:30px;
+  margin:0;
+}
+.hero p{
+  margin-top:10px;
+  font-size:16px;
+  opacity:.85;
 }
 
-/* cards */
+/* BENEFÍCIOS */
+.benefits{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:28px;
+}
+.benefits h2{
+  margin:0 0 14px;
+  font-size:20px;
+  color:var(--gold);
+}
+.benefits ul{
+  padding-left:18px;
+  margin:0;
+  line-height:1.7;
+}
+.benefits li{margin-bottom:8px}
+
+/* TESTE */
+.trial{
+  border:2px dashed var(--gold);
+  border-radius:16px;
+  padding:20px;
+  text-align:center;
+  margin-bottom:28px;
+}
+.trial h3{
+  margin:0;
+  color:var(--gold);
+  font-size:22px;
+}
+.trial p{
+  margin:10px 0;
+  font-size:15px;
+  opacity:.9;
+}
+.trial button{
+  margin-top:12px;
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  background:var(--gold);
+  color:#000;
+  font-weight:700;
+  font-size:16px;
+}
+
+/* PLANOS */
 .plan{
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:14px;
+  border-radius:16px;
   padding:22px;
   margin-bottom:20px;
 }
-.plan:hover{ border-color:var(--gold-main); }
-.plan h2{
+.plan.recommended{border-color:var(--gold)}
+.plan h3{
   margin:0;
+  color:var(--gold);
   font-size:20px;
-  font-weight:600;
 }
-.price{
-  margin:12px 0;
-  font-size:22px;
+.price-old{
+  margin-top:6px;
+  font-size:14px;
+  text-decoration:line-through;
+  opacity:.6;
+}
+.price-main{
+  margin:10px 0;
+  font-size:28px;
   font-weight:700;
 }
-ul{ padding-left:20px; margin:0; line-height:1.6; }
-
-/* botão */
-.btn{
+.price-note{
+  font-size:14px;
+  opacity:.8;
+}
+.plan ul{
+  padding-left:18px;
+  margin:12px 0 0;
+  line-height:1.6;
+}
+.plan button{
   width:100%;
   margin-top:16px;
   padding:14px;
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  border:none;
   border-radius:12px;
-  font-size:18px;
-  font-weight:600;
+  border:none;
+  background:var(--gold);
   color:#000;
+  font-weight:700;
+  font-size:16px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;
+  padding:8px 0
+}
+.bottom-nav a{color:var(--text);font-size:20px;text-decoration:none}
+.center-btn{
+  background:var(--gold);color:#000;
+  width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-top:-30px
+}
+
+.suporte-whatsapp{
+  margin:16px;
+  padding:10px 14px;
+  background:#25d366;
+  color:#fff;
+  border-radius:999px;
+  text-align:center;
+  font-weight:600;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="drawer-toggle gold" onclick="toggleDrawer()">☰</div>
-<div class="theme-toggle gold" onclick="toggleTheme()">🌓</div>
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
-  <a href="/rf-drive-control/instalar-app.html">📲 Instalar App</a>
-  <a href="/rf-drive-control/index.html">🏠 Dashboard</a>
-  <a href="/rf-drive-control/entradas.html">💵 Caixa</a>
-  <a href="/rf-drive-control/resumo.html">📊 Resumo</a>
-  <a href="/rf-drive-control/calculadora.html">📟 Calculadora</a>
-  <a href="/rf-drive-control/planos.html">💎 Planos</a>
-  <a href="/rf-drive-control/perfil.html">👤 Perfil</a>
-  <a href="/rf-drive-control/recibo.html">📠 Recibo</a>
-  <a href="/rf-drive-control/manutencao.html">🛠 Manutenção</a>
+  <div class="close-btn" onclick="toggleDrawer()">
+    <i class="fa fa-xmark"></i>
+  </div>
+
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Instalar App</a>
+  <a href="index.html"><i class="fa fa-chart-line"></i> Dashboard</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos de Viagens</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Caixa</a>
+  <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira</a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i> Despesas Pessoais</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
+  <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
+  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a class="suporte-whatsapp"
+     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
+     target="_blank">
+    <i class="fa fa-whatsapp"></i> Suporte WhatsApp
+  </a>
 </nav>
 
-<div class="container">
-  <h1 class="gold">Escolha seu Plano</h1>
-
-<!-- TESTE 36H -->
-<div class="plan">
-  <h2 class="gold">🎁 Teste Grátis 36h 🎁</h2>
-  <div class="price gold2">R$ 0,00</div>
-  <ul>
-    <li>Acesso total a todas as páginas</li>
-    <li>Duração: 36 horas</li>
-  </ul>
-  <button class="btn" onclick="iniciarTrial36h()">Iniciar Teste 36h</button>
+<div class="hero">
+  <h1>Mais controle. Menos improviso.</h1>
+  <p>O RF Driver foi criado para motoristas que querem dominar suas finanças.</p>
 </div>
 
-<!-- FREEMIUM -->
-<div class="plan">
-  <h2 class="gold">Freemium</h2>
-  <div class="price gold2">R$ 0,00</div>
+<div class="benefits">
+  <h2>Por que entrar para o time RF Driver?</h2>
   <ul>
-    <li>Acesso apenas à Página Caixa</li>
-    <li>Sem acesso às outras</li>
+    <li>Controle financeiro diário simples e automático</li>
+    <li>Metas claras para saber exatamente onde quer chegar</li>
+    <li>Planejamento real de ganhos futuros</li>
+    <li>Tudo em um único app, sem planilhas</li>
+    <li>Visual profissional pensado para motoristas</li>
   </ul>
 </div>
 
-<!-- MENSAL -->
+<div class="trial">
+  <h3>Teste grátis por 36 horas</h3>
+  <p>Use todas as funcionalidades e veja se faz sentido para sua rotina.</p>
+  <button>Testar agora</button>
+</div>
+
 <div class="plan">
-  <h2 class="gold">Plano Mensal</h2>
-  <div class="price gold2">R$ 9,90</div>
+  <h3>Plano Mensal</h3>
+  <div class="price-old">De R$ 69,90</div>
+  <div class="price-main">R$ 24,90</div>
+  <div class="price-note">Preço promocional temporário</div>
   <ul>
-    <li>Acesso total</li>
-    <li>Validade: 30 dias</li>
+    <li>Acesso total ao app</li>
+    <li>Todas as funcionalidades</li>
+    <li>Atualizações inclusas</li>
   </ul>
-  <button class="btn" onclick="abrirPagamento('MENSAL')">Assinar Plano Mensal</button>
+  <button>Escolher plano mensal</button>
 </div>
 
-<!-- SEMESTRAL -->
-<div class="plan">
-  <h2 class="gold">Plano Semestral ⭐</h2>
-  <div class="price gold2">R$ 49,90</div>
+<div class="plan recommended">
+  <h3>Plano Semestral ⭐ Recomendado</h3>
+  <div class="price-old">De R$ 419,90</div>
+  <div class="price-main">R$ 124,90</div>
+  <div class="price-note">Melhor custo-benefício</div>
   <ul>
-    <li>Acesso total</li>
-    <li>Validade: 6 meses</li>
+    <li>Acesso total ao app</li>
+    <li>Todas as funcionalidades</li>
+    <li>Economia real no longo prazo</li>
   </ul>
-  <button class="btn" onclick="abrirPagamento('SEMESTRAL')">Assinar Plano Semestral</button>
+  <button>Escolher plano semestral</button>
 </div>
 
-<!-- VITALICIO -->
 <div class="plan">
-  <h2 class="gold">Plano Vitalício 🔥</h2>
-  <div class="price gold2">R$ 149,90</div>
+  <h3>Plano Vitalício</h3>
+  <div class="price-old">De R$ 1.677,60</div>
+  <div class="price-main">R$ 299,90</div>
+  <div class="price-note">Atualizações vitalícias para os 100 primeiros</div>
   <ul>
-    <li>Acesso total para sempre</li>
-    <li>Direito a atualizações futuras</li>
+    <li>Pague uma vez</li>
+    <li>Acesso completo para sempre</li>
+    <li>Atualizações vitalícias</li>
   </ul>
-  <button class="btn" onclick="abrirPagamento('VITALICIO')">Comprar Vitalício</button>
+  <button>Comprar vitalício</button>
 </div>
 
-<!-- JÁ PAGUEI -->
-<div class="plan">
-  <h2 class="gold">Já paguei meu plano</h2>
-  <p>Caso já tenha pago no Mercado Pago, clique abaixo para liberar neste aparelho:</p>
+<nav class="bottom-nav">
+  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i></a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i></a>
 
-  <button class="btn" onclick="setPlano('MENSAL')">Liberar Mensal</button>
-  <button class="btn" onclick="setPlano('SEMESTRAL')">Liberar Semestral</button>
-  <button class="btn" onclick="setPlano('VITALICIO')">Liberar Vitalício</button>
-</div>
+  <!-- BOTÃO CENTRAL (DASHBOARD) -->
+  <a href="index.html" class="center-btn">
+    <i class="fa fa-house"></i>
+  </a>
 
-</div>
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+</nav>
 
-<div class="tabbar">
-  <a href="index.html">🏠<small>Home</small></a>
-  <a href="entradas.html">💵<small>Caixa</small></a>
-  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
-  <a href="resumo.html">📊<small>Resumo</small></a>
-  <a class="active gold" href="planos.html">💎<small>Planos</small></a>
-</div>
-
-
-<!-- ========================= -->
-<!-- JS NECESSÁRIO             -->
-<!-- ========================= -->
 <script>
-// drawer
-function toggleDrawer(){
-  document.getElementById('drawer').classList.toggle('open');
-}
-
-// pagamento (links reais)
-function abrirPagamento(plano){
-  let link = "";
-
-  if(plano==="MENSAL")     link = "https://mpago.la/1ne24Ba";
-  if(plano==="SEMESTRAL")  link = "https://mpago.la/33kSr4F";
-  if(plano==="VITALICIO")  link = "https://mpago.li/2yainfn";
-
-  if(!link){
-    alert("Link de pagamento não configurado.");
-    return;
-  }
-  window.open(link, "_blank");
-}
-
-// tema
-function toggleTheme(){
-  const body=document.body;
-  const newTheme = body.classList.contains("dark") ? "light" : "dark";
-  body.classList.remove("dark","light");
-  body.classList.add(newTheme);
-  localStorage.setItem("theme",newTheme);
-}
 (function(){
-  const th = localStorage.getItem("theme") || "dark";
-  document.body.classList.add(th);
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
 })();
+function toggleTheme(){
+  const t = document.body.dataset.theme === "light" ? "dark" : "light";
+  document.body.dataset.theme = t;
+  localStorage.setItem("tema", t);
+}
+function toggleDrawer(){
+  drawer.classList.toggle("open");
+}
 </script>
 
 </body>
