@@ -1,912 +1,228 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Emissão de Recibo - RF Driver</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-
-<!-- Biblioteca PDF -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-/* =========================================================
-   PALETA
-========================================================= */
 :root{
-  --gold-dark:#d6b25f;
-  --gold-dark2:#e8d08a;
-
-  --gold-light:#90731b;
-  --gold-light2:#b08c2e;
-
-  --bg-dark:#0d0d0d;
-  --text-dark:#f4f4f4;
-  --card-dark:#161616;
-  --border-dark:#242424;
-
-  --bg-light:#f7f7f7;
-  --text-light:#222;
-  --card-light:#ffffff;
-  --border-light:#d6d6d6;
-
-  --radius:14px;
+  --gold:#f5c542;
+  --bg:#0d0d0d;
+  --text:#f4f4f4;
+  --card:#161616;
+  --border:#242424;
 }
-
-body.dark{
-  --bg:var(--bg-dark);
-  --text:var(--text-dark);
-  --card:var(--card-dark);
-  --border:var(--border-dark);
-  --gold-main:var(--gold-dark);
-  --gold-main2:var(--gold-dark2);
+body[data-theme="light"]{
+  --bg:#f4f4f4;
+  --text:#111;
+  --card:#fff;
+  --border:#ddd;
 }
-body.light{
-  --bg:var(--bg-light);
-  --text:var(--text-light);
-  --card:var(--card-light);
-  --border:var(--border-light);
-  --gold-main:var(--gold-light);
-  --gold-main2:var(--gold-light2);
+*{box-sizing:border-box;font-family:Inter}
+body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
+
+/* TOPO */
+.drawer-toggle,.theme-toggle{
+  position:fixed;top:15px;font-size:22px;color:var(--gold);
+  cursor:pointer;z-index:20
 }
+.drawer-toggle{left:15px}
+.theme-toggle{right:15px}
 
-*{ box-sizing:border-box; font-family:Inter,system-ui; }
-
-body{
-  margin:0; background:var(--bg); color:var(--text);
-  padding-top:70px; padding-bottom:100px; transition:.3s;
-}
-
-/* =========================================================
-   DRAWER
-========================================================= */
+/* DRAWER */
 .drawer{
-  position:fixed; top:0; left:-260px;
-  width:260px; height:100%;
-  background:var(--card); transition:left .3s;
-  z-index:9999; padding-top:70px;
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:15
 }
-.drawer.open{ left:0; }
+.drawer.open{left:0}
 .drawer a{
-  display:block; padding:15px 22px;
-  border-bottom:1px solid var(--border);
-  text-decoration:none; color:var(--text);
+  display:flex;gap:12px;padding:14px 20px;
+  color:var(--text);text-decoration:none;
+  border-bottom:1px solid var(--border)
+}
+.suporte-whatsapp{
+  margin:16px;padding:10px 14px;background:#25d366;
+  color:#fff;border-radius:999px;text-align:center;
+  font-weight:600;text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:8px
 }
 
-.drawer-toggle{
-  position:fixed; left:15px; top:15px;
-  font-size:24px; cursor:pointer; z-index:10000;
-  background:var(--gold-main);
-  padding:6px 10px; border-radius:10px; color:#000;
-}
+/* HEADER */
+.header{text-align:center;margin-bottom:10px}
+.header h1{margin:0;font-size:26px;color:var(--gold)}
+.header small{opacity:.7}
 
-/* =========================================================
-   THEME
-========================================================= */
-.theme-toggle{
-  position:fixed; right:15px; top:15px;
-  font-size:22px; cursor:pointer; z-index:10001;
-  background:var(--card); padding:6px 10px; border-radius:10px;
-}
-
-/* =========================================================
-   TÍTULO
-========================================================= */
-.page-header{
-  padding:0 20px 10px;
-}
-h1{
-  margin:0;
-  font-size:28px;
-  font-weight:800;
-  color:var(--gold-main);
-}
-.sub{
-  font-size:14px; opacity:.8;
-}
-
-/* =========================================================
-   TABS PRINCIPAIS
-========================================================= */
-.tabs{
-  display:flex; gap:10px; margin-top:12px;
-}
+/* TABS */
+.tabs{display:flex;gap:10px;margin:12px 0}
 .tab-btn{
-  flex:1;
-  background:var(--card);
-  border:1px solid var(--border);
-  padding:10px; border-radius:999px;
-  cursor:pointer; font-weight:700;
-  color:var(--text); text-align:center;
+  flex:1;padding:10px;border-radius:999px;
+  background:var(--card);border:1px solid var(--border);
+  text-align:center;font-weight:600;cursor:pointer
 }
-.tab-btn.active{
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  border:none; color:#000;
-}
+.tab-btn.active{background:var(--gold);color:#000;border:none}
 
-/* =========================================================
-   CONTAINER / CARDS
-========================================================= */
-.container{padding:0 20px 20px;}
+/* CARD */
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:18px; margin-top:16px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:16px;margin-bottom:15px
 }
-.card h3{margin-top:0;margin-bottom:10px;}
-
-/* =========================================================
-   FORM
-========================================================= */
-label{display:block;margin-top:10px; font-size:13px;}
-input,select,textarea{
-  width:100%; margin-top:6px; padding:11px;
-  border-radius:10px; border:1px solid var(--border);
-  background:var(--card); color:var(--text);
+label{font-size:13px;margin-top:10px;display:block}
+input,textarea{
+  width:100%;padding:11px;margin-top:6px;
+  border-radius:10px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text)
 }
-textarea{resize:vertical; min-height:80px;}
-
-.row{display:flex; flex-wrap:wrap; gap:12px;}
-.col{flex:1; min-width:120px;}
-
+textarea{min-height:80px}
 button{
-  padding:12px; border:none; border-radius:10px;
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  cursor:pointer; font-weight:700; color:#000;
-  margin-top:12px;
+  width:100%;padding:12px;margin-top:14px;
+  background:var(--gold);border:none;
+  border-radius:10px;font-weight:700;cursor:pointer
 }
 
-/* =========================================================
-   TABBAR
-========================================================= */
-.tabbar{
-  position:fixed; bottom:0; left:0; right:0; height:70px;
-  background:var(--card); border-top:1px solid var(--border);
-  display:flex; justify-content:space-around; align-items:center;
-  z-index:9990;
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;padding:8px 0
 }
-.tabbar a{
-  text-decoration:none; color:var(--text);
-  font-size:20px; text-align:center;
-}
-.tabbar small{display:block; font-size:12px;}
-
-.action-btn{
-  width:58px; height:58px; border-radius:50%;
-  background:linear-gradient(90deg,var(--gold-main),var(--gold-main2));
-  border:none; font-size:26px; margin-top:-35px; color:#000;
+.bottom-nav a{color:var(--text);font-size:20px;text-decoration:none}
+.center-btn{
+  background:var(--gold);color:#000;width:58px;height:58px;
+  border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:24px;margin-top:-30px
 }
 </style>
-
 </head>
-<body class="light">
-<!-- BOTÕES TOPO -->
-<div class="drawer-toggle" onclick="toggleDrawer()">☰</div>
-<div id="toggleTheme" class="theme-toggle" onclick="toggleTheme()">🌓</div>
 
-<!-- DRAWER LATERAL -->
+<body>
+
+<div class="drawer-toggle" onclick="toggleDrawer()">
+  <i class="fa fa-bars"></i>
+</div>
+<div class="theme-toggle" onclick="toggleTheme()">
+  <i class="fa fa-moon"></i>
+</div>
+
 <nav class="drawer" id="drawer">
-  <a href="index.html">🏠 Dashboard</a>
-  <a href="entradas.html">💵 Caixa</a>
-  <a href="resumo.html">📊 Resumo</a>
-  <a href="calculadora.html">📟 Calculadora</a>
-  <a href="planos.html">💎 Planos</a>
-  <a href="perfil.html">👤 Perfil</a>
-  <a href="recibo.html">📠 Emissão de Recibo</a>
-  <a href="manutencao.html">🛠 Manutenção</a>
+  <div class="close-btn" onclick="toggleDrawer()">
+    <i class="fa fa-xmark"></i>
+  </div>
+
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Instalar App</a>
+  <a href="index.html"><i class="fa fa-chart-line"></i> Dashboard</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos de Viagens</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Caixa</a>
+  <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira</a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i> Despesas Pessoais</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
+  <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
+  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a class="suporte-whatsapp"
+     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
+     target="_blank">
+    <i class="fa fa-whatsapp"></i> Suporte WhatsApp
+  </a>
 </nav>
 
-<div class="page-header">
+<div class="header">
   <h1>Emissão de Recibo</h1>
-  <div class="sub">Recibos para empresas e clientes em um só lugar.</div>
-
-  <!-- TABS PRINCIPAIS: EMPRESA / CLIENTE / HISTÓRICO -->
-  <div class="tabs">
-    <div id="tabEmpresa"  class="tab-btn active" data-tab="empresa">Empresas</div>
-    <div id="tabCliente"  class="tab-btn" data-tab="cliente">Clientes</div>
-    <div id="tabHistorico" class="tab-btn" data-tab="historico">Histórico</div>
-  </div>
+  <small>Gere recibos profissionais em segundos</small>
 </div>
 
-<div class="container">
-
-  <!-- ======================================================
-       ABA EMPRESAS  
-  ======================================================= -->
-  <section id="abaEmpresa" class="card">
-    <h3>Cadastro Motorista / Empresa</h3>
-
-    <div class="row">
-      <div class="col">
-        <label>Empresa (opcional)</label>
-        <input id="emp_empresa" type="text">
-      </div>
-      <div class="col">
-        <label>CNPJ (opcional)</label>
-        <input id="emp_cnpj" type="text">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label>Motorista *</label>
-        <input id="emp_motorista" type="text">
-      </div>
-      <div class="col">
-        <label>CPF ou RG *</label>
-        <input id="emp_cpf" type="text">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label>Marca *</label>
-        <input id="emp_marca" type="text">
-      </div>
-      <div class="col">
-        <label>Modelo *</label>
-        <input id="emp_modelo" type="text">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label>Placa *</label>
-        <input id="emp_placa" type="text">
-      </div>
-      <div class="col">
-        <label>Cor *</label>
-        <input id="emp_cor" type="text">
-      </div>
-    </div>
-
-    <button id="emp_btnSalvarCadastro">Salvar Dados</button>
-
-    <hr style="margin:18px 0;opacity:.15;">
-
-    <h3>Dados da viagem - Empresa</h3>
-
-    <label>Empresa destino *</label>
-    <input id="emp_empresaDestino" type="text">
-
-    <label>Empresa responsável</label>
-    <input id="emp_empresaResponsavel" type="text">
-
-    <label>Solicitante</label>
-    <input id="emp_solicitante" type="text">
-
-    <label>Horário de chegada</label>
-    <input id="emp_horaChegada" type="time">
-
-    <label>Descrição da viagem</label>
-    <textarea id="emp_descricao"></textarea>
-
-    <h3>Funcionários</h3>
-    <div id="emp_funcionariosContainer"></div>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button type="button" id="emp_btnAddFuncionario">+ Adicionar</button>
-      <button type="button" id="emp_btnRemoveFuncionario" style="background:#aaa;">- Remover</button>
-    </div>
-
-    <h3 style="margin-top:16px;">Horários / KM</h3>
-
-    <label>Horário início</label>
-    <input id="emp_horaInicio" type="time">
-
-    <label>KM inicial</label>
-    <input id="emp_kmInicial" type="number">
-
-    <label>Horário final</label>
-    <input id="emp_horaFim" type="time">
-
-    <label>KM final</label>
-    <input id="emp_kmFinal" type="number">
-
-    <div style="margin-top:12px; font-size:14px;">
-      <strong>Total KM:</strong> <span id="emp_totalKmDisplay">0 km</span><br>
-      <strong>Espera:</strong> <span id="emp_tempoEsperaDisplay">0</span><br>
-      <strong>Viagem:</strong> <span id="emp_tempoViagemDisplay">0</span>
-    </div>
-
-    <h3 style="margin-top:16px;">Financeiro</h3>
-
-    <label>Valor total (R$)</label>
-    <input id="emp_valor" type="number" step="0.01">
-
-    <label>Data da viagem</label>
-    <input id="emp_dataViagem" type="date">
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button id="emp_btnEmitirPdf">Emitir PDF</button>
-      <button id="emp_btnEnviarWhats" style="background:#128c7e;color:#fff;">Enviar WhatsApp</button>
-    </div>
-  </section>
-
-  <!-- ======================================================
-       ABA CLIENTES  
-  ======================================================= -->
-  <section id="abaCliente" class="card" style="display:none;">
-    <h3>Cadastro do Motorista (Cliente / Particular)</h3>
-
-    <div class="row">
-      <div class="col">
-        <label>Nome do motorista</label>
-        <input id="cli_motNome" type="text" placeholder="Seu nome completo">
-      </div>
-      <div class="col">
-        <label>CPF ou CNPJ (opcional)</label>
-        <input id="cli_motCpf" type="text" placeholder="000.000.000-00">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label>Veículo</label>
-        <input id="cli_motVeiculo" type="text" placeholder="Ex: Corolla">
-      </div>
-      <div class="col">
-        <label>Placa</label>
-        <input id="cli_motPlaca" type="text" placeholder="ABC-1D23">
-      </div>
-      <div class="col">
-        <label>Cor</label>
-        <input id="cli_motCor" type="text" placeholder="Preto">
-      </div>
-    </div>
-
-    <button id="cli_saveMotorista">Salvar motorista</button>
-
-    <hr style="margin:18px 0;opacity:.15;">
-
-    <h3>Dados do passageiro</h3>
-
-    <label>Nome do passageiro</label>
-    <input id="cli_nomePassageiro" type="text" placeholder="Nome do passageiro">
-
-    <label>Origem</label>
-    <input id="cli_origem" type="text" placeholder="Ponto de início da viagem">
-
-    <label>Destino</label>
-    <input id="cli_destino" type="text" placeholder="Destino da viagem">
-
-    <label>Descrição da viagem</label>
-    <textarea id="descricao"></textarea>
-
-    <label>Chegada no ponto de embarque (horário)</label>
-    <input id="horaChegada" type="time">
-
-    <label>Horário início da viagem</label>
-    <input id="horaInicio" type="time">
-
-    <label>Parada 1</label>
-    <input id="parada1" type="text">
-
-    <label>Parada 2</label>
-    <input id="parada2" type="text">
-
-    <label>Horário final da viagem</label>
-    <input id="horaFim" type="time">
-
-    <h3 style="margin-top:18px;">Dados da viagem</h3>
-
-    <label>Valor (R$)</label>
-    <input id="cli_valor" type="number" step="0.01" placeholder="0,00">
-
-    <label>Data da viagem</label>
-    <input id="cli_dataViagem" type="date">
-
-    <label>Tempo aproximado (ex: 35 min)</label>
-    <input id="cli_tempo" type="text" placeholder="Ex: 35 min">
-
-    <label>KM aproximado</label>
-    <input id="cli_km" type="number" step="0.1" placeholder="0,0">
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
-      <button id="cli_emitirPdf">Gerar PDF</button>
-      <button id="cli_enviarWa" style="background:#128c7e;color:#fff;">Enviar WhatsApp</button>
-    </div>
-  </section>
-
-  <!-- ======================================================
-       ABA HISTÓRICO
-  ======================================================= -->
-  <section id="abaHistorico" class="card" style="display:none;">
-    <h3>Histórico de Recibos</h3>
-
-    <h4 style="margin-top:8px;">Empresas</h4>
-    <div id="hist_empresas"></div>
-
-    <hr style="margin:16px 0;opacity:.15;">
-
-    <h4>Clientes / Particular</h4>
-    <div id="hist_clientes"></div>
-  </section>
-
-</div> <!-- ./container -->
-
-<!-- TABBAR INFERIOR -->
-<div class="tabbar">
-  <a href="index.html">🏠<small>Home</small></a>
-  <a href="entradas.html">💵<small>Caixa</small></a>
-  <button class="action-btn" onclick="location.href='calculadora.html'">+</button>
-  <a href="resumo.html">📊<small>Resumo</small></a>
-  <a href="planos.html">💎 Planos</a>
+<div class="tabs">
+  <div class="tab-btn active" data-tab="empresa">Empresa</div>
+  <div class="tab-btn" data-tab="cliente">Cliente</div>
 </div>
 
+<div class="card" id="empresa">
+  <label>Empresa destino</label>
+  <input id="emp_empresaDestino">
+  <label>Descrição</label>
+  <textarea id="emp_descricao"></textarea>
+  <label>Valor (R$)</label>
+  <input id="emp_valor" type="number" step="0.01">
+  <button onclick="emitirEmpresa()">Gerar PDF</button>
+</div>
 
-<script src="planos.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<div class="card" id="cliente" style="display:none">
+  <label>Nome do cliente</label>
+  <input id="cli_nome">
+  <label>Origem</label>
+  <input id="cli_origem">
+  <label>Destino</label>
+  <input id="cli_destino">
+  <label>Descrição</label>
+  <textarea id="cli_descricao"></textarea>
+  <label>Valor (R$)</label>
+  <input id="cli_valor" type="number" step="0.01">
+  <button onclick="emitirCliente()">Gerar PDF</button>
+</div>
+
+<nav class="bottom-nav">
+  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i></a>
+  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i></a>
+
+  <!-- BOTÃO CENTRAL (DASHBOARD) -->
+  <a href="index.html" class="center-btn">
+    <i class="fa fa-house"></i>
+  </a>
+
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+</nav>
 
 <script>
-// BLOQUEIO POR PLANO – Emissão de Recibo
 (function(){
-  try{
-    const p = getPlano(); 
-    const liberados = ["TRIAL","MENSAL","SEMESTRAL","VITALICIO"];
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark"
+})()
 
-    if(!liberados.includes(p)){
-      alert("Emissão de Recibo é liberada somente em planos pagos.");
-      location.href = "planos.html";
-      return;
-    }
-  }catch(e){}
-})();
-</script>
-
-<script>
-/* ============================================================
-   HELPERS GERAIS
-============================================================ */
-const $ = (id)=>document.getElementById(id);
-
-function load(key){
-  try{ return JSON.parse(localStorage.getItem(key)||"null"); }
-  catch(e){ return null; }
-}
-function save(key,val){
-  localStorage.setItem(key, JSON.stringify(val));
-}
-
-/* IDs de storage */
-const EMP_PERFIL_KEY  = "rf_emp_perfil";
-const EMP_RECIBOS_KEY = "rf_emp_recibos";
-const CLI_MOT_KEY     = "rf_cli_motorista";
-const CLI_RECIBOS_KEY = "rf_cli_recibos";
-
-/* Tema */
-function applyTheme(theme){
-  document.body.classList.remove("dark","light");
-  document.body.classList.add(theme==="dark"?"dark":"light");
-  localStorage.setItem("theme",theme);
-  const t=$("toggleTheme");
-  if(t) t.innerText = theme==="dark" ? "☀️" : "🌙";
-}
 function toggleTheme(){
-  const isDark=document.body.classList.contains("dark");
-  applyTheme(isDark?"light":"dark");
+  const t = document.body.dataset.theme==="light"?"dark":"light"
+  document.body.dataset.theme=t
+  localStorage.setItem("tema",t)
 }
-(function(){
-  const saved=localStorage.getItem("theme")||"light";
-  applyTheme(saved);
-})();
-</script>
-
-<script>
-/* ============================================================
-   MENU
-============================================================ */
 function toggleDrawer(){
-  const d=$("drawer");
-  if(d) d.classList.toggle("open");
+  document.getElementById("drawer").classList.toggle("open")
 }
-</script>
+document.querySelectorAll(".tab-btn").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"))
+    b.classList.add("active")
+    document.getElementById("empresa").style.display=b.dataset.tab==="empresa"?"block":"none"
+    document.getElementById("cliente").style.display=b.dataset.tab==="cliente"?"block":"none"
+  }
+})
 
-<script>
-/* ============================================================
-   TROCA DE ABAS
-============================================================ */
-function setAba(nome){
-  const map={
-    empresa:"abaEmpresa",
-    cliente:"abaCliente",
-    historico:"abaHistorico"
-  };
-  ["empresa","cliente","historico"].forEach(tab=>{
-    const tabEl = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-    const secEl = $(map[tab]);
-    if(tabEl) tabEl.classList.toggle("active",tab===nome);
-    if(secEl) secEl.style.display=(tab===nome?"block":"none");
-  });
+function emitirEmpresa(){
+  const {jsPDF}=window.jspdf
+  const d=new jsPDF()
+  d.text("Recibo de Viagem - Empresa",15,15)
+  d.text(document.getElementById("emp_empresaDestino").value,15,30)
+  d.text(document.getElementById("emp_descricao").value,15,45)
+  d.text("R$ "+document.getElementById("emp_valor").value,15,60)
+  d.save("recibo_empresa.pdf")
 }
-document.querySelectorAll(".tab-btn").forEach(t=>{
-  t.addEventListener("click",()=>setAba(t.dataset.tab));
-});
-setAba("empresa");
-</script>
-
-<script>
-/* ============================================================
-   EMPRESA - FUNCIONÁRIOS
-============================================================ */
-const empContainer=$("emp_funcionariosContainer");
-
-function empAddFuncionario(){
-  const idx=(empContainer.querySelectorAll(".funcionario-block")||[]).length+1;
-  const div=document.createElement("div");
-  div.className="funcionario-block";
-  div.innerHTML=`
-    <strong style="display:block;margin-bottom:5px;">Funcionário ${idx}</strong>
-    <label>Nome</label>
-    <input type="text" data-field="nome">
-  `;
-  empContainer.appendChild(div);
+function emitirCliente(){
+  const {jsPDF}=window.jspdf
+  const d=new jsPDF()
+  d.text("Recibo de Viagem - Cliente",15,15)
+  d.text(document.getElementById("cli_nome").value,15,30)
+  d.text(document.getElementById("cli_origem").value+" → "+document.getElementById("cli_destino").value,15,45)
+  d.text(document.getElementById("cli_descricao").value,15,60)
+  d.text("R$ "+document.getElementById("cli_valor").value,15,75)
+  d.save("recibo_cliente.pdf")
 }
-function empRemoveFuncionario(){
-  const blocks=empContainer.querySelectorAll(".funcionario-block");
-  if(blocks.length>1) blocks[blocks.length-1].remove();
-}
-if(empContainer) empAddFuncionario();
-$("emp_btnAddFuncionario").onclick=empAddFuncionario;
-$("emp_btnRemoveFuncionario").onclick=empRemoveFuncionario;
-
-/* salvar perfil */
-$("emp_btnSalvarCadastro").onclick=()=>{
-  const p={
-    emp_empresa:$("emp_empresa").value||"",
-    emp_cnpj:$("emp_cnpj").value||"",
-    emp_motorista:$("emp_motorista").value||"",
-    emp_cpf:$("emp_cpf").value||"",
-    emp_marca:$("emp_marca").value||"",
-    emp_modelo:$("emp_modelo").value||"",
-    emp_placa:$("emp_placa").value||"",
-    emp_cor:$("emp_cor").value||""
-  };
-  save(EMP_PERFIL_KEY,p);
-  alert("Dados salvos!");
-};
-
-/* preencher */
-(function(){
-  const p=load(EMP_PERFIL_KEY)||{};
-  ["emp_empresa","emp_cnpj","emp_motorista","emp_cpf","emp_marca","emp_modelo","emp_placa","emp_cor"]
-  .forEach(id=>{ if($(id)&&p[id]) $(id).value=p[id]; });
-})();
-</script>
-
-<script>
-/* ============================================================
-   EMPRESA - LEITURA E CÁLCULO
-============================================================ */
-function empReadDados(){
-  const dados={
-    empresaDestino:$("emp_empresaDestino").value||"",
-    empresaResponsavel:$("emp_empresaResponsavel").value||"",
-    solicitante:$("emp_solicitante").value||"",
-    horaChegada:$("emp_horaChegada").value||"",
-    descricao:$("emp_descricao").value||"",
-    horaInicio:$("emp_horaInicio").value||"",
-    kmInicial:$("emp_kmInicial").value||"",
-    horaFim:$("emp_horaFim").value||"",
-    kmFinal:$("emp_kmFinal").value||"",
-    valor:$("emp_valor").value||"",
-    dataViagem:$("emp_dataViagem").value||"",
-    funcionarios:[]
-  };
-  empContainer.querySelectorAll(".funcionario-block").forEach(b=>{
-    const nome=b.querySelector("[data-field='nome']")?.value||"";
-    dados.funcionarios.push({nome});
-  });
-  return dados;
-}
-</script>
-
-<script>
-/* ============================================================
-   EMPRESA - PDF
-============================================================ */
-function empGerarPDF(d){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const br = iso => iso? new Date(iso).toLocaleDateString("pt-BR"):"-";
-  let y=15;
-
-  doc.setFontSize(18);
-  doc.text("Recibo de Viagem",15,y); y+=10;
-
-  doc.setFontSize(12);
-  doc.text(`Data ${br(d.dataViagem)}`,15,y); y+=10;
-
-  doc.text("Descrição da viagem:",15,y); y+=8;
-  const desc=doc.splitTextToSize(d.descricao||"",180);
-  doc.text(desc,15,y); y += desc.length*6 + 6;
-
-  doc.text(`Solicitante: ${d.solicitante||""}`,15,y); y+=6;
-  doc.text(`Empresa Destino: ${d.empresaDestino||""}`,15,y); y+=6;
-  doc.text(`Empresa Responsável: ${d.empresaResponsavel||""}`,15,y); y+=10;
-
-  doc.text(`⏱ Chegada no ponto de Embarque: ${d.horaChegada||""} h`,15,y); y+=8;
-  doc.text("------------------------",15,y); y+=8;
-
-  doc.text(`⏱ Horário início da viagem: ${d.horaInicio||""} h`,15,y); y+=8;
-  doc.text("------------------------",15,y); y+=10;
-
-  doc.text("Funcionários:",15,y); y+=8;
-  (d.funcionarios||[]).forEach((f,i)=>{
-    if(!f.nome.trim()) return;
-    doc.text(`Funcionário ${i+1}`,20,y); y+=6;
-    doc.text(`(${f.nome})`,30,y); y+=8;
-  });
-
-  y+=6;
-  doc.text("Embarque:",15,y); y+=8;
-  doc.text("Parada 1",15,y); y+=6;
-  doc.text("Parada 2",15,y); y+=6;
-  doc.text("Parada 3",15,y); y+=6;
-  doc.text("Destino:",15,y); y+=10;
-
-  doc.text(`⏱ Horário final: ${d.horaFim||""} h`,15,y); y+=8;
-  doc.text("________________________",15,y); y+=12;
-
-  doc.setFontSize(14);
-  doc.text("Valor da viagem",15,y); y+=14;
-
-  const vv=Number(d.valor||0);
-  doc.text("R$ "+vv.toFixed(2).replace(".",","),40,y); y+=18;
-
-  doc.text("Responsável (Mesmo que solicitante)",15,y);
-
-  doc.save("recibo_empresa.pdf");
-}
-
-/* Botão PDF */
-$("emp_btnEmitirPdf").onclick=()=>{
-  const p=(localStorage.getItem("planoAtual")||"free").toLowerCase();
-  if(p==="free"||p==="freemium"){ alert("PDF apenas Premium/Pro"); return; }
-
-  const d=empReadDados();
-  if(!(d.empresaDestino||"").trim()){ alert("Informe empresa destino"); return; }
-
-  empGerarPDF(d);
-
-  let recs=load(EMP_RECIBOS_KEY)||[];
-  recs.unshift({id:Date.now(),data:d.dataViagem,nome:d.empresaDestino,valor:d.valor});
-  save(EMP_RECIBOS_KEY,recs);
-
-  renderHistorico();
-  setAba("historico");
-};
-</script>
-
-<script>
-/* EMPRESA - WhatsApp */
-$("emp_btnEnviarWhats").onclick=()=>{
-  const p=(localStorage.getItem("planoAtual")||"free").toLowerCase();
-  if(p==="free"||p==="freemium"){ alert("Apenas Premium/Pro"); return; }
-
-  const d=empReadDados();
-  const br = iso=> iso? new Date(iso).toLocaleDateString("pt-BR"):"-";
-
-  const msg =
-`Recibo de Viagem
-Data ${br(d.dataViagem)}
-
-Descrição da viagem:
-${d.descricao||"-"}
-
-Solicitante: ${d.solicitante||"-"}
-Empresa Destino: ${d.empresaDestino||"-"}
-Empresa Responsável: ${d.empresaResponsavel||"-"}
-
-⏱ Chegada no ponto de Embarque: ${d.horaChegada||"-"} h
-⏱ Horário início da viagem: ${d.horaInicio||"-"} h
-
-Funcionários:
-${(d.funcionarios||[]).map((f,i)=>`Funcionário ${i+1} (${f.nome||"-"})`).join("\n")}
-
-Embarque:
-Parada 1
-Parada 2
-Parada 3
-Destino:
-
-⏱ Horário final: ${d.horaFim||"-"} h
-
-Valor da viagem:
-R$ ${(Number(d.valor||0)).toFixed(2).replace(".",",")}
-
-Responsável (Mesmo que solicitante)`
-  window.open("https://wa.me/?text="+encodeURIComponent(msg));
-};
-</script>
-
-<script>
-/* ============================================================
-   CLIENTE - princípio
-============================================================ */
-function cliGetMotorista(){
-  return load(CLI_MOT_KEY)||{};
-}
-function cliFillMotorista(){
-  const m=cliGetMotorista();
-  if(m.nome) $("cli_motNome").value=m.nome;
-  if(m.cpf) $("cli_motCpf").value=m.cpf;
-  if(m.veiculo) $("cli_motVeiculo").value=m.veiculo;
-  if(m.placa) $("cli_motPlaca").value=m.placa;
-  if(m.cor) $("cli_motCor").value=m.cor;
-}
-$("cli_saveMotorista").onclick=()=>{
-  const m={
-    nome:$("cli_motNome").value||"",
-    cpf:$("cli_motCpf").value||"",
-    veiculo:$("cli_motVeiculo").value||"",
-    placa:$("cli_motPlaca").value||"",
-    cor:$("cli_motCor").value||""
-  };
-  save(CLI_MOT_KEY,m);
-  alert("Motorista salvo!");
-};
-cliFillMotorista();
-</script>
-
-<script>
-/* ============================================================
-   CLIENTE - PDF
-============================================================ */
-function cliGerarPDF(d){
-  const { jsPDF }=window.jspdf;
-  const doc=new jsPDF();
-  const br = iso=> iso? new Date(iso).toLocaleDateString("pt-BR"):"-";
-  let y=15;
-
-  doc.setFontSize(18);
-  doc.text("Recibo de Viagem",15,y); y+=10;
-
-  doc.setFontSize(13);
-  doc.text(`Data ${br(d.data)}`,15,y); y+=12;
-
-  doc.text("Descrição da viagem:",15,y); y+=8;
-  const desc = doc.splitTextToSize(d.descricao||"",180);
-  doc.text(desc,15,y); y+=desc.length*6 + 10;
-
-  doc.text(`Cliente: ${d.nome||""}`,15,y); y+=6;
-  doc.text(`Origem: ${d.origem||""}`,15,y); y+=6;
-  doc.text(`Destino: ${d.destino||""}`,15,y); y+=12;
-
-  doc.text(`⏱ Chegada no ponto de Embarque: ${d.horaChegada||""} h`,15,y); y+=8;
-  doc.text("------------------------",15,y); y+=10;
-
-  doc.text(`⏱ Horário inicio da viagem: ${d.horaInicio||""} h`,15,y); y+=8;
-  doc.text("------------------------",15,y); y+=10;
-
-  doc.text(`Parada 1: ${d.parada1||""}`,15,y); y+=6;
-  doc.text(`Parada 2: ${d.parada2||""}`,15,y); y+=10;
-
-  doc.text(`⏱ Horário final: ${d.horaFim||""} h`,15,y); y+=8;
-  doc.text("________________________",15,y); y+=14;
-
-  doc.setFontSize(15);
-  doc.text("Valor da viagem",15,y); y+=12;
-
-  doc.text("R$ "+(Number(d.valor||0).toFixed(2)).replace(".",","),40,y); y+=18;
-
-  doc.text("Responsável (Mesmo que solicitante)",15,y);
-  doc.save("recibo_particular.pdf");
-}
-
-/* BOTÃO PDF */
-$("cli_emitirPdf").onclick=()=>{
-  const p=(localStorage.getItem("planoAtual")||"free").toLowerCase();
-  if(p==="free"||p==="freemium"){ alert("PDF apenas Premium/Pro"); return; }
-
-  const d={
-    id:Date.now(),
-    nome:$("cli_nomePassageiro").value||"",
-    origem:$("cli_origem").value||"",
-    destino:$("cli_destino").value||"",
-    descricao:$("descricao").value||"",
-    horaChegada:$("horaChegada").value||"",
-    horaInicio:$("horaInicio").value||"",
-    parada1:$("parada1").value||"",
-    parada2:$("parada2").value||"",
-    horaFim:$("horaFim").value||"",
-    valor:$("cli_valor").value||"",
-    data:$("cli_dataViagem").value||""
-  };
-
-  cliGerarPDF(d);
-
-  let arr=load(CLI_RECIBOS_KEY)||[];
-  arr.unshift(d);
-  save(CLI_RECIBOS_KEY,arr);
-  renderHistorico();
-  setAba("historico");
-};
-</script>
-
-<script>
-/* CLIENTE - Whats */
-$("cli_enviarWa").onclick=()=>{
-  const p=(localStorage.getItem("planoAtual")||"free").toLowerCase();
-  if(p==="free"||p==="freemium"){ alert("WhatsApp apenas Premium/Pro"); return; }
-
-  const d={
-    nome:$("cli_nomePassageiro").value||"",
-    origem:$("cli_origem").value||"",
-    destino:$("cli_destino").value||"",
-    descricao:$("descricao").value||"",
-    horaChegada:$("horaChegada").value||"",
-    horaInicio:$("horaInicio").value||"",
-    parada1:$("parada1").value||"",
-    parada2:$("parada2").value||"",
-    horaFim:$("horaFim").value||"",
-    valor:$("cli_valor").value||"",
-    data:$("cli_dataViagem").value||""
-  };
-  const br=iso=> iso? new Date(iso).toLocaleDateString("pt-BR"):"-";
-
-  const msg=
-`Recibo de Viagem
-Data ${br(d.data)}
-
-Descrição da viagem:
-${d.descricao}
-
-Cliente: ${d.nome}
-Origem: ${d.origem}
-Destino: ${d.destino}
-
-⏱ Chegada no ponto de Embarque: ${d.horaChegada} h
-⏱ Horário inicio da viagem: ${d.horaInicio} h
-
-Parada 1: ${d.parada1}
-Parada 2: ${d.parada2}
-
-⏱ Horário final: ${d.horaFim} h
-
-Valor da viagem:
-R$ ${(Number(d.valor||0)).toFixed(2).replace(".",",")}
-
-Responsável (Mesmo que solicitante)`;
-  window.open("https://wa.me/?text="+encodeURIComponent(msg));
-};
-</script>
-
-<script>
-/* ============================================================
-   HISTÓRICO
-============================================================ */
-function renderHistorico(){
-  const empBox=$("hist_empresas");
-  const cliBox=$("hist_clientes");
-  if(!empBox||!cliBox) return;
-
-  const emp=load(EMP_RECIBOS_KEY)||[];
-  const cli=load(CLI_RECIBOS_KEY)||[];
-
-  empBox.innerHTML = emp.length? emp.map(r=>`
-    <div class="hist-item">
-      <div>
-        <strong>${r.nome||"-"}</strong><br>
-        <span>${r.data||""}</span>
-      </div>
-      <div>R$ ${r.valor||"-"}</div>
-    </div>
-  `).join("") : "<div style='opacity:.6;font-size:13px;'>Sem recibos</div>";
-
-  cliBox.innerHTML = cli.length? cli.map(r=>`
-    <div class="hist-item">
-      <div>
-        <strong>${r.nome||"-"}</strong><br>
-        <span>${r.data||""}</span>
-      </div>
-      <div>R$ ${r.valor||"-"}</div>
-    </div>
-  `).join("") : "<div style='opacity:.6;font-size:13px;'>Sem recibos</div>";
-}
-renderHistorico();
 </script>
 
 </body>
