@@ -55,7 +55,7 @@ td{padding:10px;border-bottom:1px solid var(--border)}
   position:fixed;bottom:0;left:0;right:0;background:var(--card);
   border-top:0px solid var(--border);display:flex;justify-content:space-around;padding:8px 0
 }
-.bottom-nav a{color:var(--text);font-size:20px;text-decoration:none}
+.bottom-nav a{color:var(--text);font-size:15px;text-decoration:none}
 .center-btn{
   background:var(--gold);color:#000;width:58px;height:58px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;font-size:24px;margin-top:-30px
@@ -88,27 +88,28 @@ td{padding:10px;border-bottom:1px solid var(--border)}
     <i class="fa fa-xmark"></i>
   </div>
 
-  <a href="instalar-app.html"><i class="fa fa-download"></i> Instalar App</a>
-  <a href="index.html"><i class="fa fa-chart-line"></i> Dashboard</a>
-  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos de Viagens</a>
-  <a href="entradas.html"><i class="fa fa-cash-register"></i> Caixa</a>
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Livro Caixa</a>
   <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
-  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira</a>
-  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i> Despesas Pessoais</a>
-  <a href="resumo.html"><i class="fa fa-file"></i> Relatório</a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira (Dashboard)</a>
+  <a href="registro-despesas.html"><i class="fa fa-file-invoice-dollar"></i> Registro de Despesas</a>
+  <a href="despesas-registradas.html"><i class="fa fa-file-invoice-dollar"></i> Lista de Pagamentos</a>
+  <a href="acompanhamento-pagamentos.html"><i class="fa fa-file-invoice-dollar"></i> Histórico de Pagamentos</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório Geral</a>
   <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
   <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
   <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
-  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a </a>
   <a class="suporte-whatsapp"
      href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
      target="_blank">
-    <i class="fa fa-whatsapp"></i> Suporte WhatsApp
+    <i class="fa-brands fa-whatsapp"></i> Suporte WhatsApp
   </a>
 </nav>
 
 <div class="header">
-  <h1>Caixa</h1>
+  <h1>Livro Caixa</h1>
   <small>Gestão Financeira Diária</small>
 </div>
 
@@ -117,6 +118,20 @@ td{padding:10px;border-bottom:1px solid var(--border)}
   <div class="summary-row"><span>Saídas</span><span id="resSaidas">R$ 0,00</span></div>
   <div class="summary-row"><strong>Saldo</strong><strong id="resSaldo">R$ 0,00</strong></div>
   <canvas id="grafico" height="120"></canvas>
+</div>
+
+<div class="card">
+  <button onclick="fecharCaixa()" style="
+    background:var(--green);
+    color:#000;
+    font-weight:700;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    width:100%;
+  ">
+    🔒 Fechar Caixa do Dia
+  </button>
 </div>
 
 <div class="tab-buttons">
@@ -157,19 +172,21 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 </div>
 
 <nav class="bottom-nav">
-  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
-  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i></a>
-  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i></a>
+  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora</a>
 
   <!-- BOTÃO CENTRAL (DASHBOARD) -->
   <a href="index.html" class="center-btn">
     <i class="fa fa-house"></i>
   </a>
 
-  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
-  <a href="perfil.html"><i class="fa fa-user"></i></a>
-  <a href="planos.html"><i class="fa fa-crown"></i></a>
+  <a href="registro-despesas.html"><i class="fa fa-file-invoice-dollar"></i> Registro</a>
+  <a href="despesas-registradas.html"><i class="fa fa-file-invoice-dollar"></i> List Pag</a>
+  <a href="acompanhamento-pagamentos.html"><i class="fa fa-file-invoice-dollar"></i> Hist Pag</a>
 </nav>
+
+<script src="dataManager.js"></script>
 
 <script>
 /* ===== TEMA ===== */
@@ -237,6 +254,32 @@ document.querySelectorAll(".tab-btn").forEach(b=>b.onclick=()=>{
  document.getElementById(b.dataset.tab).style.display="block"
 })
 render();atualizar()
+
+function fecharCaixa() {
+  const ent = dados.entradas.reduce((s,i)=>s+i.valor,0);
+  const sai = dados.saidas.reduce((s,i)=>s+i.valor,0);
+  const saldo = ent - sai;
+
+  if (saldo <= 0) {
+    alert("Saldo zerado ou negativo. Nada para transferir.");
+    return;
+  }
+
+  const resp = DataManager.fecharCaixa(saldo);
+
+  if (!resp.ok) {
+    alert(resp.msg);
+    return;
+  }
+
+  alert("Caixa fechado! Saldo enviado para a Carteira.");
+
+  // Limpa o caixa após fechamento
+  dados = { entradas: [], saidas: [] };
+  localStorage.setItem("rf_caixa", JSON.stringify(dados));
+  atualizar();
+}
+
 </script>
 
 </body>
