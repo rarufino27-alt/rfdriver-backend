@@ -7,7 +7,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root{
@@ -20,53 +19,136 @@ body[data-theme="light"]{
 }
 *{box-sizing:border-box;font-family:Inter}
 body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
-.header{text-align:center;margin-bottom:10px}
-.header h1{margin:0;font-size:26px;color:var(--gold)}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:20px}
+.header h1{margin:0;font-size:36px;color:var(--gold)}
 .header small{opacity:.7}
-.drawer-toggle,.theme-toggle{
-  position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:20
+
+/* GRID */
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
 }
-.drawer-toggle{left:15px}.theme-toggle{right:15px}
-.drawer{
-  position:fixed;top:0;left:-260px;width:260px;height:100%;
-  background:var(--card);border-right:1px solid var(--border);
-  padding-top:20px;transition:.3s;z-index:15
+
+/* CARDS */
+.quad,.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
 }
-.drawer.open{left:0}
-.drawer a{
-  display:flex;gap:12px;padding:14px 20px;
-  color:var(--text);text-decoration:none;border-bottom:1px solid var(--border)
+
+/* SALDO HERO */
+.quad.saldo{
+  border:2px solid var(--gold);
 }
-.card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:14px;padding:16px;margin-bottom:15px
+.quad.saldo h2{
+  font-size:36px;
+  margin:10px 0;
 }
-input{
-  width:100%;padding:12px;margin-bottom:10px;
-  border-radius:10px;border:1px solid var(--border);
-  background:var(--bg);color:var(--text)
+
+/* META DIÁRIA */
+.quad.meta-dia{
 }
-.summary-row{
-  display:flex;justify-content:space-between;
-  font-weight:600;margin-bottom:6px
+.quad.meta-dia h3{
+  font-size:24px;
 }
+
+/* TEXTO */
+.quad small{opacity:.7}
+.hint{font-size:13px;opacity:.6;margin-top:6px}
+
+/* PROGRESSO */
 .progress{
-  width:100%;height:10px;border-radius:10px;
-  background:var(--border);overflow:hidden;margin-top:6px
+  margin-top:10px;
+  height:8px;
+  background:var(--border);
+  border-radius:6px;
+  overflow:hidden;
 }
-.progress span{
-  display:block;height:100%;background:var(--gold)
+.progress-bar{
+  height:100%;
+  background:var(--gold);
+  width:0%;
 }
+
+/* STATUS */
+.status.ok{color:var(--green)}
+.status.alerta{color:#f5c542}
+.status.risco{color:var(--red)}
+
+/* IA / PREVISÃO */
+.card.ia{border-left:6px solid var(--gold)}
+.card.previsao{border-left:6px solid var(--green)}
+.card h3{margin:8px 0}
+
+/* BOTÕES FLUTUANTES */
+.drawer-toggle,
+.theme-toggle{
+  position:fixed;
+  top:15px;
+  font-size:22px;
+  color:var(--gold);
+  cursor:pointer;
+  z-index:40;
+}
+
+.drawer-toggle{
+  left:15px;
+}
+
+.theme-toggle{
+  right:15px;
+}
+
+/* MENU LATERAL */
+.drawer{
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:260px;
+  height:100%;
+  background:var(--card);
+  border-right:1px solid var(--border);
+  padding-top:20px;
+  transition:.3s;
+  z-index:30;
+  overflow-y:auto;
+}
+
+.drawer.open{
+  left:0;
+}
+
+.drawer a{
+  display:flex;
+  gap:12px;
+  padding:14px 20px;
+  color:var(--text);
+  text-decoration:none;
+  border-bottom:1px solid var(--border);
+}
+
+.drawer .close-btn{
+  text-align:right;
+  padding:0 20px 10px;
+  cursor:pointer;
+}
+
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;
-  background:var(--card);border-top:1px solid var(--border);
-  display:flex;justify-content:space-around;padding:8px 0
+  background:var(--card);
+  display:flex;justify-content:space-around;
+  padding:8px 0
 }
-.bottom-nav a{color:var(--text);font-size:20px;text-decoration:none}
+.bottom-nav a{color:var(--text);font-size:15px;text-decoration:none}
 .center-btn{
-  background:var(--gold);color:#000;width:58px;height:58px;
-  border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:24px;margin-top:-30px
+  background:var(--gold);color:#000;
+  width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-top:-30px
 }
 
 .suporte-whatsapp{
@@ -88,158 +170,206 @@ input{
 
 <body>
 
-<div class="drawer-toggle" onclick="drawer.classList.toggle('open')">
-  <i class="fa fa-bars"></i>
-</div>
-<div class="theme-toggle" onclick="toggleTheme()">
-  <i class="fa fa-moon"></i>
-</div>
+<!-- TOGGLES -->
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
+<!-- MENU LATERAL -->
 <nav class="drawer" id="drawer">
   <div class="close-btn" onclick="toggleDrawer()">
     <i class="fa fa-xmark"></i>
   </div>
 
-  <a href="instalar-app.html"><i class="fa fa-download"></i> Instalar App</a>
-  <a href="index.html"><i class="fa fa-chart-line"></i> Dashboard</a>
-  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos de Viagens</a>
-  <a href="entradas.html"><i class="fa fa-cash-register"></i> Caixa</a>
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Livro Caixa</a>
   <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
-  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira</a>
-  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i> Despesas Pessoais</a>
-  <a href="resumo.html"><i class="fa fa-file"></i> Relatório</a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira (Dashboard)</a>
+  <a href="registro-despesas.html"><i class="fa fa-file-invoice-dollar"></i> Registro de Despesas</a>
+  <a href="despesas-registradas.html"><i class="fa fa-file-invoice-dollar"></i> Lista de Pagamentos</a>
+  <a href="acompanhamento-pagamentos.html"><i class="fa fa-file-invoice-dollar"></i> Histórico de Pagamentos</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório Geral</a>
   <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
   <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
   <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
-  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a </a>
   <a class="suporte-whatsapp"
      href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
      target="_blank">
-    <i class="fa fa-whatsapp"></i> Suporte WhatsApp
+    <i class="fa-brands fa-whatsapp"></i> Suporte WhatsApp
   </a>
 </nav>
 
+
 <div class="header">
   <h1>Carteira</h1>
-  <small>Controle de Metas e Saldo</small>
+  <small>Resumo financeiro do mês</small>
 </div>
 
-<div class="card">
-  <h3>Metas</h3>
-  <input type="number" id="metaDiaria" placeholder="Meta diária (R$)">
-  <input type="number" id="metaMensal" placeholder="Meta mensal (R$)">
+<div class="dashboard-grid">
+
+  <!-- SALDO -->
+  <div class="quad saldo">
+    <small>Saldo Atual (Caixa)</small>
+    <h2 id="saldo">R$ 0,00</h2>
+    <div class="hint">Disponível após fechamento do caixa</div>
+  </div>
+
+  <!-- META MENSAL -->
+  <div class="quad">
+    <small>Meta Mensal</small>
+    <h3 id="metaMensal">R$ 0,00</h3>
+    <div class="hint">Total de despesas do mês</div>
+
+    <div style="margin-top:8px">
+      <div><span>Pago</span> <strong id="pago">R$ 0,00</strong></div>
+      <div><span>Falta</span> <strong id="falta">R$ 0,00</strong></div>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar" id="barraMeta"></div>
+    </div>
+  </div>
+
+  <!-- META DIÁRIA -->
+  <div class="quad meta-dia">
+    <small>Meta Diária</small>
+    <h3 id="metaDiaria">R$ 0,00</h3>
+    <div class="hint">Hoje você precisa faturar pelo menos isso</div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="quad">
+    <small>Status do Mês</small>
+    <h3 id="statusMes"></h3>
+    <div class="hint">Avaliação automática do cenário atual</div>
+  </div>
+
 </div>
 
-<div class="card">
-  <h3>Resumo Financeiro</h3>
-
-  <div class="summary-row">
-    <span>Saldo do Caixa</span>
-    <span id="saldoCaixa">R$ 0,00</span>
-  </div>
-
-  <div class="summary-row">
-    <span>Despesas</span>
-    <span id="totalDespesas">R$ 0,00</span>
-  </div>
-
-  <div class="summary-row">
-    <strong>Saldo Disponível</strong>
-    <strong id="saldoDisponivel">R$ 0,00</strong>
-  </div>
+<div class="card ia">
+  <small>🤖 Sugestão financeira de hoje</small>
+  <h3 id="iaTitulo"></h3>
+  <p id="iaTexto"></p>
 </div>
 
-<div class="card">
-  <h3>Progresso da Meta Diária</h3>
-  <div class="summary-row">
-    <span>Falta</span>
-    <span id="faltaDiaria">R$ 0,00</span>
-  </div>
-  <div class="progress"><span id="progDiaria"></span></div>
-</div>
-
-<div class="card">
-  <h3>Progresso da Meta Mensal</h3>
-  <div class="summary-row">
-    <span>Falta</span>
-    <span id="faltaMensal">R$ 0,00</span>
-  </div>
-  <div class="progress"><span id="progMensal"></span></div>
+<div class="card previsao">
+  <small>📈 Previsão de fechamento do mês</small>
+  <h3 id="previsaoValor"></h3>
+  <p id="previsaoTexto"></p>
 </div>
 
 <nav class="bottom-nav">
-  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
-  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i></a>
-  <a href="despesas.html"><i class="fa fa-file-invoice-dollar"></i></a>
+  <a href="planos.html"><i class="fa fa-crown"></i> Planos</a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora</a>
 
   <!-- BOTÃO CENTRAL (DASHBOARD) -->
   <a href="index.html" class="center-btn">
     <i class="fa fa-house"></i>
   </a>
 
-  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
-  <a href="perfil.html"><i class="fa fa-user"></i></a>
-  <a href="planos.html"><i class="fa fa-crown"></i></a>
+  <a href="registro-despesas.html"><i class="fa fa-file-invoice-dollar"></i> Registro</a>
+  <a href="despesas-registradas.html"><i class="fa fa-file-invoice-dollar"></i> List Pag</a>
+  <a href="acompanhamento-pagamentos.html"><i class="fa fa-file-invoice-dollar"></i> Hist Pag</a>
 </nav>
 
+<script src="dataManager.js"></script>
 <script>
+/* ===============================
+   CARTEIRA ENGINE (mantido)
+=============================== */
+const CarteiraEngine = (() => {
+  const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+  function getResumoMes(){
+    const hoje = new Date();
+    const chaveMes = hoje.toISOString().slice(0,7);
+    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0).getDate();
+    const diasRestantes = Math.max(ultimoDiaMes - hoje.getDate() + 1, 1);
+
+    const data = DataManager.getData();
+    const pagamentosMes = data.pagamentos.filter(p =>
+      p.dataVencimento && p.dataVencimento.startsWith(chaveMes) && p.valor > 0
+    );
+
+    const metaMensalTotal = pagamentosMes.reduce((s,p)=>s+p.valor,0);
+    const totalPago = pagamentosMes.filter(p=>p.pago).reduce((s,p)=>s+p.valor,0);
+    const totalEmAberto = metaMensalTotal - totalPago;
+
+    return {
+      saldo: DataManager.getSaldoCarteira(),
+      metaMensalTotal,
+      totalPago,
+      totalEmAberto,
+      metaDiaria: metaMensalTotal > 0 ? metaMensalTotal / diasRestantes : 0,
+      percentualPago: metaMensalTotal > 0 ? (totalPago/metaMensalTotal)*100 : 0
+    };
+  }
+
+  return { getResumoMes, moeda };
+})();
+
+/* ===============================
+   RENDER
+=============================== */
 (function(){
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark"
-})()
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
 
+  const r = CarteiraEngine.getResumoMes();
+
+  saldo.textContent = CarteiraEngine.moeda(r.saldo);
+  metaMensal.textContent = CarteiraEngine.moeda(r.metaMensalTotal);
+  pago.textContent = CarteiraEngine.moeda(r.totalPago);
+  falta.textContent = CarteiraEngine.moeda(r.totalEmAberto);
+  metaDiaria.textContent = CarteiraEngine.moeda(r.metaDiaria);
+  barraMeta.style.width = r.percentualPago + "%";
+
+  if (r.totalEmAberto <= 0) {
+    statusMes.textContent = "Mês controlado";
+    statusMes.className = "status ok";
+  } else if (r.metaDiaria <= 300) {
+    statusMes.textContent = "Situação sob controle";
+    statusMes.className = "status alerta";
+  } else {
+    statusMes.textContent = "Mês em risco";
+    statusMes.className = "status risco";
+  }
+
+  const pressao = r.metaDiaria / 300;
+  if (pressao <= 0.7) {
+    iaTitulo.textContent = "Dia tranquilo";
+    iaTexto.textContent = "Meta diária baixa. Trabalhe no seu ritmo.";
+  } else if (pressao <= 1.1) {
+    iaTitulo.textContent = "Dia de atenção";
+    iaTexto.textContent = "Mantenha constância para não pressionar o mês.";
+  } else {
+    iaTitulo.textContent = "Dia crítico";
+    iaTexto.textContent = "Meta diária alta. Priorize faturamento hoje.";
+  }
+
+  const hoje = new Date();
+  const mediaReal = hoje.getDate() > 1 ? r.saldo / hoje.getDate() : 0;
+  const previsao = mediaReal * new Date(hoje.getFullYear(), hoje.getMonth()+1, 0).getDate() - r.metaMensalTotal;
+
+  previsaoValor.textContent = CarteiraEngine.moeda(previsao);
+  previsaoTexto.textContent =
+    previsao >= 0
+      ? "Mantendo o ritmo atual, o mês tende a fechar positivo."
+      : "Se nada mudar, o mês tende a fechar no negativo.";
+})();
+
+function toggleDrawer(){
+  document.getElementById("drawer").classList.toggle("open");
+}
+</script>
+
+<script>
 function toggleTheme(){
-  const t = document.body.dataset.theme === "light" ? "dark" : "light"
-  document.body.dataset.theme = t
-  localStorage.setItem("tema", t)
+  const atual = document.body.dataset.theme === "light" ? "dark" : "light";
+  document.body.dataset.theme = atual;
+  localStorage.setItem("tema", atual);
 }
-
-const metaDiariaInput = document.getElementById("metaDiaria")
-const metaMensalInput = document.getElementById("metaMensal")
-
-metaDiariaInput.value = localStorage.getItem("rf_meta_diaria") || ""
-metaMensalInput.value = localStorage.getItem("rf_meta_mensal") || ""
-
-metaDiariaInput.oninput = () =>
-  localStorage.setItem("rf_meta_diaria", metaDiariaInput.value)
-
-metaMensalInput.oninput = () =>
-  localStorage.setItem("rf_meta_mensal", metaMensalInput.value)
-
-function atualizarCarteira(){
-  const entradas = +localStorage.getItem("rf_caixa_total_entradas") || 0
-  const saidas = +localStorage.getItem("rf_caixa_total_saidas") || 0
-  const despesas = JSON.parse(localStorage.getItem("rf_despesas")) || []
-
-  const totalDespesas = despesas.reduce((s,d)=>s+d.valor,0)
-  const saldoCaixa = entradas - saidas
-  const saldoDisponivel = saldoCaixa - totalDespesas
-
-  saldoCaixaEl.textContent = saldoCaixa.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
-  totalDespesasEl.textContent = totalDespesas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
-  saldoDisponivelEl.textContent = saldoDisponivel.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
-
-  const metaD = +metaDiariaInput.value || 0
-  const metaM = +metaMensalInput.value || 0
-
-  const faltaD = Math.max(metaD - saldoDisponivel, 0)
-  const faltaM = Math.max(metaM - saldoDisponivel, 0)
-
-  faltaDiaria.textContent = faltaD.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
-  faltaMensal.textContent = faltaM.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
-
-  progDiaria.style.width = metaD ? Math.min((saldoDisponivel/metaD)*100,100)+"%" : "0%"
-  progMensal.style.width = metaM ? Math.min((saldoDisponivel/metaM)*100,100)+"%" : "0%"
-}
-
-const saldoCaixaEl = document.getElementById("saldoCaixa")
-const totalDespesasEl = document.getElementById("totalDespesas")
-const saldoDisponivelEl = document.getElementById("saldoDisponivel")
-const faltaDiaria = document.getElementById("faltaDiaria")
-const faltaMensal = document.getElementById("faltaMensal")
-const progDiaria = document.getElementById("progDiaria")
-const progMensal = document.getElementById("progMensal")
-
-atualizarCarteira()
 </script>
 
 </body>
