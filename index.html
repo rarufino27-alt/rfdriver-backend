@@ -191,6 +191,46 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 
 <script>
 (function(){
+
+  // Segurança máxima
+  if(
+    typeof PlanoManager === "undefined" ||
+    typeof PlanoManager.getPlano !== "function"
+  ){
+    return;
+  }
+
+  const paginaAtual =
+    (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
+
+  const plano = PlanoManager.getPlano();
+
+  // Libera sempre a página de planos
+  if(paginaAtual === "planos.html"){
+    return;
+  }
+
+  // Durante as 36h de teste: TUDO liberado
+  if(plano === "freemium" && PlanoManager.isTesteAtivo()){
+    return;
+  }
+
+  // Após o teste: restringe freemium
+  if(plano === "freemium"){
+
+    const paginasLiberadas = (window.PaginasLiberadasFreemium || ["entradas.html"])
+      .map(p => p.toLowerCase());
+
+    if(!paginasLiberadas.includes(paginaAtual)){
+      window.location.replace("planos.html");
+    }
+  }
+
+})();
+</script>
+
+<script>
+(function(){
  document.body.dataset.theme=localStorage.getItem("tema")||"dark";
 })();
 
