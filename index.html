@@ -101,6 +101,17 @@ td{padding:10px;border-bottom:1px solid var(--border)}
   gap:8px;
 }
 </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFC107">
+
+<!-- iOS / aparência -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="RF Driver">
+
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
 </head>
 
 <body>
@@ -239,6 +250,14 @@ function carregarAgendamentos(){
 }
 
 atualizarDashboard();
+</script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/rfdriver-backend/service-worker.js");
+    });
+  }
 </script>
 
 </body>
