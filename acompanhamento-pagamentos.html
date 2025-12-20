@@ -58,7 +58,11 @@ tr.recebimento td{color:var(--green)}
   cursor:pointer;
   font-size:9px
 }
-.btn-pagar{background:var(--green);color:#000}
+.btn-pagar{
+ background:var(--green);
+ color:#000;font-size:8px;
+ padding:4px 5px;
+}
 
 input{
   background:var(--bg);
@@ -224,6 +228,14 @@ input{
 document.body.dataset.theme = localStorage.getItem("tema") || "dark";
 const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
+function dataAbreviada(data){
+  const d = new Date(data);
+  const dia = String(d.getDate()).padStart(2, "0");
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const ano = String(d.getFullYear()).slice(-2);
+  return `${dia}/${mes}/${ano}`;
+}
+
 function toggleTheme(){ document.body.dataset.theme = DataManager.toggleTema(); }
 function toggleDrawer(){ drawer.classList.toggle("open"); }
 
@@ -270,7 +282,7 @@ function pagar(id){
 function render(){
   const hoje = new Date();
   tituloMes.textContent = hoje.toLocaleString("pt-BR",{month:"long"}).toUpperCase();
-  dataAtual.textContent = hoje.toLocaleDateString("pt-BR");
+  dataAtual.textContent = dataAbreviada(hoje);
 
   const mes = hoje.getMonth(), ano = hoje.getFullYear();
   const pagamentos = DataManager.getPagamentos().filter(p=>{
@@ -317,7 +329,7 @@ function render(){
     const div = document.createElement("div");
     div.className = `card semana ${classe}`;
     div.innerHTML = `
-      <h3>${ini.toLocaleDateString("pt-BR")} → ${fim.toLocaleDateString("pt-BR")}</h3>
+      <h3>${dataAbreviada(ini)} → ${dataAbreviada(fim)}</h3>
       <table>
         <tr><th>Descrição</th><th>Valor</th><th>Parcela</th><th>Data</th><th></th></tr>
         ${semanas[k].map(p=>`
@@ -325,7 +337,7 @@ function render(){
             <td>${p.descricao}</td>
             <td>${moeda(p.valor)}</td>
             <td>${p.parcelaInfo||""}</td>
-            <td>${new Date(p.dataVencimento).toLocaleDateString("pt-BR")}</td>
+            <td>${dataAbreviada(p.dataVencimento)}</td>
             <td>${p.pago?"✔":`<button class="btn btn-pagar" onclick="pagar('${p.id}')">Pagar</button>`}</td>
           </tr>
         `).join("")}
