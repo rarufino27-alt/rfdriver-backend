@@ -179,3 +179,65 @@ const DataManager = {
     return this.getData().carteira.historico;
   }
 };
+
+const PlanoManager = {
+
+  getPlano(){
+    return localStorage.getItem("planoUsuario") || "freemium";
+  },
+
+  setPlano(plano){
+    localStorage.setItem("planoUsuario", plano);
+
+    if(plano === "freemium"){
+      if(!localStorage.getItem("inicioTeste")){
+        localStorage.setItem("inicioTeste", new Date().toISOString());
+      }
+    } else {
+      localStorage.removeItem("inicioTeste");
+    }
+  },
+
+  isTesteAtivo(){
+    const inicio = localStorage.getItem("inicioTeste");
+    if(!inicio) return false;
+
+    const agora = new Date();
+    const inicioData = new Date(inicio);
+    const diffHoras = (agora - inicioData) / (1000 * 60 * 60);
+
+    return diffHoras <= 36;
+  },
+
+  acessoTotalLiberado(){
+    const plano = this.getPlano();
+    if(plano !== "freemium") return true;
+    return this.isTesteAtivo();
+  }
+
+};
+
+const PaginasLiberadasFreemium = [
+  "entradas.html"
+];
+
+const PlanoConfig = {
+  freemium: {
+    acessoTotal: false,
+    paginasLiberadas: ["entradas.html"]
+  },
+  mensal: {
+    acessoTotal: true
+  },
+  semestral: {
+    acessoTotal: true
+  },
+  vitalicio: {
+    acessoTotal: true
+  }
+};
+
+PlanoManager.temAcessoTotal = function(){
+  const plano = this.getPlano();
+  return PlanoConfig[plano]?.acessoTotal === true;
+};
