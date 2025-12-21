@@ -37,33 +37,147 @@ const DataManager = {
   },
 
   gerarId() {
-    return (
-      Date.now().toString(36) +
-      Math.random().toString(36).slice(2, 8)
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  },
+
+  /* ===============================
+     REGISTRO DE DESPESA
+  =============================== */
+  adicionarRegistro({
+    categoria,
+    descricao,
+    tipo,
+    valorParcela,
+    totalParcelas,
+    dataBase
+  }) {
+    const data = this.getData();
+
+    const recorrente = totalParcelas === null;
+
+    const registro = {
+      id: this.gerarId(),
+      categoria,
+      descricao: descricao.trim(),
+      tipo,
+      valorParcela: Number(valorParcela),
+      totalParcelas,
+      recorrente,
+      dataBase,
+      criadoEm: new Date().toISOString()
+    };
+
+    data.registros.push(registro);
+
+    this.gerarPagamentos(registro, data);
+
+    this.saveData(data);
+  },
+
+  /* ===============================
+     GERA PAGAMENTOS
+     REGRA: apenas ANO ATUAL
+  =============================== */
+ gerarPagamentos(registro, data) {
+  const dataRegistro = new Date(registro.dataBase);
+  const anoAtual = new Date().getFullYear();
+
+  // Janeiro do ano atual, mantendo o dia original
+  let dt = new Date(anoAtual, 0, dataRegistro.getDate());
+
+  // Se o dia não existir no mês (ex: 31/02), ajusta automaticamente
+  if (dt.getDate() !== dataRegistro.getDate()) {
+    dt = new Date(anoAtual, 0 + 1, 0);
+  }
+
+  // RECORRENTE: Janeiro → Dezembro
+  if (registro.recorrente) {
+    while (dt.getFullYear() === anoAtual) {
+      data.pagamentos.push(
+        this._criarPagamento(
+          registro,
+          new Date(dt),
+          "MENSAL"
+        )
+      );
+      dt.setMonth(dt.getMonth() + 1);
+    }
+    return;
+  }
+
+  // PARCELADO (limitado ao ano)
+  for (let i = 1; i <= registro.totalParcelas; i++) {
+    if (dt.getFullYear() !== anoAtual) break;
+
+    data.pagamentos.push(
+      this._criarPagamento(
+        registro,
+        new Date(dt),
+        `${i} de ${registro.totalParcelas}`
+      )
     );
+    dt.setMonth(dt.getMonth() + 1);
+  }
+},
+
+  _criarPagamento(registro, dataVenc, parcelaInfo) {
+    return {
+      id: this.gerarId(),
+      registroId: registro.id,
+      descricao: registro.descricao,
+      categoria: registro.categoria,
+      tipo: registro.tipo,
+      valor: registro.valorParcela,
+      parcelaInfo,
+      dataVencimento: dataVenc.toISOString().split("T")[0],
+      pago: false,
+      dataPagamento: null
+    };
+  },
+
+  /* ===============================
+     PAGAMENTOS
+  =============================== */
+  getPagamentos() {
+    return this.getData().pagamentos;
+  },
+
+  marcarComoPago(id) {
+    const data = this.getData();
+    const pg = data.pagamentos.find(p => p.id === id);
+    if (!pg || pg.pago) return;
+
+    pg.pago = true;
+    pg.dataPagamento = new Date().toISOString().split("T")[0];
+
+    data.carteira.saldo -= pg.valor;
+    data.carteira.historico.push({
+      tipo: "saida",
+      valor: pg.valor,
+      data: pg.dataPagamento,
+      origem: pg.descricao
+    });
+
+    this.saveData(data);
+  },
+
+  removerPorDescricao(descricao) {
+    const data = this.getData();
+    data.pagamentos = data.pagamentos.filter(p => p.descricao !== descricao);
+    data.registros = data.registros.filter(r => r.descricao !== descricao);
+    this.saveData(data);
   },
 
   /* ===============================
      CARTEIRA
   =============================== */
-  getSaldoCarteira() {
-    return this.getData().carteira.saldo;
-  },
-
-  getHistoricoCarteira() {
-    return this.getData().carteira.historico;
-  },
-
   adicionarSaldoCarteira(valor, origem = "Fechamento de Caixa") {
     const data = this.getData();
     const v = Number(valor);
 
-    if (!v || isNaN(v) || v <= 0) {
-      return { ok: false, msg: "Valor inválido" };
-    }
+    if (!v || v <= 0) return { ok: false };
 
     data.carteira.saldo += v;
-
     data.carteira.historico.push({
       tipo: "entrada",
       valor: v,
@@ -81,15 +195,12 @@ const DataManager = {
     return { ok: true };
   },
 
-  limparCarteira() {
-    const data = this.getData();
-    data.carteira = { saldo: 0, historico: [] };
-    this.saveData(data);
-    return { ok: true };
+  getSaldoCarteira() {
+    return this.getData().carteira.saldo;
   },
 
   /* ===============================
-     META MENSAL
+     META
   =============================== */
   setMetaMensal(valor, mesAno) {
     const data = this.getData();
@@ -99,111 +210,8 @@ const DataManager = {
 
   getMetaMensal(mesAno) {
     return this.getData().metas[mesAno] || 0;
-  },
-
-  /* ===============================
-     CONTROLE ANUAL / EXPORTAÇÃO
-  =============================== */
-  getAnoAtual() {
-    return new Date().getFullYear();
-  },
-
-  existeHistoricoAnoAnterior() {
-    const data = this.getData();
-    const anoAtual = this.getAnoAtual();
-
-    return data.caixaFechado.some(r =>
-      new Date(r.data).getFullYear() < anoAtual
-    );
-  },
-
-  exportarCSV(ano) {
-    const data = this.getData();
-    const registros = data.caixaFechado.filter(r =>
-      new Date(r.data).getFullYear() === ano
-    );
-
-    if (!registros.length) {
-      alert("Nenhum dado encontrado para exportação.");
-      return false;
-    }
-
-    let csv = "Data,Origem,Valor\n";
-
-    registros.forEach(r => {
-      csv += `${this.formatarDataCurta(r.data)},${r.origem},${r.valor}\n`;
-    });
-
-    const blob = new Blob([csv], {
-      type: "text/csv;charset=utf-8;"
-    });
-
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = `RF-Driver-${ano}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    return true;
-  },
-
-  limparAnoAnterior() {
-    const data = this.getData();
-    const anoAtual = this.getAnoAtual();
-
-    data.caixaFechado = data.caixaFechado.filter(r =>
-      new Date(r.data).getFullYear() === anoAtual
-    );
-
-    this.saveData(data);
   }
 };
-
-/* ===============================
-   PLANO / ACESSO
-=============================== */
-const PlanoManager = {
-  getPlano() {
-    return localStorage.getItem("planoUsuario") || "freemium";
-  },
-
-  setPlano(plano) {
-    localStorage.setItem("planoUsuario", plano);
-
-    if (plano === "freemium") {
-      if (!localStorage.getItem("inicioTeste")) {
-        localStorage.setItem("inicioTeste", new Date().toISOString());
-      }
-    } else {
-      localStorage.removeItem("inicioTeste");
-    }
-  },
-
-  isTesteAtivo() {
-    const inicio = localStorage.getItem("inicioTeste");
-    if (!inicio) return false;
-
-    const diffHoras =
-      (new Date() - new Date(inicio)) / (1000 * 60 * 60);
-
-    return diffHoras <= 36;
-  },
-
-  temAcessoTotal() {
-    const plano = this.getPlano();
-    return plano !== "freemium" || this.isTesteAtivo();
-  }
-};
-
-/* ===============================
-   FREEMIUM
-=============================== */
-const PaginasLiberadasFreemium = [
-  "entradas.html"
-];
 
 /* ===============================
    UTIL
