@@ -162,9 +162,7 @@ button{
 <body>
 
 <div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="GlobalTheme.toggle()">
-  <i class="fa fa-moon"></i>
-</div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
   <div class="close-btn" onclick="toggleDrawer()">
@@ -270,7 +268,6 @@ button{
 </nav>
 
 <script src="dataManager.js"></script>
-<script src="js/global.js"></script>
 
 <script>
 (function(){
@@ -313,7 +310,15 @@ button{
 </script>
 
 <script>
-
+/* TEMA */
+(function(){
+ document.body.dataset.theme = localStorage.getItem("tema") || "dark";
+})();
+function toggleTheme(){
+ const t=document.body.dataset.theme==="light"?"dark":"light";
+ document.body.dataset.theme=t;
+ localStorage.setItem("tema",t);
+}
 function toggleDrawer(){
  document.getElementById("drawer").classList.toggle("open");
 }
