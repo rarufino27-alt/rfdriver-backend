@@ -15,10 +15,7 @@ const DataManager = {
     if (!Array.isArray(data.caixaFechado)) data.caixaFechado = [];
 
     if (!data.carteira) {
-      data.carteira = {
-        saldo: 0,
-        historico: []
-      };
+      data.carteira = { saldo: 0, historico: [] };
     }
 
     if (!data.configuracoes) {
@@ -59,8 +56,8 @@ const DataManager = {
 
   adicionarSaldoCarteira(valor, origem = "Fechamento de Caixa") {
     const data = this.getData();
-
     const v = Number(valor);
+
     if (!v || isNaN(v) || v <= 0) {
       return { ok: false, msg: "Valor inválido" };
     }
@@ -86,12 +83,7 @@ const DataManager = {
 
   limparCarteira() {
     const data = this.getData();
-
-    data.carteira = {
-      saldo: 0,
-      historico: []
-    };
-
+    data.carteira = { saldo: 0, historico: [] };
     this.saveData(data);
     return { ok: true };
   },
@@ -107,6 +99,66 @@ const DataManager = {
 
   getMetaMensal(mesAno) {
     return this.getData().metas[mesAno] || 0;
+  },
+
+  /* ===============================
+     CONTROLE ANUAL / EXPORTAÇÃO
+  =============================== */
+  getAnoAtual() {
+    return new Date().getFullYear();
+  },
+
+  existeHistoricoAnoAnterior() {
+    const data = this.getData();
+    const anoAtual = this.getAnoAtual();
+
+    return data.caixaFechado.some(r =>
+      new Date(r.data).getFullYear() < anoAtual
+    );
+  },
+
+  exportarCSV(ano) {
+    const data = this.getData();
+    const registros = data.caixaFechado.filter(r =>
+      new Date(r.data).getFullYear() === ano
+    );
+
+    if (!registros.length) {
+      alert("Nenhum dado encontrado para exportação.");
+      return false;
+    }
+
+    let csv = "Data,Origem,Valor\n";
+
+    registros.forEach(r => {
+      csv += `${this.formatarDataCurta(r.data)},${r.origem},${r.valor}\n`;
+    });
+
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8;"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `RF-Driver-${ano}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    return true;
+  },
+
+  limparAnoAnterior() {
+    const data = this.getData();
+    const anoAtual = this.getAnoAtual();
+
+    data.caixaFechado = data.caixaFechado.filter(r =>
+      new Date(r.data).getFullYear() === anoAtual
+    );
+
+    this.saveData(data);
   }
 };
 
