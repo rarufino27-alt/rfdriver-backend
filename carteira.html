@@ -173,7 +173,9 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 
 <!-- TOGGLES -->
 <div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+<div class="theme-toggle" onclick="GlobalTheme.toggle()">
+  <i class="fa fa-moon"></i>
+</div>
 
 <!-- MENU LATERAL -->
 <nav class="drawer" id="drawer">
@@ -369,8 +371,7 @@ const CarteiraEngine = (() => {
    RENDER
 =============================== */
 (function(){
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
-
+  
   const r = CarteiraEngine.getResumoMes();
 
   saldo.textContent = CarteiraEngine.moeda(r.saldo);
