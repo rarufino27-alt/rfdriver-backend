@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Planos - RF Driver</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
@@ -48,8 +48,12 @@ body{
 .drawer a{
   display:flex;gap:12px;
   padding:14px 20px;color:var(--text);
-  text-decoration:none;border-bottom:1px solid var(--border)
+  text-decoration:none;border-bottom:1px solid var(--border);
   font-size:15px
+}
+.close-btn{
+  padding:12px 20px;
+  cursor:pointer;
 }
 .suporte-whatsapp{
   margin:16px;
@@ -126,17 +130,6 @@ body{
   font-size:13px;
   opacity:.7;
 }
-.trial button{
-  margin-top:14px;
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:none;
-  background:var(--gold);
-  color:#000;
-  font-weight:700;
-  font-size:16px;
-}
 
 /* PLANOS */
 .plan{
@@ -160,7 +153,7 @@ body{
 .price-main{
   margin:12px 0;
   font-size:30px;
-  font-weight:700;
+  font-weight:800;
 }
 .price-note{
   font-size:14px;
@@ -171,33 +164,54 @@ body{
   margin:14px 0 0;
   line-height:1.6;
 }
-.plan button{
+
+/* BOTÕES PREMIUM */
+.plan button,
+.trial button{
   width:100%;
   margin-top:18px;
   padding:15px;
-  border-radius:12px;
+  border-radius:14px;
   border:none;
   background:var(--gold);
   color:#000;
-  font-weight:700;
+  font-weight:800;
   font-size:16px;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  box-shadow:0 8px 18px rgba(245,197,66,.25);
+}
+.plan button:hover,
+.trial button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 26px rgba(245,197,66,.4);
+}
+.plan button:active,
+.trial button:active{
+  transform:scale(.96);
+  box-shadow:0 4px 10px rgba(245,197,66,.6);
+  background:#ffd666;
 }
 
 /* DESTAQUE SEMESTRAL */
 .plan.featured{
   border:2px solid var(--gold);
-  transform:scale(1.03);
-  box-shadow:0 0 0 2px rgba(245,197,66,.15);
+  background:linear-gradient(180deg,#1b1b1b,#111);
+  transform:scale(1.05);
+  box-shadow:0 20px 40px rgba(245,197,66,.35);
 }
+
+/* BADGE */
 .badge{
-  display:inline-block;
-  background:var(--gold);
+  background:linear-gradient(135deg,#f5c542,#ffd666);
   color:#000;
   font-size:12px;
-  font-weight:700;
-  padding:6px 12px;
+  font-weight:800;
+  padding:8px 14px;
   border-radius:999px;
   margin-bottom:10px;
+  display:inline-block;
+  box-shadow:0 6px 14px rgba(245,197,66,.5);
 }
 
 /* BOTTOM NAV */
@@ -223,18 +237,14 @@ body{
 <div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
-  <div class="close-btn" onclick="toggleDrawer()">
-    <i class="fa fa-xmark"></i>
-  </div>
-
+  <div class="close-btn" onclick="toggleDrawer()"><i class="fa fa-xmark"></i></div>
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
   <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos</a>
   <a href="entradas.html"><i class="fa fa-cash-register"></i> Livro Caixa</a>
   <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
   <a href="resumo.html"><i class="fa fa-file"></i> Relatório Geral</a>
-  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora</a>
   <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
-  <a </a>
   <a class="suporte-whatsapp"
      href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
      target="_blank">
@@ -244,40 +254,31 @@ body{
 
 <div class="hero">
   <h1>Você trabalha muito.<br>Seu dinheiro deveria trabalhar melhor.</h1>
-  <p>
-    O RF Driver é o painel de controle financeiro para motoristas, taxistas e entregadores
-    que querem parar de improvisar e começar a lucrar com previsibilidade.
-  </p>
+  <p>Controle, previsibilidade e lucro real para quem dirige todos os dias.</p>
 </div>
 
 <div class="pain">
   <h2>O problema não é quanto você ganha</h2>
-  <p>
-    É não saber exatamente quanto sobra, onde está gastando e se está evoluindo.
-    O RF Driver mostra isso de forma clara, diária e sem complicação.
-  </p>
+  <p>É não saber quanto sobra. O RF Driver resolve isso sem complicação.</p>
 </div>
 
 <div class="trial">
   <h3>Teste completo por 36 horas</h3>
-  <p>Use todas as funcionalidades sem pagar nada.</p>
-  <span>Sem cartão • Sem compromisso • Sem risco</span>
-  <button>Ativar teste gratuito</button>
+  <p>Desbloqueie tudo e veja o app trabalhando por você.</p>
+  <span>Sem cartão • Sem compromisso</span>
+  <button onclick="ativarTeste()">Desbloquear tudo por 36 horas</button>
 </div>
 
 <div class="plan">
   <h3>Plano Mensal</h3>
   <div class="price-old">De R$ 69,90</div>
   <div class="price-main">R$ 24,90</div>
-  <div class="price-note">Ideal para quem está começando</div>
+  <div class="price-note">Flexibilidade total</div>
   <ul>
-    <li>Acesso total ao app</li>
-    <li>Controle financeiro diário</li>
+    <li>Acesso completo</li>
     <li>Cancele quando quiser</li>
   </ul>
-    <button onclick="escolherPlano('mensal')">
-      Escolher plano mensal
-    </button>
+  <button onclick="escolherPlano('mensal')">Escolher plano mensal</button>
 </div>
 
 <div class="plan featured">
@@ -285,15 +286,12 @@ body{
   <h3>Plano Semestral</h3>
   <div class="price-old">De R$ 419,90</div>
   <div class="price-main">R$ 124,90</div>
-  <div class="price-note">Mais economia, mais controle</div>
+  <div class="price-note">Melhor custo-benefício</div>
   <ul>
-    <li>Acesso total por 6 meses</li>
-    <li>Economia real no longo prazo</li>
-    <li>Ideal para quem dirige todo dia</li>
+    <li>6 meses de acesso total</li>
+    <li>Economia real</li>
   </ul>
-   <button onclick="escolherPlano('semestral')">
-      Escolher plano semestral
-   </button>
+  <button onclick="escolherPlano('semestral')">Escolher plano semestral</button>
 </div>
 
 <div class="plan">
@@ -302,28 +300,19 @@ body{
   <div class="price-main">R$ 299,90</div>
   <div class="price-note">Pague uma vez, use para sempre</div>
   <ul>
-    <li>Acesso completo vitalício</li>
+    <li>Acesso eterno</li>
     <li>Atualizações inclusas</li>
-    <li>Para quem pensa como dono de negócio</li>
   </ul>
-  <button onclick="escolherPlano('vitalicio')">
-  Comprar vitalício
-  </button>
+  <button onclick="escolherPlano('vitalicio')">Comprar vitalício</button>
 </div>
 
 <nav class="bottom-nav">
-  <a href="planos.html"><i class="fa fa-crown"></i> </a>
-  <a href="perfil.html"><i class="fa fa-user"></i> </a>
-  <a href="carteira.html"><i class="fa fa-wallet"></i> </a>
-
-  <!-- BOTÃO CENTRAL (DASHBOARD) -->
-  <a href="index.html" class="center-btn">
-    <i class="fa fa-house"></i>
-  </a>
-
-  <a href="registro-despesas.html"><i class="fa fa-file-signature"></i> </a>
-  <a href="despesas-registradas.html"><i class="fa fa-list"></i> </a>
-  <a href="acompanhamento-pagamentos.html"><i class="fa fa-clock"></i> </a>
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
+  <a href="registro-despesas.html"><i class="fa fa-file-signature"></i></a>
+  <a href="despesas-registradas.html"><i class="fa fa-list"></i></a>
 </nav>
 
 <script>
@@ -336,25 +325,23 @@ function toggleTheme(){
   localStorage.setItem("tema", t);
 }
 function toggleDrawer(){
-  drawer.classList.toggle("open");
+  document.getElementById("drawer").classList.toggle("open");
+}
+function escolherPlano(plano){
+  if(typeof PlanoManager === "undefined") return;
+  if(navigator.vibrate) navigator.vibrate(40);
+  PlanoManager.setPlano(plano);
+  setTimeout(()=>location.href="carteira.html",250);
+}
+function ativarTeste(){
+  if(typeof PlanoManager === "undefined") return;
+  if(navigator.vibrate) navigator.vibrate(60);
+  PlanoManager.ativarTeste36h();
+  setTimeout(()=>location.href="index.html",250);
 }
 </script>
 
 <script src="dataManager.js"></script>
-
-<script>
-function escolherPlano(plano){
-
-  // Segurança
-  if(typeof PlanoManager === "undefined") return;
-
-  // Define o plano escolhido
-  PlanoManager.setPlano(plano);
-
-  // Redireciona para o app
-  window.location.href = "carteira.html";
-}
-</script>
 
 </body>
 </html>
