@@ -251,28 +251,43 @@ document.querySelectorAll(".tab-btn").forEach(b=>b.onclick=()=>{
 render();atualizar()
 
 function fecharCaixa() {
-  const ent = dados.entradas.reduce((s,i)=>s+i.valor,0);
-  const sai = dados.saidas.reduce((s,i)=>s+i.valor,0);
+  const ent = dados.entradas.reduce((s,i)=>s + Number(i.valor || 0), 0);
+  const sai = dados.saidas.reduce((s,i)=>s + Number(i.valor || 0), 0);
   const saldo = ent - sai;
 
   if (saldo <= 0) {
-    alert("Saldo zerado ou negativo. Nada para transferir.");
+    alert("Saldo zerado ou negativo. Nada para enviar à carteira.");
     return;
   }
 
-  const resp = DataManager.fecharCaixa(saldo);
-
-  if (!resp.ok) {
-    alert(resp.msg);
+  if (!confirm(`Confirmar fechamento do caixa?\nValor: R$ ${saldo.toFixed(2)}`)) {
     return;
   }
 
-  alert("Caixa fechado! Saldo enviado para a Carteira.");
+  // === CARTEIRA ===
+  const carteira = JSON.parse(localStorage.getItem("rf_carteira")) || {
+    saldo: 0,
+    historico: []
+  };
 
-  // Limpa o caixa após fechamento
+  carteira.saldo += saldo;
+  carteira.historico.push({
+    tipo: "Fechamento de Caixa",
+    valor: saldo,
+    data: new Date().toISOString()
+  });
+
+  localStorage.setItem("rf_carteira", JSON.stringify(carteira));
+
+  // === LIMPA CAIXA ===
   dados = { entradas: [], saidas: [] };
   localStorage.setItem("rf_caixa", JSON.stringify(dados));
+  localStorage.removeItem("rf_caixa_total_entradas");
+  localStorage.removeItem("rf_caixa_total_saidas");
+
   atualizar();
+
+  alert("Caixa fechado com sucesso e valor enviado para a Carteira.");
 }
 
 </script>
