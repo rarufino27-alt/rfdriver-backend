@@ -207,6 +207,7 @@ button{
 </nav>
 
 <script src="dataManager.js"></script>
+<script src="js/global.js"></script>
 
 <script>
 (function(){
@@ -237,8 +238,11 @@ button{
   // Após o teste: restringe freemium
   if(plano === "freemium"){
 
-    const paginasLiberadas = (window.PaginasLiberadasFreemium || ["entradas.html"])
-      .map(p => p.toLowerCase());
+    const PaginasLiberadasFreemium = [
+  "entradas.html",
+  "perfil.html",
+  "carteira.html"
+];
 
     if(!paginasLiberadas.includes(paginaAtual)){
       window.location.replace("planos.html");
