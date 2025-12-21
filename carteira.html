@@ -211,6 +211,23 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
     <div class="hint">Disponível após fechamento do caixa</div>
   </div>
 
+  <div class="card">
+    <button onclick="limparCarteira()" style="
+     background: var(--red);
+     color: #fff;
+     font-weight: 700;
+     padding: 14px;
+     border-radius: 12px;
+     border: none;
+     width: 100%;
+   ">
+     🧹 Limpar Carteira
+   </button>
+   <div class="hint">
+     Essa ação remove todo o saldo e histórico da carteira.
+   </div>
+ </div>
+
   <!-- META MENSAL -->
   <div class="quad">
     <small>Meta Mensal</small>
@@ -406,6 +423,26 @@ function toggleTheme(){
   const atual = document.body.dataset.theme === "light" ? "dark" : "light";
   document.body.dataset.theme = atual;
   localStorage.setItem("tema", atual);
+}
+</script>
+
+<script>
+function limparCarteira() {
+  const confirmacao = confirm(
+    "ATENÇÃO!\n\nIsso irá apagar todo o saldo e histórico da carteira.\nEssa ação não pode ser desfeita.\n\nDeseja continuar?"
+  );
+
+  if (!confirmacao) return;
+
+  const resp = DataManager.limparCarteira();
+
+  if (!resp.ok) {
+    alert("Erro ao limpar a carteira.");
+    return;
+  }
+
+  alert("Carteira limpa com sucesso.");
+  location.reload();
 }
 </script>
 
