@@ -454,5 +454,15 @@ function limparCarteira() {
 }
 </script>
 
+  <script src="PlanoManager.js"></script>
+<script>
+  const plano = PlanoManager.planoAtivo();
+
+  if(plano === "freemium"){
+    alert("Essa funcionalidade é exclusiva para planos pagos.");
+    location.href = "planos.html";
+  }
+</script>
+
 </body>
 </html>
