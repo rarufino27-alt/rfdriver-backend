@@ -125,7 +125,9 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 140px}
 <body>
 
 <div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+<div class="theme-toggle" onclick="GlobalTheme.toggle()">
+  <i class="fa fa-moon"></i>
+</div>
 
 <nav class="drawer" id="drawer">
   <div class="close-btn" onclick="toggleDrawer()">
@@ -226,7 +228,6 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 140px}
 
 <script>
 /* ===== INIT ===== */
-document.body.dataset.theme = localStorage.getItem("tema") || "dark";
 
 const lista = document.getElementById("lista");
 const modal = document.getElementById("modal");
