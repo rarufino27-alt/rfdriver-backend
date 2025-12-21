@@ -105,13 +105,9 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 
 <body>
 
-<!-- TOPO -->
-<div class="drawer-toggle" onclick="toggleDrawer()">
-  <i class="fa fa-bars"></i>
-</div>
-<div class="theme-toggle" onclick="GlobalTheme.toggle()">
-  <i class="fa fa-moon"></i>
-</div>
+<!-- TOGGLES -->
+<div class="drawer-toggle" onclick="drawer.classList.toggle('open')"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <!-- MENU LATERAL -->
 <nav class="drawer" id="drawer">
@@ -206,9 +202,16 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 </nav>
 
 <script src="dataManager.js"></script>
-<script src="js/global.js"></script>
 
 <script>
+
+/* ===== TEMA ===== */
+(function(){document.body.dataset.theme=localStorage.getItem("tema")||"dark"})()
+function toggleTheme(){
+ const t=document.body.dataset.theme==="light"?"dark":"light"
+ document.body.dataset.theme=t;localStorage.setItem("tema",t)
+}
+
 (function(){
 
   // Segurança máxima
@@ -249,18 +252,6 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 </script>
 
 <script>
-/* ===== TEMA ===== */
-(function(){
-  document.body.dataset.theme = DataManager.getData().configuracoes.tema
-})()
-function toggleTheme(){
-  document.body.dataset.theme = DataManager.toggleTema()
-}
-
-/* ===== DRAWER ===== */
-function toggleDrawer(){
-  drawer.classList.toggle("open")
-}
 
 /* ===== TABS ===== */
 document.addEventListener("DOMContentLoaded", () => {
