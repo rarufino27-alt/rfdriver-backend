@@ -81,7 +81,9 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 <body>
 
 <div class="drawer-toggle" onclick="drawer.classList.toggle('open')"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+<div class="theme-toggle" onclick="GlobalTheme.toggle()">
+  <i class="fa fa-moon"></i>
+</div>
 
 <nav class="drawer" id="drawer">
   <div class="close-btn" onclick="toggleDrawer()">
@@ -116,7 +118,7 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 </div>
 
 <div class="card">
-  <button onclick="fecharCaixa()" style="
+  <button onclick="fecharCaixa()"style="
     background:var(--green);
     color:#000;
     font-weight:700;
