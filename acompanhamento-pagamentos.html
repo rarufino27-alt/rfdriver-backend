@@ -18,65 +18,16 @@ body[data-theme="light"]{
   --bg:#f4f4f4; --text:#111; --card:#fff; --border:#ddd;
 }
 *{box-sizing:border-box;font-family:Inter}
-
 body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 
 .header{text-align:center;margin-bottom:16px}
 .header h1{margin:0;color:var(--gold)}
 .header small{opacity:.7}
 
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:16px
-}
-
-.card.alerta{border-left:6px solid var(--yellow)}
-.card.critica{border-left:6px solid var(--red)}
-.card.ok{border-left:12px solid var(--green)}
-
-.semana h3{color:var(--gold);margin-bottom:6px}
-
-.total,.diaria{font-weight:700;text-align:right;margin-top:6px}
-.diaria{opacity:.85}
-
-table{width:80%;border-collapse:collapse;font-size:10px}
-th,td{padding:6px;border-bottom:1px solid var(--border)}
-th{opacity:.7}
-
-tr.pago{opacity:.5;text-decoration:line-through}
-tr.recebimento td{color:var(--green)}
-
-.btn{
-  background:var(--gold);
-  border:none;
-  padding:6px 10px;
-  border-radius:10px;
-  font-weight:700;
-  cursor:pointer;
-  font-size:9px
-}
-.btn-pagar{
- background:var(--green);
- color:#000;font-size:8px;
- padding:4px 5px;
-}
-
-input{
-  background:var(--bg);
-  color:var(--text);
-  border:1px solid var(--border);
-  padding:6px;
-  border-radius:8px;
-}
-
 .drawer-toggle,.theme-toggle{
   position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:20
 }
-.drawer-toggle{left:15px}
-.theme-toggle{right:15px}
+.drawer-toggle{left:15px}.theme-toggle{right:15px}
 
 .drawer{
   position:fixed;top:0;left:-260px;width:260px;height:100%;
@@ -88,7 +39,49 @@ input{
   display:flex;gap:12px;padding:14px 20px;
   color:var(--text);text-decoration:none;
   border-bottom:1px solid var(--border)
-  font-size:15px
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  margin-bottom:16px
+}
+.card.alerta{border-left:6px solid var(--yellow)}
+.card.critica{border-left:6px solid var(--red)}
+.card.ok{border-left:12px solid var(--green)}
+
+table{width:100%;border-collapse:collapse;font-size:11px}
+th,td{padding:6px;border-bottom:1px solid var(--border)}
+th{opacity:.7}
+
+tr.pago{opacity:.5;text-decoration:line-through}
+tr.recebimento td{color:var(--green)}
+
+.btn{
+  background:var(--gold);
+  border:none;
+  padding:6px 10px;
+  border-radius:8px;
+  font-weight:700;
+  cursor:pointer;
+  font-size:10px
+}
+
+.btn-pagar{
+  background:var(--green);
+  color:#000;
+  font-size:8px;
+}
+
+input{
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text)
 }
 
 .bottom-nav{
@@ -124,10 +117,8 @@ input{
 
 <body>
 
-<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="GlobalTheme.toggle()">
-  <i class="fa fa-moon"></i>
-</div>
+<div class="drawer-toggle" onclick="drawer.classList.toggle('open')"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
   <div class="close-btn" onclick="toggleDrawer()">
@@ -158,7 +149,7 @@ input{
 <div class="card">
   <h3>➕ Recebimentos</h3>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <input id="valorAtual" type="number" placeholder="Valor atual">
+    <input id="valorAtual" type="number" placeholder="Valor recebido hoje">
     <button class="btn" onclick="addAtual()">Atual</button>
 
     <input id="valorPrev" type="number" placeholder="Valor previsto">
@@ -185,65 +176,28 @@ input{
 </nav>
 
 <script src="dataManager.js"></script>
-<script src="js/global.js"></script>
 
 <script>
-(function(){
 
-  // Segurança máxima
-  if(
-    typeof PlanoManager === "undefined" ||
-    typeof PlanoManager.getPlano !== "function"
-  ){
-    return;
-  }
-
-  const paginaAtual =
-    (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
-
-  const plano = PlanoManager.getPlano();
-
-  // Libera sempre a página de planos
-  if(paginaAtual === "planos.html"){
-    return;
-  }
-
-  // Durante as 36h de teste: TUDO liberado
-  if(plano === "freemium" && PlanoManager.isTesteAtivo()){
-    return;
-  }
-
-  // Após o teste: restringe freemium
-  if(plano === "freemium"){
-
-    const paginasLiberadas = (window.PaginasLiberadasFreemium || ["entradas.html"])
-      .map(p => p.toLowerCase());
-
-    if(!paginasLiberadas.includes(paginaAtual)){
-      window.location.replace("planos.html");
-    }
-  }
-
-})();
-</script>
-
-<script>
-const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-
-function dataAbreviada(data){
-  const d = new Date(data);
-  const dia = String(d.getDate()).padStart(2, "0");
-  const mes = String(d.getMonth() + 1).padStart(2, "0");
-  const ano = String(d.getFullYear()).slice(-2);
-  return `${dia}/${mes}/${ano}`;
+/* ===== TEMA ===== */
+(function(){document.body.dataset.theme=localStorage.getItem("tema")||"dark"})()
+function toggleTheme(){
+ const t=document.body.dataset.theme==="light"?"dark":"light"
+ document.body.dataset.theme=t;localStorage.setItem("tema",t)
 }
 
-function toggleTheme(){ document.body.dataset.theme = DataManager.toggleTema(); }
-function toggleDrawer(){ drawer.classList.toggle("open"); }
+const moeda = v =>
+  Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+function dataAbreviada(data){
+  const d=new Date(data);
+  return d.toLocaleDateString("pt-BR");
+}
 
 function addAtual(){
   const v = Number(valorAtual.value);
   if(!v) return;
+
   const d = DataManager.getData();
   d.pagamentos.push({
     id: DataManager.gerarId(),
@@ -262,6 +216,7 @@ function addPrev(){
   const v = Number(valorPrev.value);
   const dt = dataPrev.value;
   if(!v || !dt) return;
+
   const d = DataManager.getData();
   d.pagamentos.push({
     id: DataManager.gerarId(),
@@ -277,82 +232,77 @@ function addPrev(){
 }
 
 function pagar(id){
-  DataManager.marcarComoPago(id);
-  render();
+  const d = DataManager.getData();
+  const p = d.pagamentos.find(p=>p.id===id);
+  if(p){ p.pago=true; DataManager.saveData(d); render(); }
 }
 
 function render(){
-  const hoje = new Date();
-  tituloMes.textContent = hoje.toLocaleString("pt-BR",{month:"long"}).toUpperCase();
-  dataAtual.textContent = dataAbreviada(hoje);
+  const hoje=new Date();
+  tituloMes.textContent=hoje.toLocaleString("pt-BR",{month:"long"}).toUpperCase();
+  dataAtual.textContent=hoje.toLocaleDateString("pt-BR");
 
-  const mes = hoje.getMonth(), ano = hoje.getFullYear();
-  const pagamentos = DataManager.getPagamentos().filter(p=>{
-    const d = new Date(p.dataVencimento);
+  const mes=hoje.getMonth(), ano=hoje.getFullYear();
+  const pagamentos=DataManager.getData().pagamentos.filter(p=>{
+    const d=new Date(p.dataVencimento);
     return d.getMonth()===mes && d.getFullYear()===ano;
   });
 
-  const semanas = {};
+  const semanas={};
   pagamentos.forEach(p=>{
-    const d = new Date(p.dataVencimento);
-    const dia = d.getDay() || 7;
+    const d=new Date(p.dataVencimento);
+    const dia=d.getDay()||7;
     d.setDate(d.getDate()-dia+1);
-    const k = d.toISOString().slice(0,10);
-    semanas[k] ??= [];
-    semanas[k].push(p);
+    const k=d.toISOString().slice(0,10);
+    (semanas[k]??=[]).push(p);
   });
 
   conteudo.innerHTML="";
 
   Object.keys(semanas).sort().forEach(k=>{
-    const ini = new Date(k);
-    const fim = new Date(ini); fim.setDate(fim.getDate()+6);
+    const ini=new Date(k), fim=new Date(ini);
+    fim.setDate(fim.getDate()+6);
 
     semanas[k].sort((a,b)=>new Date(a.dataVencimento)-new Date(b.dataVencimento));
 
-    let total = 0;
-    semanas[k].forEach(p=>{ if(!p.pago) total += p.valor; });
+    let total=0;
+    semanas[k].forEach(p=>{ if(!p.pago) total+=p.valor; });
 
-    const dias = 7;
-    const diaria = total / dias;
+    const diaria=total/7;
+    let classe="ok";
+    if(diaria>350) classe="critica";
+    else if(diaria>200) classe="alerta";
 
-    let classe="ok", sugestao="";
-    if(diaria > 350){
-      classe="critica";
-      const alvo = semanas[k].filter(p=>!p.pago && p.valor>0)
-        .sort((a,b)=>b.valor-a.valor)[0];
-      if(alvo){
-        sugestao = `🔴 Sugestão IA: adiar "${alvo.descricao}" (${moeda(alvo.valor)}) para a próxima semana.`;
-      }
-    } else if(diaria > 200){
-      classe="alerta";
-    }
-
-    const div = document.createElement("div");
-    div.className = `card semana ${classe}`;
-    div.innerHTML = `
+    const div=document.createElement("div");
+    div.className=`card ${classe}`;
+    div.innerHTML=`
       <h3>${dataAbreviada(ini)} → ${dataAbreviada(fim)}</h3>
       <table>
-        <tr><th>Descrição</th><th>Valor</th><th>Parcela</th><th>Data</th><th></th></tr>
+        <tr><th>Descrição</th><th>Valor</th><th>Data</th><th></th></tr>
         ${semanas[k].map(p=>`
           <tr class="${p.pago?'pago':''} ${p.valor<0?'recebimento':''}">
             <td>${p.descricao}</td>
             <td>${moeda(p.valor)}</td>
-            <td>${p.parcelaInfo||""}</td>
             <td>${dataAbreviada(p.dataVencimento)}</td>
             <td>${p.pago?"✔":`<button class="btn btn-pagar" onclick="pagar('${p.id}')">Pagar</button>`}</td>
           </tr>
         `).join("")}
       </table>
-      <div class="total">Total em aberto: ${moeda(total)}</div>
-      <div class="diaria">Diária da semana: ${moeda(diaria)}</div>
-      ${sugestao?`<div style="margin-top:6px;font-size:13px">${sugestao}</div>`:""}
+      <div><strong>Em aberto:</strong> ${moeda(total)}</div>
+      <div><strong>Diária:</strong> ${moeda(diaria)}</div>
     `;
     conteudo.appendChild(div);
   });
 }
 
 render();
+</script>
+
+<script>
+function toggleDrawer(){
+  const drawer = document.getElementById("drawer");
+  drawer.classList.toggle("open");
+}
 </script>
 
 </body>
