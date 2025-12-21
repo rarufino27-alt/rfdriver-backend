@@ -326,6 +326,9 @@ body{
   <a href="acompanhamento-pagamentos.html"><i class="fa fa-clock"></i> </a>
 </nav>
 
+<script src="dataManager.js"></script>
+<script src="js/global.js"></script>
+
 <script>
 (function(){
   document.body.dataset.theme = localStorage.getItem("tema") || "dark";
@@ -339,8 +342,6 @@ function toggleDrawer(){
   drawer.classList.toggle("open");
 }
 </script>
-
-<script src="dataManager.js"></script>
 
 <script>
 function escolherPlano(plano){
