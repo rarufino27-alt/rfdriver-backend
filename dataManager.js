@@ -217,6 +217,33 @@ const PlanoManager = {
 
 };
 
+  adicionarSaldoCarteira(valor, origem = "Fechamento de Caixa") {
+    const data = this.getData();
+
+    const v = Number(valor);
+    if (isNaN(v) || v <= 0) {
+      return { ok: false, msg: "Valor inválido" };
+    }
+
+    data.carteira.saldo += v;
+
+    data.carteira.historico.push({
+      tipo: "entrada",
+      valor: v,
+      data: new Date().toISOString().split("T")[0],
+      origem
+    });
+
+    data.caixaFechado.push({
+      valor: v,
+      data: new Date().toISOString(),
+      origem
+    });
+
+    this.saveData(data);
+    return { ok: true };
+  },
+
 const PaginasLiberadasFreemium = [
   "entradas.html"
 ];
@@ -240,4 +267,69 @@ const PlanoConfig = {
 PlanoManager.temAcessoTotal = function(){
   const plano = this.getPlano();
   return PlanoConfig[plano]?.acessoTotal === true;
+};
+
+DataManager.formatarDataCurta = function(data){
+  const d = new Date(data);
+  const dia = String(d.getDate()).padStart(2, "0");
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const ano = String(d.getFullYear()).slice(-2);
+  return `${dia}/${mes}/${ano}`;
+};
+
+const AuthManager = {
+
+  getUsuario(){
+    return JSON.parse(localStorage.getItem("usuarioLogado"));
+  },
+
+  isLogado(){
+    return !!localStorage.getItem("usuarioLogado");
+  },
+
+  cadastrar({ nome, email, senha }){
+    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    if(usuarios.find(u => u.email === email)){
+      return { erro: "Email já cadastrado" };
+    }
+
+    const usuario = {
+      id: Date.now(),
+      nome,
+      email,
+      senha
+    };
+
+    usuarios.push(usuario);
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+    // Login automático
+    localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+
+    // Inicia freemium + trial
+    PlanoManager.setPlano("freemium");
+
+    return { sucesso: true };
+  },
+
+  login({ email, senha }){
+    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    const usuario = usuarios.find(
+      u => u.email === email && u.senha === senha
+    );
+
+    if(!usuario){
+      return { erro: "Email ou senha inválidos" };
+    }
+
+    localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+    return { sucesso: true };
+  },
+
+  logout(){
+    localStorage.removeItem("usuarioLogado");
+  }
+
 };
