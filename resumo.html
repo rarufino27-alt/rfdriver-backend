@@ -86,30 +86,13 @@ td.valor{text-align:right;font-weight:600}
   display:flex;align-items:center;justify-content:center;
   font-size:24px;margin-top:-30px
 }
-
-.suporte-whatsapp{
-  margin:16px;
-  padding:10px 14px;
-  background:#25d366;
-  color:#fff;
-  border-radius:999px;
-  text-align:center;
-  font-weight:600;
-  text-decoration:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-}
 </style>
 </head>
 
 <body>
 
 <div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="GlobalTheme.toggle()">
-  <i class="fa fa-moon"></i>
-</div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
   <div class="close-btn" onclick="toggleDrawer()">
@@ -189,10 +172,10 @@ td.valor{text-align:right;font-weight:600}
 </nav>
 
 <script src="dataManager.js"></script>
-<script src="js/global.js"></script>
 
 <script>
 /* ===== BASE ===== */
+document.body.dataset.theme = localStorage.getItem("tema") || "dark";
 
 const fatEl = document.getElementById("fat");
 const despEl = document.getElementById("desp");
