@@ -180,6 +180,33 @@ const DataManager = {
   }
 };
 
+  adicionarSaldoCarteira(valor, origem = "Fechamento de Caixa") {
+    const data = this.getData();
+
+    const v = Number(valor);
+    if (isNaN(v) || v <= 0) {
+      return { ok: false, msg: "Valor inválido" };
+    }
+
+    data.carteira.saldo += v;
+
+    data.carteira.historico.push({
+      tipo: "entrada",
+      valor: v,
+      data: new Date().toISOString().split("T")[0],
+      origem
+    });
+
+    data.caixaFechado.push({
+      valor: v,
+      data: new Date().toISOString(),
+      origem
+    });
+
+    this.saveData(data);
+    return { ok: true };
+  },
+
 const PlanoManager = {
 
   getPlano(){
@@ -216,33 +243,6 @@ const PlanoManager = {
   }
 
 };
-
-  adicionarSaldoCarteira(valor, origem = "Fechamento de Caixa") {
-    const data = this.getData();
-
-    const v = Number(valor);
-    if (isNaN(v) || v <= 0) {
-      return { ok: false, msg: "Valor inválido" };
-    }
-
-    data.carteira.saldo += v;
-
-    data.carteira.historico.push({
-      tipo: "entrada",
-      valor: v,
-      data: new Date().toISOString().split("T")[0],
-      origem
-    });
-
-    data.caixaFechado.push({
-      valor: v,
-      data: new Date().toISOString(),
-      origem
-    });
-
-    this.saveData(data);
-    return { ok: true };
-  },
 
 const PaginasLiberadasFreemium = [
   "entradas.html"
