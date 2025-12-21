@@ -51,21 +51,32 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 140px}
   font-size:13px
 }
 .btn-toggle{background:none;color:var(--gold)}
-.btn-edit{background:#444;color:#fff}
 .btn-danger{background:none;color:var(--red);border:1px solid var(--red)}
 
-.parcelas{margin-top:10px;border-top:1px dashed var(--border);padding-top:10px;display:none}
-.parcela{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid var(--border)}
-.parcela.paga{text-decoration:line-through;opacity:.6}
+.parcelas{
+  margin-top:10px;
+  border-top:1px dashed var(--border);
+  padding-top:10px;
+  display:none
+}
+.parcela{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  padding:6px 0;
+  border-bottom:1px solid var(--border)
+}
+.parcela.paga{
+  text-decoration:line-through;
+  opacity:.6
+}
 
-/* TOGGLES */
 .drawer-toggle,.theme-toggle{
   position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:50
 }
 .drawer-toggle{left:15px}
 .theme-toggle{right:15px}
 
-/* DRAWER */
 .drawer{
   position:fixed;top:0;left:-260px;width:260px;height:100%;
   background:var(--card);border-right:1px solid var(--border);
@@ -75,25 +86,8 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 140px}
 .drawer a{
   display:flex;gap:10px;padding:14px 20px;
   color:var(--text);text-decoration:none;border-bottom:1px solid var(--border)
-  fonte-size:15px
 }
 
-/* MODAL */
-.modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  display:none;align-items:center;justify-content:center;z-index:100
-}
-.modal-content{
-  background:var(--card);padding:20px;border-radius:16px;
-  width:100%;max-width:360px
-}
-.modal-content input{
-  width:100%;padding:8px;margin-bottom:10px;
-  background:var(--bg);color:var(--text);border:1px solid var(--border);
-  border-radius:10px
-}
-
-/* BOTTOM */
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;
   background:var(--card);display:flex;justify-content:space-around;padding:8px 0
@@ -104,30 +98,13 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 140px}
   border-radius:50%;display:flex;align-items:center;justify-content:center;
   margin-top:-28px
 }
-
-.suporte-whatsapp{
-  margin:16px;
-  padding:10px 14px;
-  background:#25d366;
-  color:#fff;
-  border-radius:999px;
-  text-align:center;
-  font-weight:600;
-  text-decoration:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-}
 </style>
 </head>
 
 <body>
 
 <div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="GlobalTheme.toggle()">
-  <i class="fa fa-moon"></i>
-</div>
+<div class="theme-toggle" onclick="GlobalTheme.toggle()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
   <div class="close-btn" onclick="toggleDrawer()">
@@ -156,18 +133,6 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 140px}
 
 <div id="lista"></div>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h3>Editar despesa</h3>
-    <input id="editDescricao" placeholder="Descrição">
-    <input id="editValor" type="number" placeholder="Valor">
-    <input id="editData" type="date">
-    <button class="btn btn-edit" onclick="salvarEdicao()">Salvar</button>
-    <button class="btn btn-toggle" onclick="fecharModal()">Cancelar</button>
-  </div>
-</div>
-
 <nav class="bottom-nav">
   <a href="planos.html"><i class="fa fa-crown"></i> </a>
   <a href="perfil.html"><i class="fa fa-user"></i> </a>
@@ -184,68 +149,25 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 140px}
 </nav>
 
 <script src="dataManager.js"></script>
-<script src="js/global.js"></script>
 
 <script>
-(function(){
-
-  // Segurança máxima
-  if(
-    typeof PlanoManager === "undefined" ||
-    typeof PlanoManager.getPlano !== "function"
-  ){
-    return;
-  }
-
-  const paginaAtual =
-    (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
-
-  const plano = PlanoManager.getPlano();
-
-  // Libera sempre a página de planos
-  if(paginaAtual === "planos.html"){
-    return;
-  }
-
-  // Durante as 36h de teste: TUDO liberado
-  if(plano === "freemium" && PlanoManager.isTesteAtivo()){
-    return;
-  }
-
-  // Após o teste: restringe freemium
-  if(plano === "freemium"){
-
-    const paginasLiberadas = (window.PaginasLiberadasFreemium || ["entradas.html"])
-      .map(p => p.toLowerCase());
-
-    if(!paginasLiberadas.includes(paginaAtual)){
-      window.location.replace("planos.html");
-    }
-  }
-
-})();
-</script>
-
-<script>
-/* ===== INIT ===== */
-
 const lista = document.getElementById("lista");
-const modal = document.getElementById("modal");
-const editDescricao = document.getElementById("editDescricao");
-const editValor = document.getElementById("editValor");
-const editData = document.getElementById("editData");
 
-let descricaoAtual = "";
+const moeda = v =>
+  Number(v || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
 
-const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-
-/* ===== RENDER ===== */
 function render(){
-  const pagamentos = DataManager.getPagamentos();
-  lista.innerHTML = "";
+  const dados = DataManager.getData();
+
+  const pagamentos = dados.pagamentos
+    .filter(p => p.tipo === "despesa");
 
   if(!pagamentos.length){
-    lista.innerHTML="<p style='opacity:.6;text-align:center'>Nenhuma despesa registrada</p>";
+    lista.innerHTML =
+      "<p style='opacity:.6;text-align:center'>Nenhuma despesa registrada</p>";
     return;
   }
 
@@ -255,52 +177,53 @@ function render(){
     grupos[p.descricao].push(p);
   });
 
-  Object.entries(grupos).forEach(([desc, parcelas])=>{
+  lista.innerHTML="";
+
+  Object.entries(grupos).forEach(([descricao, parcelas])=>{
+
     parcelas.sort((a,b)=>a.dataVencimento.localeCompare(b.dataVencimento));
 
-    const total = parcelas.reduce((s,p)=>s+p.valor,0);
-    const pago = parcelas.filter(p=>p.pago).reduce((s,p)=>s+p.valor,0);
+    const total = parcelas.reduce(
+      (s,p)=>s + (p.valor ?? 0), 0
+    );
 
     const card = document.createElement("div");
     card.className="card";
+
     card.innerHTML=`
-      <h3>${desc}</h3>
+      <h3>${descricao}</h3>
       <div class="resumo">
         <span>Total ${moeda(total)}</span>
-        <span>Pago ${moeda(pago)}</span>
-        <span>Em aberto ${moeda(total-pago)}</span>
+        <span>Parcelas ${parcelas.length}</span>
       </div>
       <div class="actions">
         <button class="btn btn-toggle">Parcelas</button>
-        <button class="btn btn-edit">Editar</button>
         <button class="btn btn-danger">Excluir</button>
       </div>
       <div class="parcelas">
         ${parcelas.map(p=>`
-          <div class="parcela ${p.pago?'paga':''}">
+          <div class="parcela ${p.pago ? "paga" : ""}">
             <span>${p.parcelaInfo} - ${p.dataVencimento}</span>
             <small>${moeda(p.valor)}</small>
-          </div>`).join("")}
+          </div>
+        `).join("")}
       </div>
     `;
 
     card.querySelector(".btn-toggle").onclick=()=>{
       const el=card.querySelector(".parcelas");
-      el.style.display=el.style.display==="block"?"none":"block";
-    };
-
-    card.querySelector(".btn-edit").onclick=()=>{
-      descricaoAtual=desc;
-      const p=parcelas.find(p=>!p.pago)||parcelas[0];
-      editDescricao.value=desc;
-      editValor.value=p.valor;
-      editData.value=p.dataVencimento;
-      modal.style.display="flex";
+      el.style.display = el.style.display==="block"?"none":"block";
     };
 
     card.querySelector(".btn-danger").onclick=()=>{
-      if(confirm("Excluir definitivamente?")){
-        DataManager.removerPorDescricao(desc);
+      if(confirm("Excluir despesa definitivamente?")){
+        dados.pagamentos = dados.pagamentos.filter(
+          p => p.descricao !== descricao
+        );
+        dados.registros = dados.registros.filter(
+          r => r.descricao !== descricao
+        );
+        DataManager.saveData(dados);
         render();
       }
     };
@@ -309,37 +232,11 @@ function render(){
   });
 }
 
-/* ===== EDIT ===== */
-function salvarEdicao(){
-  const data = DataManager.getData();
-  data.pagamentos.forEach(p=>{
-    if(p.descricao===descricaoAtual && !p.pago){
-      p.descricao=editDescricao.value;
-      p.valor=Number(editValor.value);
-      p.dataVencimento=editData.value;
-    }
-  });
-  data.registros.forEach(r=>{
-    if(r.descricao===descricaoAtual){
-      r.descricao=editDescricao.value;
-      r.valorParcela=Number(editValor.value);
-      r.dataBase=editData.value;
-    }
-  });
-  DataManager.saveData(data);
-  modal.style.display="none";
-  render();
+function toggleDrawer(){
+  document.getElementById("drawer").classList.toggle("open");
 }
 
-function fecharModal(){modal.style.display="none";}
-function toggleDrawer(){drawer.classList.toggle("open")}
-function toggleTheme(){
-  const t=document.body.dataset.theme==="dark"?"light":"dark";
-  document.body.dataset.theme=t;
-  localStorage.setItem("tema",t);
-}
-
-document.addEventListener("DOMContentLoaded", render);
+render();
 </script>
 
 </body>
