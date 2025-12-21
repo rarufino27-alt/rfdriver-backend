@@ -1,121 +1,135 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cadastro - RF Driver</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 body{
- font-family:Inter,system-ui;
- background:#0d0d0d;
- color:#fff;
- padding:40px 20px;
+  margin:0;
+  font-family:Inter;
+  background:#0d0d0d;
+  color:#f4f4f4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
 }
-h1{
- font-size:28px;
- color:#d6b25f;
- margin-bottom:20px;
- text-align:center;
+.card{
+  background:#161616;
+  padding:24px;
+  border-radius:16px;
+  width:100%;
+  max-width:380px;
 }
-label{display:block;margin-top:14px;font-size:14px;}
-input{
- width:100%;padding:12px;border-radius:10px;
- border:1px solid #333;
- background:#161616;color:#fff;
- margin-top:6px;
- font-size:14px;
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
 }
 button{
- width:100%;padding:14px;margin-top:25px;
- background:linear-gradient(90deg,#d6b25f,#e8d08a);
- border:none;border-radius:10px;font-weight:700;color:#000;
- cursor:pointer;font-size:16px;
+  background:#f5c542;
+  font-weight:700;
 }
-
-.container{max-width:480px;margin:auto;}
-p{text-align:center;margin-top:20px;}
-a{color:#d6b25f;text-decoration:none;}
+small{opacity:.7}
+.forca{margin-top:6px;font-size:13px}
+.fraca{color:#ff3b30}
+.media{color:#f5c542}
+.forte{color:#1DB954}
+.toggle{
+  font-size:13px;
+  cursor:pointer;
+  margin-top:4px;
+  display:inline-block;
+}
 </style>
 </head>
 
-<body class="dark">
+<body>
 
-<div class="container">
-<h1>Criar Conta</h1>
+<div class="card">
+  <h2>Criar conta</h2>
 
-<label>Nome</label>
-<input id="cadNome" type="text">
+  <input id="nome" placeholder="Nome">
+  <input id="email" placeholder="Email">
+  <input id="email2" placeholder="Confirmar email">
 
-<label>CPF</label>
-<input id="cadCPF" type="text">
+  <input id="senha" type="password" placeholder="Senha" oninput="avaliarSenha()">
+  <span class="toggle" onclick="toggleSenha()">👁 Mostrar senha</span>
+  <div id="nivelSenha" class="forca"></div>
 
-<label>Email</label>
-<input id="cadEmail" type="email">
+  <button onclick="cadastrar()">Criar conta</button>
 
-<label>Confirmar Email</label>
-<input id="cadEmail2" type="email">
-
-<label>Celular</label>
-<input id="cadCel" type="tel">
-
-<label>Confirmar Celular</label>
-<input id="cadCel2" type="tel">
-
-<label>Senha</label>
-<input id="cadSenha" type="password">
-
-<label>Confirmar Senha</label>
-<input id="cadSenha2" type="password">
-
-<button onclick="registrar()">Criar Conta</button>
-
-<p>Já possui conta? <a href="login.html">Entrar</a></p>
+  <p id="msg"></p>
 </div>
 
+<script src="dataManager.js"></script>
+<script src="js/global.js"></script>
+
 <script>
-function registrar(){
- const nome = cadNome.value.trim();
- const cpf = cadCPF.value.trim();
- const email = cadEmail.value.trim();
- const email2 = cadEmail2.value.trim();
- const cel = cadCel.value.trim();
- const cel2 = cadCel2.value.trim();
- const senha = cadSenha.value.trim();
- const senha2 = cadSenha2.value.trim();
 
- if(!nome||!cpf||!email||!cel||!senha){
-    alert("Preencha todos os campos");
-    return;
- }
-
- if(email!==email2){
-    alert("Emails não conferem!");
-    return;
- }
-
- if(cel!==cel2){
-    alert("Celular não confere!");
-    return;
- }
-
- if(senha!==senha2){
-    alert("Senhas não conferem!");
-    return;
- }
-
-const user = {
-   nome, cpf, email,
-   celular: cel,
-   senha
-};
-
- localStorage.setItem("usuarioRF", JSON.stringify(user));
-
- alert("Cadastro realizado com sucesso!");
- location.href="login.html";
+function toggleSenha(){
+  senha.type = senha.type === "password" ? "text" : "password";
 }
+
+function avaliarSenha(){
+  const v = senha.value;
+  let nivel = 0;
+
+  if(v.length >= 6) nivel++;
+  if(/[A-Z]/i.test(v)) nivel++;
+  if(/[0-9]/.test(v)) nivel++;
+  if(/[^A-Za-z0-9]/.test(v)) nivel++;
+
+  if(nivel <= 1){
+    nivelSenha.textContent = "Senha fraca";
+    nivelSenha.className = "forca fraca";
+  } else if(nivel === 2 || nivel === 3){
+    nivelSenha.textContent = "Senha média";
+    nivelSenha.className = "forca media";
+  } else {
+    nivelSenha.textContent = "Senha forte";
+    nivelSenha.className = "forca forte";
+  }
+
+  return nivel >= 2;
+}
+
+function cadastrar(){
+
+  if(email.value !== email2.value){
+    msg.textContent = "Os emails não conferem";
+    return;
+  }
+
+  if(senha.value !== senha2.value){
+    msg.textContent = "As senhas não conferem";
+    return;
+  }
+
+  if(!avaliarSenha()){
+    msg.textContent = "Escolha uma senha mais forte";
+    return;
+  }
+
+  const r = AuthManager.cadastrar({
+    nome: nome.value,
+    email: email.value,
+    senha: senha.value
+  });
+
+  if(r.erro){
+    msg.textContent = r.erro;
+    return;
+  }
+
+  // 👉 REDIRECIONA PARA PERFIL (PRIMEIRA PÁGINA)
+  window.location.href = "perfil.html";
+}
+
 </script>
 
 </body>
