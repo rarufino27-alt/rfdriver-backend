@@ -18,84 +18,42 @@
   --green:#1DB954; 
   --red:#ff3b30;
 }
-
 body[data-theme="light"]{
   --bg:#f4f4f4; 
   --text:#111; 
   --card:#fff; 
   --border:#ddd;
 }
-
-*{ box-sizing:border-box; font-family:Inter }
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  padding:70px 16px 150px;
-}
+*{box-sizing:border-box;font-family:Inter}
+body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 
 /* HEADER */
-.header{
-  text-align:center;
-  margin-bottom:14px;
-}
-.header h1{
-  margin:0;
-  font-size:26px;
-  color:var(--gold);
-}
-.header small{ opacity:.7 }
+.header{text-align:center;margin-bottom:14px}
+.header h1{margin:0;font-size:26px;color:var(--gold)}
+.header small{opacity:.7}
 
-/* BOTÕES TOPO */
+/* TOPO */
 .drawer-toggle,.theme-toggle{
-  position:fixed;
-  top:15px;
-  font-size:22px;
-  color:var(--gold);
-  cursor:pointer;
-  z-index:20;
+  position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:20
 }
-.drawer-toggle{ left:15px }
-.theme-toggle{ right:15px }
+.drawer-toggle{left:15px}
+.theme-toggle{right:15px}
 
 /* DRAWER */
 .drawer{
-  position:fixed;
-  top:0;
-  left:-260px;
-  width:260px;
-  height:100%;
-  background:var(--card);
-  border-right:1px solid var(--border);
-  padding-top:20px;
-  transition:.3s;
-  z-index:15;
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:15
 }
-.drawer.open{ left:0 }
-
+.drawer.open{left:0}
 .drawer a{
-  display:flex;
-  gap:12px;
-  padding:14px 20px;
-  color:var(--text);
-  fonte-size:15px;
-  text-decoration:none;
-  border-bottom:1px solid var(--border);
+  display:flex;gap:12px;padding:14px 20px;color:var(--text);
+  text-decoration:none;border-bottom:1px solid var(--border)
 }
-
 .suporte-whatsapp{
-  margin:16px;
-  padding:10px 14px;
-  background:#25d366;
-  color:#fff;
-  border-radius:999px;
-  text-align:center;
-  font-weight:600;
-  text-decoration:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
+  margin:16px;padding:10px 14px;background:#25d366;color:#fff;
+  border-radius:999px;text-align:center;font-weight:600;
+  text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px
 }
 
 /* CARDS */
@@ -106,257 +64,206 @@ body{
   padding:16px;
   margin-bottom:15px;
 }
+.line{display:flex;justify-content:space-between;margin-bottom:8px;font-weight:600}
 
-.line{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:8px;
-  font-weight:600;
+/* TABS */
+.tab-buttons{display:flex;gap:8px;margin-bottom:12px}
+.tab-btn{
+  flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-weight:600;opacity:.6
 }
+.tab-btn.active{opacity:1;border-color:var(--gold);color:var(--gold)}
+.tab{display:none}
+.tab.active{display:block}
 
 /* PROGRESS */
-.progress{
-  width:100%;
-  height:10px;
+.progress{width:100%;height:10px;border-radius:10px;background:var(--border);overflow:hidden}
+.progress span{display:block;height:100%;background:var(--gold)}
+
+/* FILTROS */
+.filtros{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.filtros button{
+  padding:8px 12px;
   border-radius:10px;
-  background:var(--border);
-  overflow:hidden;
-  margin-top:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  font-weight:600;
 }
-.progress span{
-  display:block;
-  height:100%;
-  background:var(--gold);
+.filtros input{
+  padding:8px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
 }
+
+/* TABELA */
+table{width:100%;border-collapse:collapse}
+td{padding:10px;border-bottom:1px solid var(--border)}
 
 /* BOTTOM NAV */
 .bottom-nav{
-  position:fixed;
-  bottom:0; left:0; right:0;
-  background:var(--card);
-  border-top:1px solid var(--border);
-  display:flex;
-  justify-content:space-around;
-  padding:8px 0;
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);
+  border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0
 }
-.bottom-nav a{
-  color:var(--text);
-  font-size:15px;
-  text-decoration:none;
-}
+.bottom-nav a{color:var(--text);text-decoration:none}
 .center-btn{
-  background:var(--gold);
-  color:#000;
-  width:58px;
-  height:58px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:24px;
-  margin-top:-30px;
+  background:var(--gold);color:#000;width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:24px;margin-top:-30px
 }
 </style>
 </head>
 
 <body>
 
-<!-- BOTÕES TOPO -->
-<div class="drawer-toggle" onclick="toggleDrawer()">
-  <i class="fa fa-bars"></i>
-</div>
-<div class="theme-toggle" onclick="toggleTheme()">
-  <i class="fa fa-moon"></i>
-</div>
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
-<!-- MENU LATERAL -->
 <nav class="drawer" id="drawer">
-  <div class="close-btn" onclick="toggleDrawer()">
-    <i class="fa fa-xmark"></i>
-  </div>
-
+  <div class="close-btn" onclick="toggleDrawer()"><i class="fa fa-xmark"></i></div>
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
   <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos</a>
   <a href="entradas.html"><i class="fa fa-cash-register"></i> Livro Caixa</a>
   <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
   <a href="resumo.html"><i class="fa fa-file"></i> Relatório Geral</a>
-  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora</a>
   <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
-  <a </a>
-  <a class="suporte-whatsapp"
-     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
-     target="_blank">
-    <i class="fa-brands fa-whatsapp"></i> Suporte WhatsApp
+  <a class="suporte-whatsapp" href="https://wa.me/5581992716132" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i> Suporte
   </a>
 </nav>
 
-<!-- HEADER -->
 <div class="header">
   <h1>Relatório</h1>
   <small>Visão geral do seu desempenho financeiro</small>
 </div>
 
-<!-- TOTAIS -->
-<div class="card">
-  <h3>Resumo Geral</h3>
-  <div class="line"><span>Faturamento</span><span id="fat">R$ 0,00</span></div>
-  <div class="line"><span>Despesas</span><span id="desp">R$ 0,00</span></div>
-  <div class="line">
-    <strong>Lucro Líquido</strong>
-    <strong id="lucro">R$ 0,00</strong>
+<div class="tab-buttons">
+  <button class="tab-btn active" data-tab="geral">Visão Geral</button>
+  <button class="tab-btn" data-tab="historico">Histórico</button>
+</div>
+
+<div id="geral" class="tab active">
+  <div class="card">
+    <div class="line"><span>Saldo Atual</span><span id="saldo">R$ 0,00</span></div>
+    <div class="line"><span>Meta Mensal</span><span id="metaMensal">R$ 0,00</span></div>
+    <div class="progress"><span id="progMeta"></span></div>
   </div>
 </div>
 
-<!-- POR CATEGORIA -->
-<div class="card">
-  <h3>Entradas por Tipo</h3>
-  <div class="line"><span>Aplicativos</span><span id="catApp">R$ 0,00</span></div>
-  <div class="line"><span>Particular</span><span id="catParticular">R$ 0,00</span></div>
-  <div class="line"><span>Empresa</span><span id="catEmpresa">R$ 0,00</span></div>
-  <div class="line"><span>Outros</span><span id="catOutros">R$ 0,00</span></div>
-</div>
+<div id="historico" class="tab">
+  <div class="card">
+    <div class="filtros">
+      <button onclick="filtrarDias(7)">7 dias</button>
+      <button onclick="filtrarDias(15)">15 dias</button>
+      <button onclick="filtrarDias(30)">30 dias</button>
+      <input type="date" id="dtInicio">
+      <input type="date" id="dtFim">
+      <button onclick="filtrarPersonalizado()">Filtrar</button>
+    </div>
 
-<!-- META -->
-<div class="card">
-  <h3>Meta Mensal</h3>
-  <div class="line">
-    <span>Meta definida</span>
-    <span id="metaMensal">R$ 0,00</span>
-  </div>
-  <div class="progress">
-    <span id="progMeta"></span>
+    <table>
+      <tbody id="listaHistorico"></tbody>
+    </table>
   </div>
 </div>
 
-<!-- MENU INFERIOR -->
 <nav class="bottom-nav">
-  <a href="planos.html"><i class="fa fa-crown"></i> </a>
-  <a href="perfil.html"><i class="fa fa-user"></i> </a>
-  <a href="carteira.html"><i class="fa fa-wallet"></i> </a>
-
-  <!-- BOTÃO CENTRAL (DASHBOARD) -->
-  <a href="index.html" class="center-btn">
-    <i class="fa fa-house"></i>
-  </a>
-
-  <a href="registro-despesas.html"><i class="fa fa-file-signature"></i> </a>
-  <a href="despesas-registradas.html"><i class="fa fa-list"></i> </a>
-  <a href="acompanhamento-pagamentos.html"><i class="fa fa-clock"></i> </a>
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
+  <a href="registro-despesas.html"><i class="fa fa-file-signature"></i></a>
+  <a href="despesas-registradas.html"><i class="fa fa-list"></i></a>
 </nav>
 
 <script src="dataManager.js"></script>
+<script src="js/global.js"></script>
 
 <script>
-(function(){
-
-  // Segurança máxima
-  if(
-    typeof PlanoManager === "undefined" ||
-    typeof PlanoManager.getPlano !== "function"
-  ){
-    return;
-  }
-
-  const paginaAtual =
-    (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
-
-  const plano = PlanoManager.getPlano();
-
-  // Libera sempre a página de planos
-  if(paginaAtual === "planos.html"){
-    return;
-  }
-
-  // Durante as 36h de teste: TUDO liberado
-  if(plano === "freemium" && PlanoManager.isTesteAtivo()){
-    return;
-  }
-
-  // Após o teste: restringe freemium
-  if(plano === "freemium"){
-
-    const paginasLiberadas = (window.PaginasLiberadasFreemium || ["entradas.html"])
-      .map(p => p.toLowerCase());
-
-    if(!paginasLiberadas.includes(paginaAtual)){
-      window.location.replace("planos.html");
-    }
-  }
-
-})();
-</script>
-
-<script>
-/* TEMA */
-(function(){
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark"
-})()
+document.body.dataset.theme = localStorage.getItem("tema") || "dark"
 
 function toggleTheme(){
   const t = document.body.dataset.theme === "light" ? "dark" : "light"
   document.body.dataset.theme = t
   localStorage.setItem("tema", t)
 }
-
-/* DRAWER */
 function toggleDrawer(){
   document.getElementById("drawer").classList.toggle("open")
 }
 
-/* RELATÓRIO */
-function brl(v){
-  return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+function brl(v){return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+
+const data = DataManager.getData()
+const anoAtual = new Date().getFullYear()
+const historicoBase = (data.caixaFechado || []).filter(h =>
+  new Date(h.data).getFullYear() === anoAtual
+)
+
+function carregarResumo(){
+  const saldo = DataManager.getSaldoCarteira()
+  const mes = new Date().toISOString().slice(0,7)
+  const meta = DataManager.getMetaMensal(mes)
+
+  document.getElementById("saldo").textContent = brl(saldo)
+  document.getElementById("metaMensal").textContent = meta ? brl(meta) : "Não definida"
+  document.getElementById("progMeta").style.width =
+    meta ? Math.min((saldo / meta) * 100, 100) + "%" : "0%"
 }
 
-function carregarRelatorio(){
-  const registros = JSON.parse(localStorage.getItem("entradasSaidas")||"[]")
-
-  let fat=0, desp=0
-  let app=0, part=0, emp=0, outros=0
-
-  registros.forEach(r=>{
-    const v = +r.valor||0
-    if(r.tipo==="entrada"){
-      fat+=v
-      if(r.categoria==="empresa") emp+=v
-      else if(r.categoria==="particular") part+=v
-      else if(r.formaPag==="appMobile") app+=v
-      else outros+=v
-    } else {
-      desp+=v
-    }
-  })
-
-  const lucro = fat-desp
-
-  fatEl.textContent = brl(fat)
-  despEl.textContent = brl(desp)
-  lucroEl.textContent = brl(lucro)
-  lucroEl.style.color = lucro>=0 ? "var(--green)" : "var(--red)"
-
-  catApp.textContent = brl(app)
-  catParticular.textContent = brl(part)
-  catEmpresa.textContent = brl(emp)
-  catOutros.textContent = brl(outros)
-
-  const meta = +localStorage.getItem("rf_meta_mensal")||0
-  metaMensalEl.textContent = meta?brl(meta):"Não definida"
-
-  progMeta.style.width = meta?Math.min((fat/meta)*100,100)+"%":"0%"
+function renderHistorico(lista){
+  const el = document.getElementById("listaHistorico")
+  if(!lista.length){
+    el.innerHTML = "<tr><td>Nenhum registro encontrado</td></tr>"
+    return
+  }
+  el.innerHTML = lista.map(h=>`
+    <tr>
+      <td>${DataManager.formatarDataCurta(h.data)}</td>
+      <td>${h.origem}</td>
+      <td style="text-align:right">${brl(h.valor)}</td>
+    </tr>
+  `).join("")
 }
 
-/* ELEMENTOS */
-const fatEl = document.getElementById("fat")
-const despEl = document.getElementById("desp")
-const lucroEl = document.getElementById("lucro")
-const catApp = document.getElementById("catApp")
-const catParticular = document.getElementById("catParticular")
-const catEmpresa = document.getElementById("catEmpresa")
-const catOutros = document.getElementById("catOutros")
-const metaMensalEl = document.getElementById("metaMensal")
-const progMeta = document.getElementById("progMeta")
+function filtrarDias(dias){
+  const limite = new Date()
+  limite.setDate(limite.getDate() - dias)
+  renderHistorico(historicoBase.filter(h => new Date(h.data) >= limite))
+}
 
-carregarRelatorio()
+function filtrarPersonalizado(){
+  const ini = new Date(document.getElementById("dtInicio").value)
+  const fim = new Date(document.getElementById("dtFim").value)
+
+  if(!ini || !fim || ini > fim) return alert("Período inválido")
+
+  const diff = (fim - ini) / (1000*60*60*24)
+  if(diff > 90) return alert("Período máximo permitido: 90 dias")
+
+  renderHistorico(historicoBase.filter(h=>{
+    const d = new Date(h.data)
+    return d >= ini && d <= fim
+  }))
+}
+
+document.querySelectorAll(".tab-btn").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"))
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
+    b.classList.add("active")
+    document.getElementById(b.dataset.tab).classList.add("active")
+  }
+})
+
+carregarResumo()
+renderHistorico(historicoBase)
 </script>
 
 </body>
