@@ -84,6 +84,18 @@ const DataManager = {
     return { ok: true };
   },
 
+  limparCarteira() {
+    const data = this.getData();
+
+    data.carteira = {
+      saldo: 0,
+      historico: []
+    };
+
+    this.saveData(data);
+    return { ok: true };
+  },
+
   /* ===============================
      META MENSAL
   =============================== */
