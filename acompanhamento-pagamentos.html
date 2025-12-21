@@ -125,7 +125,9 @@ input{
 <body>
 
 <div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+<div class="theme-toggle" onclick="GlobalTheme.toggle()">
+  <i class="fa fa-moon"></i>
+</div>
 
 <nav class="drawer" id="drawer">
   <div class="close-btn" onclick="toggleDrawer()">
@@ -226,7 +228,6 @@ input{
 </script>
 
 <script>
-document.body.dataset.theme = localStorage.getItem("tema") || "dark";
 const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
 function dataAbreviada(data){
