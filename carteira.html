@@ -172,10 +172,8 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 <body>
 
 <!-- TOGGLES -->
-<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="GlobalTheme.toggle()">
-  <i class="fa fa-moon"></i>
-</div>
+<div class="drawer-toggle" onclick="drawer.classList.toggle('open')"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <!-- MENU LATERAL -->
 <nav class="drawer" id="drawer">
@@ -213,22 +211,22 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
     <div class="hint">Disponível após fechamento do caixa</div>
   </div>
 
-  <div class="card">
-    <button onclick="limparCarteira()" style="
-     background: var(--red);
-     color: #fff;
-     font-weight: 700;
-     padding: 14px;
-     border-radius: 12px;
-     border: none;
-     width: 100%;
-   ">
-     🧹 Limpar Carteira
-   </button>
-   <div class="hint">
-     Essa ação remove todo o saldo e histórico da carteira.
-   </div>
- </div>
+<div class="card">
+  <button onclick="limparCarteira()" style="
+    background: var(--red);
+    color: #fff;
+    font-weight: 700;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    width: 100%;
+  ">
+    🧹 Limpar Carteira
+  </button>
+  <div class="hint">
+    Essa ação remove todo o saldo e histórico da carteira.
+  </div>
+</div>
 
   <!-- META MENSAL -->
   <div class="quad">
@@ -290,9 +288,16 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 </nav>
 
 <script src="dataManager.js"></script>
-<script src="js/global.js"></script>
 
 <script>
+
+/* ===== TEMA ===== */
+(function(){document.body.dataset.theme=localStorage.getItem("tema")||"dark"})()
+function toggleTheme(){
+ const t=document.body.dataset.theme==="light"?"dark":"light"
+ document.body.dataset.theme=t;localStorage.setItem("tema",t)
+}
+
 (function(){
 
   // Segurança máxima
@@ -371,7 +376,8 @@ const CarteiraEngine = (() => {
    RENDER
 =============================== */
 (function(){
-  
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
+
   const r = CarteiraEngine.getResumoMes();
 
   saldo.textContent = CarteiraEngine.moeda(r.saldo);
