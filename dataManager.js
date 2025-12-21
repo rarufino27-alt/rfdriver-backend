@@ -15,7 +15,10 @@ const DataManager = {
     if (!Array.isArray(data.caixaFechado)) data.caixaFechado = [];
 
     if (!data.carteira) {
-      data.carteira = { saldo: 0, historico: [] };
+      data.carteira = {
+        saldo: 0,
+        historico: []
+      };
     }
 
     if (!data.configuracoes) {
@@ -25,7 +28,7 @@ const DataManager = {
     }
 
     if (!data.metas) {
-      data.metas = {};
+      data.metas = {}; // YYYY-MM
     }
 
     this.saveData(data);
@@ -37,7 +40,10 @@ const DataManager = {
   },
 
   gerarId() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    return (
+      Date.now().toString(36) +
+      Math.random().toString(36).slice(2, 8)
+    );
   },
 
   /* ===============================
@@ -55,7 +61,7 @@ const DataManager = {
     const data = this.getData();
 
     const v = Number(valor);
-    if (isNaN(v) || v <= 0) {
+    if (!v || isNaN(v) || v <= 0) {
       return { ok: false, msg: "Valor inválido" };
     }
 
@@ -76,5 +82,72 @@ const DataManager = {
 
     this.saveData(data);
     return { ok: true };
+  },
+
+  /* ===============================
+     META MENSAL
+  =============================== */
+  setMetaMensal(valor, mesAno) {
+    const data = this.getData();
+    data.metas[mesAno] = Number(valor);
+    this.saveData(data);
+  },
+
+  getMetaMensal(mesAno) {
+    return this.getData().metas[mesAno] || 0;
   }
+};
+
+/* ===============================
+   PLANO / ACESSO
+=============================== */
+const PlanoManager = {
+  getPlano() {
+    return localStorage.getItem("planoUsuario") || "freemium";
+  },
+
+  setPlano(plano) {
+    localStorage.setItem("planoUsuario", plano);
+
+    if (plano === "freemium") {
+      if (!localStorage.getItem("inicioTeste")) {
+        localStorage.setItem("inicioTeste", new Date().toISOString());
+      }
+    } else {
+      localStorage.removeItem("inicioTeste");
+    }
+  },
+
+  isTesteAtivo() {
+    const inicio = localStorage.getItem("inicioTeste");
+    if (!inicio) return false;
+
+    const diffHoras =
+      (new Date() - new Date(inicio)) / (1000 * 60 * 60);
+
+    return diffHoras <= 36;
+  },
+
+  temAcessoTotal() {
+    const plano = this.getPlano();
+    return plano !== "freemium" || this.isTesteAtivo();
+  }
+};
+
+/* ===============================
+   FREEMIUM
+=============================== */
+const PaginasLiberadasFreemium = [
+  "entradas.html"
+];
+
+/* ===============================
+   UTIL
+=============================== */
+DataManager.formatarDataCurta = function (data) {
+  const d = new Date(data);
+  const dia = String(d.getDate()).padStart(2, "0");
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const ano = String(d.getFullYear()).slice(-2);
+  return `${dia}/${mes}/${ano}`;
 };
