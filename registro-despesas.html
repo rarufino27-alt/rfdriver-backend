@@ -111,7 +111,9 @@ button{
 
 <!-- TOGGLES -->
 <div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+<div class="theme-toggle" onclick="GlobalTheme.toggle()">
+  <i class="fa fa-moon"></i>
+</div>
 
 <!-- MENU LATERAL -->
 <nav class="drawer" id="drawer">
@@ -174,13 +176,13 @@ button{
 
   <label>Quantidade de Parcelas</label>
   <select id="parcelas">
-    <option value="mensal">Mensal</option>
+    <option value="mensal">Mensal (recorrente)</option>
   </select>
 
   <label>Data de Pagamento</label>
   <input id="data" type="date">
 
-  <button id="btnRegistrar" type="button">Registrar</button>
+  <button type="button" onclick="registrar()">Registrar</button>
 </div>
 
 <!-- CONFIRMAÇÃO -->
@@ -248,57 +250,126 @@ button{
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
-
+  // Popular parcelas
   const parcelasSelect = document.getElementById("parcelas");
-  for(let i=1;i<=240;i++){
-    const o=document.createElement("option");
-    o.value=i;o.textContent=i;
+  parcelasSelect.innerHTML = "";
+
+  const mensal = document.createElement("option");
+  mensal.value = "mensal";
+  mensal.textContent = "Mensal (recorrente)";
+  parcelasSelect.appendChild(mensal);
+
+  for(let i = 1; i <= 240; i++){
+    const o = document.createElement("option");
+    o.value = i;
+    o.textContent = `${i} parcelas`;
     parcelasSelect.appendChild(o);
-  }
-
-  document.getElementById("btnRegistrar").addEventListener("click", () => {
-
-    const descricao = document.getElementById("descricao").value;
-    const valor = document.getElementById("valor").value;
-    const data = document.getElementById("data").value;
-
-    if(!descricao || !valor || !data){
-      alert("Preencha os campos obrigatórios");
-      return;
-    }
-
-    DataManager.adicionarRegistro({
-      categoria: document.getElementById("categoria").value,
-      descricao,
-      tipo: document.getElementById("tipo").value,
-      valorParcela: Number(valor),
-      totalParcelas: parcelasSelect.value==="mensal"?null:Number(parcelasSelect.value),
-      dataBase: data
-    });
-
-    const box = document.getElementById("confirmacao");
-    box.style.display="block";
-    box.innerHTML = `
-      <strong>Último registro salvo:</strong><br>
-      ${descricao}<br>
-      Valor: R$ ${Number(valor).toFixed(2)}<br>
-      Data: ${new Date(data).toLocaleDateString("pt-BR")}
-    `;
-
-    document.getElementById("descricao").value="";
-    document.getElementById("valor").value="";
-    document.getElementById("data").value="";
-  });
+}
 
 });
 
+/* ===============================
+   FUNÇÃO PADRÃO DE REGISTRO
+=============================== */
+window.registrar = function () {
+
+  const categoria = document.getElementById("categoria").value;
+  const descricao = document.getElementById("descricao").value.trim();
+  const tipo = document.getElementById("tipo").value;
+  const valor = Number(document.getElementById("valor").value);
+  const dataBase = document.getElementById("data").value;
+  const parcelasValor = document.getElementById("parcelas").value;
+
+  if (!descricao || !valor || valor <= 0 || !dataBase) {
+    alert("Preencha todos os campos obrigatórios corretamente.");
+    return;
+  }
+
+  const recorrente = parcelasValor === "mensal";
+  const totalParcelas = recorrente ? null : Number(parcelasValor);
+
+  const dados = DataManager.getData();
+
+const registro = {
+  id: DataManager.gerarId(),
+  tipo,
+  categoria,
+  descricao,
+  valorParcela: valor,
+  totalParcelas,
+  recorrente,
+  dataBase,
+  ativo: true,
+  criadoEm: new Date().toISOString()
+};
+
+dados.registros.push(registro);
+
+// GERA PAGAMENTOS (igual ao padrão antigo)
+const base = new Date(dataBase);
+
+if (recorrente) {
+  for (let i = 0; i < 24; i++) {
+    const d = new Date(base);
+    d.setMonth(d.getMonth() + i);
+    dados.pagamentos.push({
+      id: DataManager.gerarId(),
+      registroId: registro.id,
+      descricao,
+      categoria,
+      tipo,
+      valor,
+      parcelaInfo: "Mensal",
+      dataVencimento: d.toISOString().split("T")[0],
+      pago: false,
+      dataPagamento: null
+    });
+  }
+} else {
+  for (let i = 1; i <= totalParcelas; i++) {
+    const d = new Date(base);
+    d.setMonth(d.getMonth() + (i - 1));
+    dados.pagamentos.push({
+      id: DataManager.gerarId(),
+      registroId: registro.id,
+      descricao,
+      categoria,
+      tipo,
+      valor,
+      parcelaInfo: `${i}/${totalParcelas}`,
+      dataVencimento: d.toISOString().split("T")[0],
+      pago: false,
+      dataPagamento: null
+    });
+  }
+}
+
+DataManager.saveData(dados);
+
+  // Confirmação visual
+  const box = document.getElementById("confirmacao");
+  box.style.display = "block";
+  box.innerHTML = `
+    <strong>Registro salvo:</strong><br>
+    ${descricao}<br>
+    Valor: ${valor.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}<br>
+    ${recorrente ? "Recorrência mensal" : `Parcelas: ${totalParcelas}`}<br>
+    Data base: ${new Date(dataBase).toLocaleDateString("pt-BR")}
+  `;
+
+  // Limpa formulário
+  document.getElementById("descricao").value = "";
+  document.getElementById("valor").value = "";
+  document.getElementById("data").value = "";
+};
+
+/* ===============================
+   UI
+=============================== */
 function toggleDrawer(){
   document.getElementById("drawer").classList.toggle("open");
 }
-function toggleTheme(){
-  document.body.dataset.theme = DataManager.toggleTema();
-}
+
 </script>
 
 </body>
