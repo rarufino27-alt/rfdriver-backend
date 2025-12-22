@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Despesas Registradas - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="css-theme.css">
+</head>
+
+<body>
+
+<!-- CONTROLES -->
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+
+<!-- MENU LATERAL -->
+<div id="menu-lateral"></div>
+
+<!-- CONTEÚDO -->
+<main id="conteudo">
+
+  <header class="header">
+    <h1 style="color:var(--gold);margin:0">Despesas Registradas</h1>
+    <small>Visão geral de todas as despesas</small>
+  </header>
+
+  <div id="lista"></div>
+
+</main>
+
+<!-- MENU INFERIOR -->
+<div id="menu-inferior"></div>
+
+<script src="js-dataManager.js"></script>
+<script src="js-global.js"></script>
+<script src="js-planoManager.js"></script>
+<script>
+  PlanoManager.protegerPagina("despesas");
+</script>
+
+<script>
+/* COMPONENTES */
+loadComponent("menu-lateral","components-menu-lateral.html");
+loadComponent("menu-inferior","components-menu-inferior.html");
+
+/* ELEMENTOS */
+const lista = document.getElementById("lista");
+const moeda = v => Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+/* RENDER */
+function render(){
+  const dados = DataManager.getData();
+  const pagamentos = dados.pagamentos.filter(p=>p.tipo==="despesa");
+
+  if(!pagamentos.length){
+    lista.innerHTML = "<p style='opacity:.6;text-align:center'>Nenhuma despesa registrada</p>";
+    return;
+  }
+
+  const grupos = {};
+  pagamentos.forEach(p=>{
+    if(!grupos[p.descricao]) grupos[p.descricao] = [];
+    grupos[p.descricao].push(p);
+  });
+
+  lista.innerHTML = "";
+
+  Object.entries(grupos).forEach(([descricao, parcelas])=>{
+    parcelas.sort((a,b)=>a.dataVencimento.localeCompare(b.dataVencimento));
+    const total = parcelas.reduce((s,p)=>s+(p.valor||0),0);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <h3 style="color:var(--gold);margin:0">${descricao}</h3>
+
+      <div class="resumo" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+        <span>Total ${moeda(total)}</span>
+        <span>Parcelas ${parcelas.length}</span>
+      </div>
+
+      <div class="actions" style="margin-top:10px;display:flex;gap:10px">
+        <button class="btn-toggle" style="background:none;color:var(--gold);border:none;font-weight:600">
+          Parcelas
+        </button>
+        <button class="btn-danger" style="background:none;color:#ff3b30;border:1px solid #ff3b30;
+          padding:6px 10px;border-radius:10px;font-weight:600">
+          Excluir
+        </button>
+      </div>
+
+      <div class="parcelas" style="display:none;margin-top:10px;border-top:1px dashed var(--border);padding-top:10px">
+        ${parcelas.map(p=>`
+          <div style="display:flex;justify-content:space-between;
+            padding:6px 0;border-bottom:1px solid var(--border);
+            ${p.pago?"text-decoration:line-through;opacity:.6":""}">
+            <span>${p.parcelaInfo} • ${new Date(p.dataVencimento).toLocaleDateString("pt-BR")}</span>
+            <small>${moeda(p.valor)}</small>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    const parcelasDiv = card.querySelector(".parcelas");
+
+    card.querySelector(".btn-toggle").onclick = ()=>{
+      parcelasDiv.style.display = parcelasDiv.style.display==="block" ? "none" : "block";
+    };
+
+    card.querySelector(".btn-danger").onclick = ()=>{
+      if(confirm("Excluir esta despesa definitivamente?")){
+        dados.pagamentos = dados.pagamentos.filter(p=>p.descricao!==descricao);
+        dados.registros = dados.registros.filter(r=>r.descricao!==descricao);
+        DataManager.saveData(dados);
+        render();
+      }
+    };
+
+    lista.appendChild(card);
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>

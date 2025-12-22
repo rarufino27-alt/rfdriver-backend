@@ -1,0 +1,25 @@
+:root{
+  --gold:#f5c542;
+  --bg:#0d0d0d;
+  --text:#f4f4f4;
+  --card:#161616;
+  --border:#242424;
+}
+
+body[data-theme="light"]{
+  --bg:#f4f4f4;
+  --text:#111;
+  --card:#fff;
+  --border:#ddd;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:Inter, system-ui, sans-serif;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+}

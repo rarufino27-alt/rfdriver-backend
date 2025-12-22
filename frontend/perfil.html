@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfil - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="css-theme.css">
+</head>
+
+<body>
+
+<!-- CONTROLES -->
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+
+<!-- MENU LATERAL -->
+<div id="menu-lateral"></div>
+
+<!-- CONTEÚDO -->
+<main id="conteudo">
+
+  <header class="header">
+    <h1 style="color:var(--gold);margin:0">Perfil</h1>
+    <small>Dados pessoais, veículos e financeiro</small>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs" style="display:flex;gap:10px;margin-bottom:12px">
+    <div class="tab-btn active" data-tab="pessoal">Pessoal</div>
+    <div class="tab-btn" data-tab="veiculos">Veículos</div>
+    <div class="tab-btn" data-tab="financeiro">Financeiro</div>
+  </div>
+
+  <!-- ===== ABA PESSOAL ===== -->
+  <div id="pessoal" class="card">
+    <label>Nome</label>
+    <input id="pNome">
+
+    <label>Telefone</label>
+    <input id="pTelefone">
+
+    <label>CPF</label>
+    <input id="pCpf">
+
+    <label>Cidade / Estado</label>
+    <input id="pCidade">
+
+    <button id="btnSalvarPessoal">Salvar dados</button>
+  </div>
+
+  <!-- ===== ABA VEÍCULOS ===== -->
+  <div id="veiculos" class="card" style="display:none">
+    <label>Marca</label>
+    <input id="vMarca">
+
+    <label>Modelo</label>
+    <input id="vModelo">
+
+    <button id="btnSalvarVeiculo">Adicionar veículo</button>
+
+    <div id="listaVeiculos" style="margin-top:10px"></div>
+  </div>
+
+  <!-- ===== ABA FINANCEIRO ===== -->
+  <div id="financeiro" class="card" style="display:none">
+    <label>Banco</label>
+    <input id="fBanco">
+
+    <label>Chave PIX</label>
+    <input id="fChavePix">
+
+    <button id="btnSalvarFinanceiro">Salvar financeiro</button>
+  </div>
+
+</main>
+
+<!-- MENU INFERIOR -->
+<div id="menu-inferior"></div>
+
+<script src="js-dataManager.js"></script>
+<script src="js-global.js"></script>
+<script src="js-planoManager.js"></script>
+<script>
+  PlanoManager.protegerPagina("perfil");
+</script>
+
+<script>
+/* COMPONENTES */
+loadComponent("menu-lateral","components-menu-lateral.html");
+loadComponent("menu-inferior","components-menu-inferior.html");
+
+/* ELEMENTOS */
+const pNome = document.getElementById("pNome");
+const pTelefone = document.getElementById("pTelefone");
+const pCpf = document.getElementById("pCpf");
+const pCidade = document.getElementById("pCidade");
+
+const vMarca = document.getElementById("vMarca");
+const vModelo = document.getElementById("vModelo");
+const listaVeiculos = document.getElementById("listaVeiculos");
+
+const fBanco = document.getElementById("fBanco");
+const fChavePix = document.getElementById("fChavePix");
+
+/* TABS */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+
+    ["pessoal","veiculos","financeiro"].forEach(id=>{
+      document.getElementById(id).style.display =
+        btn.dataset.tab === id ? "block" : "none";
+    });
+  };
+});
+
+/* DADOS */
+function salvarPessoal(){
+  localStorage.setItem("perfilPessoalRF", JSON.stringify({
+    nome: pNome.value,
+    telefone: pTelefone.value,
+    cpf: pCpf.value,
+    cidade: pCidade.value
+  }));
+  alert("Dados pessoais salvos");
+}
+
+function salvarVeiculo(){
+  if(!vMarca.value || !vModelo.value) return alert("Informe marca e modelo");
+  const arr = JSON.parse(localStorage.getItem("veiculosRF") || "[]");
+  arr.push({ marca: vMarca.value, modelo: vModelo.value });
+  localStorage.setItem("veiculosRF", JSON.stringify(arr));
+  vMarca.value = vModelo.value = "";
+  renderVeiculos();
+}
+
+function renderVeiculos(){
+  const arr = JSON.parse(localStorage.getItem("veiculosRF") || "[]");
+  listaVeiculos.innerHTML = arr.map(v=>`
+    <div class="card" style="padding:10px">
+      <strong>${v.marca}</strong> ${v.modelo}
+    </div>
+  `).join("");
+}
+
+function salvarFinanceiro(){
+  localStorage.setItem("financeiroRF", JSON.stringify({
+    banco: fBanco.value,
+    pix: fChavePix.value
+  }));
+  alert("Financeiro salvo");
+}
+
+/* LOAD */
+document.getElementById("btnSalvarPessoal").onclick = salvarPessoal;
+document.getElementById("btnSalvarVeiculo").onclick = salvarVeiculo;
+document.getElementById("btnSalvarFinanceiro").onclick = salvarFinanceiro;
+
+renderVeiculos();
+</script>
+
+</body>
+</html>

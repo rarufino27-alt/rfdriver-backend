@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caixa - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="css-theme.css">
+</head>
+
+<body>
+
+<!-- CONTROLES -->
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+
+<!-- MENU LATERAL -->
+<div id="menu-lateral"></div>
+
+<!-- CONTEÚDO -->
+<main id="conteudo">
+
+  <header class="header">
+    <h1 style="color:var(--gold);margin:0">Livro Caixa</h1>
+    <small>Gestão Financeira Diária</small>
+  </header>
+
+  <div class="summary card">
+    <div class="summary-row"><span>Entradas</span><span id="resEntradas">R$ 0,00</span></div>
+    <div class="summary-row"><span>Saídas</span><span id="resSaidas">R$ 0,00</span></div>
+    <div class="summary-row"><strong>Saldo</strong><strong id="resSaldo">R$ 0,00</strong></div>
+    <canvas id="grafico" height="120"></canvas>
+  </div>
+
+  <div class="card">
+    <button id="btnFecharCaixa"
+      style="background:#1DB954;color:#000;font-weight:700;width:100%;padding:14px;border-radius:12px;border:none">
+      🔒 Fechar Caixa do Dia
+    </button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-buttons">
+    <button class="tab-btn active" data-tab="corridas">Corridas</button>
+    <button class="tab-btn" data-tab="outras">Outras Entradas</button>
+    <button class="tab-btn" data-tab="saidas">Saídas</button>
+  </div>
+
+  <div class="card tab" id="corridas" style="display:block">
+    <select id="tipoCorrida">
+      <option value="">Tipo de corrida</option>
+      <option value="App">Corridas de Aplicativo</option>
+      <option value="Entrega">Outros Aplicativos</option>
+      <option value="Empresa">Empresa</option>
+      <option value="Particular">Particular</option>
+    </select>
+    <select id="subTipo" style="display:none"></select>
+    <input id="valorCorrida" type="number" placeholder="Valor (R$)">
+    <table><tbody id="listaCorridas"></tbody></table>
+  </div>
+
+  <div class="card tab" id="outras">
+    <input id="descOutra" placeholder="Descrição">
+    <input id="valorOutra" type="number" placeholder="Valor (R$)">
+    <table><tbody id="listaOutras"></tbody></table>
+  </div>
+
+  <div class="card tab" id="saidas">
+    <select id="tipoSaida">
+      <option>Combustível</option>
+      <option>Alimentação</option>
+      <option>Pedágio</option>
+      <option>Outros</option>
+    </select>
+    <input id="valorSaida" type="number" placeholder="Valor (R$)">
+    <table><tbody id="listaSaidas"></tbody></table>
+  </div>
+
+  <div style="margin-top:16px">
+    <button id="btnRegistrar"
+      style="width:100%;padding:14px;border:none;border-radius:12px;
+      background:var(--gold);font-weight:700">
+      Registrar
+    </button>
+  </div>
+
+</main>
+
+<!-- MENU INFERIOR -->
+<div id="menu-inferior"></div>
+
+<script src="js-dataManager.js"></script>
+<script src="js-global.js"></script>
+<script src="js-planoManager.js"></script>
+<script>
+  PlanoManager.protegerPagina("entradas");
+</script>
+
+<script>
+/* COMPONENTES */
+loadComponent("menu-lateral","components-menu-lateral.html");
+loadComponent("menu-inferior","components-menu-inferior.html");
+
+/* ESTADO LOCAL DO CAIXA */
+let dados = JSON.parse(localStorage.getItem("rf_caixa")) || { entradas:[], saidas:[] };
+
+/* GRÁFICO */
+const grafico = new Chart(document.getElementById("grafico"),{
+  type:"bar",
+  data:{labels:["Entradas","Saídas"],datasets:[{data:[0,0],backgroundColor:["#1DB954","#ff3b30"]}]},
+  options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+});
+
+/* SUBTIPOS */
+tipoCorrida.onchange = ()=>{
+  subTipo.innerHTML="";
+  subTipo.style.display="none";
+  let ops=[];
+  if(tipoCorrida.value==="App") ops=["Uber","99","InDrive"];
+  if(tipoCorrida.value==="Entrega") ops=["iFood","99Food","Uber Entregas","Rappi","Outros"];
+  if(ops.length){
+    subTipo.style.display="block";
+    ops.forEach(o=>subTipo.innerHTML+=`<option>${o}</option>`);
+  }
+};
+
+/* ATUALIZA */
+function atualizar(){
+  const ent = dados.entradas.reduce((s,i)=>s+Number(i.valor||0),0);
+  const sai = dados.saidas.reduce((s,i)=>s+Number(i.valor||0),0);
+
+  resEntradas.textContent = ent.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  resSaidas.textContent = sai.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  resSaldo.textContent = (ent-sai).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+  grafico.data.datasets[0].data=[ent,sai];
+  grafico.update();
+
+  localStorage.setItem("rf_caixa",JSON.stringify(dados));
+}
+
+/* RENDER */
+function render(){
+  listaCorridas.innerHTML = dados.entradas.map((e,i)=>`
+    <tr>
+      <td>${e.desc}</td>
+      <td>${Number(e.valor).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+      <td class="del" onclick="delItem('entradas',${i})">✕</td>
+    </tr>`).join("");
+
+  listaSaidas.innerHTML = dados.saidas.map((e,i)=>`
+    <tr>
+      <td>${e.desc}</td>
+      <td>${Number(e.valor).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+      <td class="del" onclick="delItem('saidas',${i})">✕</td>
+    </tr>`).join("");
+}
+
+/* REGISTRAR */
+btnRegistrar.onclick = ()=>{
+  if(corridas.style.display!=="none"){
+    if(!valorCorrida.value) return alert("Informe o valor.");
+    dados.entradas.push({
+      desc: tipoCorrida.value+(subTipo.value?" - "+subTipo.value:""),
+      valor: Number(valorCorrida.value)
+    });
+    valorCorrida.value="";
+  }
+
+  if(outras.style.display!=="none"){
+    if(!valorOutra.value) return alert("Informe o valor.");
+    dados.entradas.push({desc:descOutra.value,valor:Number(valorOutra.value)});
+    descOutra.value=valorOutra.value="";
+  }
+
+  if(saidas.style.display!=="none"){
+    if(!valorSaida.value) return alert("Informe o valor.");
+    dados.saidas.push({desc:tipoSaida.value,valor:Number(valorSaida.value)});
+    valorSaida.value="";
+  }
+
+  render(); atualizar();
+};
+
+function delItem(tipo,i){
+  dados[tipo].splice(i,1);
+  render(); atualizar();
+}
+
+/* TABS */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".tab").forEach(t=>t.style.display="none");
+    document.getElementById(btn.dataset.tab).style.display="block";
+  };
+});
+
+/* FECHAR CAIXA */
+btnFecharCaixa.onclick = ()=>{
+  const ent = dados.entradas.reduce((s,i)=>s+Number(i.valor||0),0);
+  const sai = dados.saidas.reduce((s,i)=>s+Number(i.valor||0),0);
+  const saldo = ent - sai;
+
+  if(saldo<=0) return alert("Saldo zerado ou negativo.");
+  if(!confirm(`Fechar o caixa e enviar ${saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})} para a carteira?`)) return;
+
+  localStorage.removeItem("rf_caixa");
+  alert("Caixa fechado com sucesso.");
+  location.reload();
+};
+
+render(); atualizar();
+</script>
+
+</body>
+</html>

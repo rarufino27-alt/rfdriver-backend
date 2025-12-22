@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planos - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="css-theme.css">
+</head>
+
+<body>
+
+<!-- CONTROLES -->
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+
+<!-- MENU LATERAL -->
+<div id="menu-lateral"></div>
+
+<!-- CONTEÚDO -->
+<main id="conteudo">
+
+  <!-- HERO -->
+  <section class="hero" style="text-align:center;margin-bottom:32px">
+    <h1 style="color:var(--gold);font-size:32px;margin:0">
+      Você trabalha muito.<br>Seu dinheiro deveria trabalhar melhor.
+    </h1>
+    <p style="margin-top:12px;opacity:.9">
+      Controle, previsibilidade e lucro real para quem dirige todos os dias.
+    </p>
+  </section>
+
+  <!-- DOR -->
+  <section class="pain card">
+    <h2 style="color:var(--gold);margin:0 0 12px">
+      O problema não é quanto você ganha
+    </h2>
+    <p style="opacity:.9">
+      É não saber quanto sobra. O RF Driver resolve isso sem complicação.
+    </p>
+  </section>
+
+  <!-- FREEMIUM -->
+  <section class="plan card">
+    <h3 style="color:var(--gold);margin:0">Plano Freemium</h3>
+    <div class="price-main" style="font-size:30px;font-weight:800;margin:12px 0">
+      R$ 0,00
+    </div>
+    <div style="opacity:.8">Plano básico gratuito</div>
+    <ul style="margin-top:14px">
+      <li>Acesso ao Dashboard</li>
+      <li>Perfil e Livro Caixa</li>
+      <li>Funcionalidades essenciais</li>
+    </ul>
+    <button onclick="ativarFreemium()">Usar plano freemium</button>
+  </section>
+
+  <!-- TESTE -->
+  <section class="trial" style="border:2px dashed var(--gold);border-radius:18px;padding:22px;text-align:center">
+    <h3 style="color:var(--gold);margin:0">Teste completo por 36 horas</h3>
+    <p style="margin:10px 0;opacity:.9">
+      Desbloqueie tudo e veja o app trabalhando por você.
+    </p>
+    <span style="font-size:13px;opacity:.7">Sem cartão • Sem compromisso</span>
+    <button onclick="ativarTeste()">Desbloquear tudo por 36 horas</button>
+  </section>
+
+  <!-- MENSAL -->
+  <section class="plan card">
+    <h3 style="color:var(--gold);margin:0">Plano Mensal</h3>
+    <div style="text-decoration:line-through;opacity:.6">De R$ 69,90</div>
+    <div class="price-main" style="font-size:30px;font-weight:800;margin:12px 0">
+      R$ 24,90
+    </div>
+    <div style="opacity:.8">Flexibilidade total</div>
+    <ul style="margin-top:14px">
+      <li>Acesso completo</li>
+      <li>Cancele quando quiser</li>
+    </ul>
+    <button onclick="escolherPlano('mensal')">Escolher plano mensal</button>
+  </section>
+
+  <!-- SEMESTRAL -->
+  <section class="plan card" style="border:2px solid var(--gold);box-shadow:0 20px 40px rgba(245,197,66,.35)">
+    <div class="badge" style="margin-bottom:10px">MAIS ESCOLHIDO</div>
+    <h3 style="color:var(--gold);margin:0">Plano Semestral</h3>
+    <div style="text-decoration:line-through;opacity:.6">De R$ 419,90</div>
+    <div class="price-main" style="font-size:30px;font-weight:800;margin:12px 0">
+      R$ 124,90
+    </div>
+    <div style="opacity:.8">Melhor custo-benefício</div>
+    <ul style="margin-top:14px">
+      <li>6 meses de acesso total</li>
+      <li>Economia real</li>
+    </ul>
+    <button onclick="escolherPlano('semestral')">Escolher plano semestral</button>
+  </section>
+
+  <!-- VITALÍCIO -->
+  <section class="plan card">
+    <h3 style="color:var(--gold);margin:0">Plano Vitalício</h3>
+    <div style="text-decoration:line-through;opacity:.6">De R$ 1.677,60</div>
+    <div class="price-main" style="font-size:30px;font-weight:800;margin:12px 0">
+      R$ 299,90
+    </div>
+    <div style="opacity:.8">Pague uma vez, use para sempre</div>
+    <ul style="margin-top:14px">
+      <li>Acesso eterno</li>
+      <li>Atualizações inclusas</li>
+    </ul>
+    <button onclick="escolherPlano('vitalicio')">Comprar vitalício</button>
+  </section>
+
+</main>
+
+<!-- MENU INFERIOR -->
+<div id="menu-inferior"></div>
+
+<script src="js-dataManager.js"></script>
+<script src="js-global.js"></script>
+<script src="js-planoManager.js"></script>
+<script>
+  PlanoManager.protegerPagina("planos");
+</script>
+
+<script>
+/* COMPONENTES */
+loadComponent("menu-lateral","components-menu-lateral.html");
+loadComponent("menu-inferior","components-menu-inferior.html");
+
+/* AÇÕES DE PLANO */
+function escolherPlano(plano){
+  if(typeof PlanoManager === "undefined") return;
+  if(navigator.vibrate) navigator.vibrate(40);
+  PlanoManager.setPlano(plano);
+  setTimeout(()=>location.href="carteira.html",250);
+}
+
+function ativarTeste(){
+  if(typeof PlanoManager === "undefined") return;
+  if(navigator.vibrate) navigator.vibrate(60);
+  PlanoManager.ativarTeste36h();
+  setTimeout(()=>location.href="index.html",250);
+}
+
+function ativarFreemium(){
+  if(typeof PlanoManager === "undefined") return;
+  PlanoManager.resetarFreemium();
+  setTimeout(()=>location.href="entradas.html",250);
+}
+</script>
+
+</body>
+</html>

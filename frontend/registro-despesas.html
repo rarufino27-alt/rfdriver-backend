@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registro de Despesas - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="css-theme.css">
+</head>
+
+<body>
+
+<!-- CONTROLES -->
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+
+<!-- MENU LATERAL -->
+<div id="menu-lateral"></div>
+
+<!-- CONTEÚDO -->
+<main id="conteudo">
+
+  <header class="header">
+    <h1 style="color:var(--gold);margin:0">Registro de Despesas</h1>
+    <small>Confirmação imediata do registro</small>
+  </header>
+
+  <div class="card">
+    <label>Categoria</label>
+    <select id="categoria">
+      <option>Alimentação</option>
+      <option>Cartão</option>
+      <option>Empréstimos</option>
+      <option>Financiamento</option>
+      <option>Luz</option>
+      <option>Água</option>
+      <option>IPTU</option>
+      <option>IPVA</option>
+      <option>Condomínio</option>
+      <option>Vestuário</option>
+      <option>Transporte</option>
+      <option>Carro</option>
+      <option>Lazer</option>
+      <option>Outros</option>
+    </select>
+
+    <label>Descrição</label>
+    <input id="descricao" placeholder="Ex: Cartão de Neide">
+
+    <label>Tipo</label>
+    <select id="tipo">
+      <option value="despesa">Despesa</option>
+      <option value="divida">Dívida</option>
+    </select>
+
+    <label>Valor</label>
+    <input id="valor" type="number" step="0.01">
+
+    <label>Quantidade de Parcelas</label>
+    <select id="parcelas">
+      <option value="mensal">Mensal (recorrente)</option>
+    </select>
+
+    <label>Data de Vencimento</label>
+    <input id="data" type="date">
+
+    <button id="btnRegistrar">Registrar</button>
+  </div>
+
+  <div class="card confirmacao" id="confirmacao" style="display:none"></div>
+
+</main>
+
+<!-- MENU INFERIOR -->
+<div id="menu-inferior"></div>
+
+<script src="js-dataManager.js"></script>
+<script src="js-global.js"></script>
+<script src="js-planoManager.js"></script>
+<script>
+  PlanoManager.protegerPagina("despesas");
+</script>
+
+<script>
+/* COMPONENTES */
+loadComponent("menu-lateral","components-menu-lateral.html");
+loadComponent("menu-inferior","components-menu-inferior.html");
+
+/* ELEMENTOS */
+const categoriaEl = document.getElementById("categoria");
+const descricaoEl = document.getElementById("descricao");
+const tipoEl = document.getElementById("tipo");
+const valorEl = document.getElementById("valor");
+const parcelasEl = document.getElementById("parcelas");
+const dataEl = document.getElementById("data");
+const confirmacao = document.getElementById("confirmacao");
+const btnRegistrar = document.getElementById("btnRegistrar");
+
+/* PARCELAS */
+document.addEventListener("DOMContentLoaded",()=>{
+  for(let i=1;i<=240;i++){
+    const o=document.createElement("option");
+    o.value=i;
+    o.textContent=`${i} parcelas`;
+    parcelasEl.appendChild(o);
+  }
+});
+
+/* REGISTRAR */
+btnRegistrar.onclick = ()=>{
+  const categoria = categoriaEl.value;
+  const descricao = descricaoEl.value.trim();
+  const tipo = tipoEl.value;
+  const valor = Number(valorEl.value);
+  const dataBase = dataEl.value;
+  const parcelasValor = parcelasEl.value;
+
+  if(!descricao || !valor || valor<=0 || !dataBase){
+    alert("Preencha todos os campos corretamente.");
+    return;
+  }
+
+  const recorrente = parcelasValor==="mensal";
+  const totalParcelas = recorrente ? null : Number(parcelasValor);
+
+  const dados = DataManager.getData();
+
+  const registro = {
+    id: DataManager.gerarId(),
+    tipo,
+    categoria,
+    descricao,
+    valorParcela: valor,
+    totalParcelas,
+    recorrente,
+    dataBase,
+    ativo: true,
+    criadoEm: new Date().toISOString()
+  };
+
+  dados.registros.push(registro);
+
+  const base = new Date(dataBase);
+
+  if(tipo==="despesa"){
+    dados.pagamentos.push({
+      id: DataManager.gerarId(),
+      registroId: registro.id,
+      descricao,
+      categoria,
+      tipo: "despesa",
+      valor,
+      parcelaInfo: "Única",
+      dataVencimento: base.toISOString().split("T")[0],
+      pago: false
+    });
+  }
+
+  if(tipo==="divida"){
+    const limite = recorrente ? 24 : totalParcelas;
+    for(let i=0;i<limite;i++){
+      const d = new Date(base);
+      d.setMonth(d.getMonth()+i);
+      dados.pagamentos.push({
+        id: DataManager.gerarId(),
+        registroId: registro.id,
+        descricao,
+        categoria,
+        tipo: "divida",
+        valor,
+        parcelaInfo: recorrente ? "Mensal" : `${i+1}/${totalParcelas}`,
+        dataVencimento: d.toISOString().split("T")[0],
+        pago: false
+      });
+    }
+  }
+
+  DataManager.saveData(dados);
+
+  confirmacao.style.display="block";
+  confirmacao.innerHTML=`
+    <strong style="color:var(--gold)">Registro salvo com sucesso</strong><br><br>
+    ${descricao}<br>
+    Valor: ${valor.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}<br>
+    Tipo: ${tipo==="despesa"?"Despesa":"Dívida"}<br>
+    Vencimento: ${new Date(dataBase).toLocaleDateString("pt-BR")}
+  `;
+
+  descricaoEl.value="";
+  valorEl.value="";
+  dataEl.value="";
+};
+</script>
+
+</body>
+</html>
